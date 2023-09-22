@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1695385670 source:c:\users\tadeusz bindas\documents\github\memsubloader\memsubloader\main.cpp
+	<windows.h>
+	<commdlg.h>
+	<tchar.h>
+	<iostream>
+	<shlwapi.h>
+	<fstream>
+	<string>
+	<vector>
+
