@@ -1,0 +1,5 @@
+*.layout
+*.depend
+# generated directories
+bin/
+obj/
