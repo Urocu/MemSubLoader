@@ -1,5 +1,6 @@
 #include "MemSubLoader.hpp"
 
+// Config window controls handling
 LRESULT CALLBACK ConfigWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
@@ -19,6 +20,7 @@ LRESULT CALLBACK ConfigWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
+// Config window initialization
 void CreateConfigWindow(HWND parent)
 {
 	const wchar_t CONFIG_CLASS_NAME[] = L"ConfigWindowClass";
@@ -41,6 +43,7 @@ void CreateConfigWindow(HWND parent)
 	ShowWindow(configHWND, SW_SHOW);
 }
 
+// Main window controls handling
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
@@ -115,6 +118,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
+// Main window initialization
 int CreateMainWindow(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	const wchar_t CLASS_NAME[] = L"MainWindowClass";
@@ -132,9 +136,7 @@ int CreateMainWindow(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	//Creates main window and positions it at the middle of the screen
 	mainHWND = CreateWindowEx(0, CLASS_NAME, L"MemSubLoader", WS_OVERLAPPEDWINDOW &~WS_MAXIMIZEBOX &~WS_THICKFRAME, desktop.right / 2 - 320, desktop.bottom / 2 - 120, 640, 240, NULL, NULL, hInstance, NULL);
 	if (mainHWND == NULL)
-	{
 		return 1;
-	}
 
 	//Creates three buttons
 	CreateWindow(L"BUTTON", L"Choose Game", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 50, 50, 150, 50, mainHWND, (HMENU) GAME, hInstance, NULL);

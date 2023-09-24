@@ -19,7 +19,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int res = CreateMainWindow(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 	if (res)
 	{
-		printf("Error: Couldn't initialize main window");
+		printf("Error: Couldn't initialize main window\n");
 		return 1;
 	}
 	while (GetMessage(&msg, NULL, 0, 0) > 0)
