@@ -1,19 +1,14 @@
 #include "MemSubLoader.hpp"
 
-bool findAddress(uintptr_t &address, int offset)
+//Find address containing audio ID
+void findAddress(uintptr_t &address, int offset, HANDLE hProcess)
 {
-	SIZE_T bytesRead;
-	int newAddress;
-
-	if (ReadProcessMemory(pi.hProcess, (LPCVOID) address, &newAddress, sizeof(newAddress), &bytesRead))
-	{
-		address = newAddress;
-		address += offset;
-		return true;
-	}
-	return false;
+    SIZE_T bytesRead;
+    if (ReadProcessMemory(hProcess, (LPCVOID)address, &address, 4, &bytesRead) )
+            address += offset;
 }
 
+//Open File Explorer
 bool OpenFileExplorer(HWND hwnd, wchar_t *filePath, int filePathSize, int button)
 {
 	OPENFILENAME ofn = {
