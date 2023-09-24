@@ -27,7 +27,7 @@ void game_start(PROCESS_INFORMATION pi)
 		}
 	}
 	else
-		SetWindowText(subtitles,L"File failed to open");
+		SetWindowText(subtitles, L"File failed to open");
 	subfile.close();
 
 	int lastID = 0;
@@ -38,7 +38,7 @@ void game_start(PROCESS_INFORMATION pi)
 		//Read memory of audioID's address
 		if (ReadProcessMemory(pi.hProcess, (LPCVOID)addressToRead, &audID, sizeof(audID), &bytesRead) && lastID!=audID && audID <Text.size() && audID >0)
 		{
-			SetWindowText(subtitles,Text[audID].c_str());
+			SetWindowText(subtitles, Text[audID].c_str());
 			lastID=audID;
 		}
 		//process messages, otherwise the software will freeze
@@ -51,13 +51,13 @@ void game_start(PROCESS_INFORMATION pi)
 
 		addressToRead = baseaddress;
 		for( int i = 0; i < num; i++)
-			findAddress(addressToRead,offset[i],pi.hProcess);
+			findAddress(addressToRead, offset[i], pi.hProcess);
 		//If width and height of the screen changed, resize and reposition the subtitles window
 		if(Width != GetSystemMetrics(SM_CXSCREEN) && Height != GetSystemMetrics(SM_CYSCREEN))
 		{
 			Width = GetSystemMetrics(SM_CXSCREEN);
 			Height = GetSystemMetrics(SM_CYSCREEN);
-			SetWindowPos(subtitles,HWND_TOPMOST, 0,Height-100,Width,100,0);
+			SetWindowPos(subtitles, HWND_TOPMOST, 0, Height-100, Width, 100, 0);
 		}
 
 	}
