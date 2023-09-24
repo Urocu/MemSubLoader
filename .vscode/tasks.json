@@ -3,20 +3,21 @@
         {
             "type": "cppbuild",
             "label": "build",
-            "command": "C:\\cygwin64\\bin\\gcc.exe",
+            "command": "C:\\cygwin64\\bin\\g++.exe",
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
-                "main.cpp",
+                "${workspaceFolder}/srcs/*.cpp",
                 "-o",
                 "${workspaceFolder}/bin/Release/MemSubLoader.exe",
-				"-lstdc++",
-				"-lcomdlg32",
-				"-lshlwapi",
-				"-lgdi32"
+                "-I${workspaceFolder}/includes",
+                "-lstdc++",
+                "-lcomdlg32",
+                "-lshlwapi",
+                "-lgdi32"
             ],
             "options": {
-                "cwd": "${fileDirname}"
+                "cwd": "${workspaceFolder}"
             },
             "problemMatcher": [
                 "$gcc"
