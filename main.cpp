@@ -4,8 +4,6 @@
 #define _WIN32_WINNT 0x0501
 
 #include <windows.h>
-#include <commdlg.h>
-#include <tchar.h>
 #include <iostream>
 #include <shlwapi.h>
 #include <fstream>
@@ -19,38 +17,29 @@
 HWND game_text = NULL;
 HWND file_text = NULL;
 HWND subtitles = NULL;
-HWND gameHWND = NULL;
 wchar_t gamePath[MAX_PATH] = {};
 wchar_t filePath[MAX_PATH] = {};
-PROCESS_INFORMATION pi;
-STARTUPINFO si;
-HWND gWindow = NULL;
 
-bool findAddress(uintptr_t &address, int offset)
+//Find address containing audio ID
+void findAddress(uintptr_t &address, int offset, HANDLE hProcess)
 {
     SIZE_T bytesRead;
-    int newAddress;
-    if (ReadProcessMemory(pi.hProcess, (LPCVOID)address, &newAddress, sizeof(newAddress), &bytesRead) )
-    {
-            address = newAddress;
+    if (ReadProcessMemory(hProcess, (LPCVOID)address, &address, 4, &bytesRead) )
             address += offset;
-            return true;
-    }
-    return false;
-
 }
 
-void game_start()
+//Used when the game starts
+void game_start(PROCESS_INFORMATION pi)
 {
     SIZE_T bytesRead;
     int audID;
     uintptr_t baseaddress;
     uintptr_t addressToRead;
-
     std::vector <std::wstring> Text;
 
     std::wstring ws( filePath );
     std::string SfilePath( ws.begin(), ws.end() );
+    //Opens file containing base address, offsets and text for subtitles
     std::wifstream subfile;
     subfile.open(SfilePath);
     int num;
@@ -69,33 +58,44 @@ void game_start()
     else
         SetWindowText(subtitles,L"File failed to open");
     subfile.close();
+
     int lastID = 0;
-    SetWindowText(subtitles,Text[0].c_str());
+    DWORD Width = 0;
+    DWORD Height = 0;
     while (WaitForSingleObject( pi.hProcess, 0 ) == WAIT_TIMEOUT)
     {
+        //Read memory of audioID's address
         if (ReadProcessMemory(pi.hProcess, (LPCVOID)addressToRead, &audID, sizeof(audID), &bytesRead) && lastID!=audID && audID <Text.size() && audID >0)
         {
             SetWindowText(subtitles,Text[audID].c_str());
             lastID=audID;
         }
+        //process messages, otherwise the software will freeze
         MSG msg = { };
         while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
         {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
+
         addressToRead = baseaddress;
         for( int i = 0; i < num; i++)
-            findAddress(addressToRead,offset[i]);
-        DWORD Width = GetSystemMetrics(SM_CXSCREEN);
-        DWORD Height = GetSystemMetrics(SM_CYSCREEN);
-        SetWindowPos(subtitles,HWND_TOPMOST, 0,Height-100,Width,100,NULL);
+            findAddress(addressToRead,offset[i],pi.hProcess);
+        //If width and height of the screen changed, resize and reposition the subtitles window
+        if(Width != GetSystemMetrics(SM_CXSCREEN) && Height != GetSystemMetrics(SM_CYSCREEN))
+        {
+            Width = GetSystemMetrics(SM_CXSCREEN);
+            Height = GetSystemMetrics(SM_CYSCREEN);
+            SetWindowPos(subtitles,HWND_TOPMOST, 0,Height-100,Width,100,0);
+        }
+
     }
     CloseHandle(pi.hProcess);
     CloseHandle(pi.hThread);
     DestroyWindow(subtitles);
 }
 
+//Open File Explorer
 bool OpenFileExplorer(HWND hwnd, wchar_t* filePath, int filePathSize, int button)
 {
     OPENFILENAME ofn = { sizeof(OPENFILENAME) };
@@ -107,7 +107,6 @@ bool OpenFileExplorer(HWND hwnd, wchar_t* filePath, int filePathSize, int button
     ofn.lpstrFile = filePath;
     ofn.nMaxFile = filePathSize;
     ofn.Flags = OFN_FILEMUSTEXIST;
-
     if (GetOpenFileName(&ofn))
         return true;
     else
@@ -133,18 +132,22 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
         case START:
         {
+            //When both game and file was selected
             if(gamePath[0] != NULL && filePath[0] != NULL)
             {
-
+                STARTUPINFO si;
+                PROCESS_INFORMATION pi;
                 ZeroMemory( &si, sizeof(si) );
                 si.cb = sizeof(si);
                 ZeroMemory( &pi, sizeof(pi) );
+                //Opens the game
                 CreateProcess(gamePath, NULL,NULL,NULL,FALSE,0,NULL, NULL, &si,&pi);
                 WaitForInputIdle(pi.hProcess, INFINITE);
+                //Creates subtitles window
                 subtitles = CreateWindowEx(WS_EX_LAYERED|WS_EX_TRANSPARENT,L"STATIC", L"", WS_VISIBLE|WS_POPUP , 50, 100, 640, 100, hwnd, NULL, NULL, NULL);
                 SetLayeredWindowAttributes(subtitles, RGB(255, 255, 255), 128, LWA_ALPHA);
                 SetWindowText(subtitles, L"Loading...");
-                game_start();
+                game_start(pi);
             }
             else
                 MessageBox(hwnd, L"You must select both game and file", L"Warning", MB_ICONINFORMATION);
@@ -182,8 +185,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
     const wchar_t CLASS_NAME[]  = L"Sample Window Class";
 
-    HWND Sub_hwnd;
-
     WNDCLASS wc      = { };
     wc.lpfnWndProc   = WindowProc;
     wc.hInstance     = hInstance;
@@ -193,14 +194,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     RECT desktop;
     const HWND hDesktop = GetDesktopWindow();
     GetWindowRect(hDesktop, &desktop);
-
+    //Creates main window and positions it at the middle of the screen
     HWND hwnd = CreateWindowEx(0,CLASS_NAME,L"MemSubLoader",WS_OVERLAPPEDWINDOW & ~WS_MAXIMIZEBOX & ~WS_THICKFRAME,desktop.right/2 - 320,desktop.bottom/2 - 120,640,240,NULL,NULL,hInstance,NULL);
-
     if (hwnd == NULL)
-    {
         return 0;
-    }
 
+    //Creates three buttons
     CreateWindow(L"BUTTON", L"Choose Game", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 50, 50, 150, 50, hwnd, (HMENU)GAME, hInstance, NULL);
     CreateWindow(L"BUTTON", L"Choose File", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 440, 50, 150, 50, hwnd, (HMENU)TRANSLATION, hInstance, NULL);
     CreateWindow(L"BUTTON", L"Start", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 245, 150, 150, 50, hwnd, (HMENU)START, hInstance, NULL);
