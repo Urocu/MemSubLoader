@@ -31,15 +31,7 @@ void CreateConfigWindow(HWND parent)
 	configWindowClass.lpszClassName = CONFIG_CLASS_NAME;
 	RegisterClass(&configWindowClass);
 
-	configHWND = CreateWindowEx(0, CONFIG_CLASS_NAME, L"Subtitle Configuration", WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, CW_USEDEFAULT, CW_USEDEFAULT, 400, 300, NULL, NULL, NULL, NULL);
-
-	CreateWindow(L"STATIC", L"Font:", WS_CHILD | WS_VISIBLE, 10, 10, 80, 20, configHWND, NULL, NULL, NULL);
-	CreateWindow(L"COMBOBOX", L"", WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST, 100, 10, 150, 200, configHWND, NULL, NULL, NULL);
-	CreateWindow(L"STATIC", L"Font Size:", WS_CHILD | WS_VISIBLE, 10, 40, 80, 20, configHWND, NULL, NULL, NULL);
-	CreateWindow(L"EDIT", L"16", WS_CHILD | WS_VISIBLE | WS_BORDER, 100, 40, 50, 20, configHWND, NULL, NULL, NULL);
-	CreateWindow(L"STATIC", L"Font Color:", WS_CHILD | WS_VISIBLE, 10, 70, 80, 20, configHWND, NULL, NULL, NULL);
-	CreateWindow(L"BUTTON", L"Select Color", WS_CHILD | WS_VISIBLE, 100, 70, 100, 30, configHWND, NULL, NULL, NULL);
-	CreateWindow(L"BUTTON", L"Apply", WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON, 150, 200, 80, 30, configHWND, NULL, NULL, NULL);
+	configHWND = CreateWindow(CONFIG_CLASS_NAME, L"Subtitles Configuration", WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, CW_USEDEFAULT, CW_USEDEFAULT, 400, 300, NULL, NULL, NULL, NULL);
 	ShowWindow(configHWND, SW_SHOW);
 }
 
@@ -140,10 +132,19 @@ int CreateMainWindow(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	if (mainHWND == NULL)
 		return 1;
 
-	// Creates three buttons
-	CreateWindow(L"BUTTON", L"Choose Game", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 50, 50, 150, 50, mainHWND, (HMENU) GAME, hInstance, NULL);
-	CreateWindow(L"BUTTON", L"Choose File", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 440, 50, 150, 50, mainHWND, (HMENU) TRANSLATION, hInstance, NULL);
-	CreateWindow(L"BUTTON", L"Start", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 245, 150, 150, 50, mainHWND, (HMENU) START, hInstance, NULL);
+	HWND subsPath = CreateWindow(L"EDIT", L"", WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL, 50, 50, 330, 24, mainHWND, (HMENU) GAME_FIELD, hInstance, NULL);
+	HWND gamePath = CreateWindow(L"EDIT", L"", WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL, 50, 90, 330, 24, mainHWND, (HMENU) TRANSLATION_FIELD, hInstance, NULL);
+
+	HICON folderIcon = LoadIcon(hInstance, IDI_HAND);
+
+	HWND subsButton = CreateWindow(L"BUTTON", L"", WS_CHILD | WS_VISIBLE | BS_ICON, 10, 50, 30, 24, mainHWND, (HMENU)GAME, hInstance, NULL);
+	SendMessage(subsButton, BM_SETIMAGE, IMAGE_ICON, (LPARAM)folderIcon);
+
+	HWND gameButton = CreateWindow(L"BUTTON", L"", WS_CHILD | WS_VISIBLE | BS_ICON, 10, 90, 30, 24, mainHWND, (HMENU)TRANSLATION, hInstance, NULL);
+	SendMessage(gameButton, BM_SETIMAGE, IMAGE_ICON, (LPARAM)folderIcon);
+
+	HWND startButton = CreateWindow(L"BUTTON", L"Start", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 245, 150, 150, 50, mainHWND, (HMENU)START, hInstance, NULL);
+
 	ShowWindow(mainHWND, nCmdShow);
 	return 0;
 }
