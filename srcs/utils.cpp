@@ -1,6 +1,6 @@
 #include "MemSubLoader.hpp"
 
-//Find address containing audio ID
+// Find address containing audio ID
 void findAddress(uintptr_t &address, int offset, HANDLE hProcess)
 {
     SIZE_T bytesRead;
@@ -8,7 +8,7 @@ void findAddress(uintptr_t &address, int offset, HANDLE hProcess)
             address += offset;
 }
 
-//Open File Explorer
+// Open File Explorer
 bool OpenFileExplorer(HWND hwnd, wchar_t *filePath, int filePathSize, int button)
 {
 	OPENFILENAME ofn = {

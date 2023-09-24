@@ -62,7 +62,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 							SetWindowText(file_text, PathFindFileName(filePath));
 						break;
 
-					case START: //When both game and file was selected
+					case START: // When both game and file was selected
 						{
 							if (gamePath[0] != NULL && filePath[0] != NULL)
 							{
@@ -71,10 +71,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 								ZeroMemory(&si, sizeof(si));
 								si.cb = sizeof(si);
 								ZeroMemory(&pi, sizeof(pi));
-								//Opens the game
+								// Opens the game
 								CreateProcess(gamePath, NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
 								WaitForInputIdle(pi.hProcess, INFINITE);
-								//Creates subtitles window
+								// Creates subtitles window
 								subtitles = CreateWindowEx(WS_EX_LAYERED | WS_EX_TRANSPARENT, L"STATIC", L"", WS_VISIBLE | WS_POPUP, 50, 100, 640, 100, hwnd, NULL, NULL, NULL);
 								SetLayeredWindowAttributes(subtitles, RGB(255, 255, 255), 128, LWA_ALPHA);
 								SetWindowText(subtitles, L"Loading...");
@@ -133,12 +133,12 @@ int CreateMainWindow(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	wc.lpszClassName = CLASS_NAME;
 	RegisterClass(&wc);
 
-	//Creates main window and positions it at the middle of the screen
+	// Creates main window and positions it at the middle of the screen
 	mainHWND = CreateWindowEx(0, CLASS_NAME, L"MemSubLoader", WS_OVERLAPPEDWINDOW &~WS_MAXIMIZEBOX &~WS_THICKFRAME, desktop.right / 2 - 320, desktop.bottom / 2 - 120, 640, 240, NULL, NULL, hInstance, NULL);
 	if (mainHWND == NULL)
 		return 1;
 
-	//Creates three buttons
+	// Creates three buttons
 	CreateWindow(L"BUTTON", L"Choose Game", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 50, 50, 150, 50, mainHWND, (HMENU) GAME, hInstance, NULL);
 	CreateWindow(L"BUTTON", L"Choose File", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 440, 50, 150, 50, mainHWND, (HMENU) TRANSLATION, hInstance, NULL);
 	CreateWindow(L"BUTTON", L"Start", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 245, 150, 150, 50, mainHWND, (HMENU) START, hInstance, NULL);
