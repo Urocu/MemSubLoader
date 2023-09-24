@@ -31,7 +31,7 @@ void CreateConfigWindow(HWND parent)
 	configWindowClass.lpszClassName = CONFIG_CLASS_NAME;
 	RegisterClass(&configWindowClass);
 
-	configHWND = CreateWindowEx(WS_EX_LAYERED, CONFIG_CLASS_NAME, L"Subtitle Configuration", WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, CW_USEDEFAULT, CW_USEDEFAULT, 400, 300, NULL, NULL, NULL, NULL);
+	configHWND = CreateWindowEx(0, CONFIG_CLASS_NAME, L"Subtitle Configuration", WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, CW_USEDEFAULT, CW_USEDEFAULT, 400, 300, NULL, NULL, NULL, NULL);
 
 	CreateWindow(L"STATIC", L"Font:", WS_CHILD | WS_VISIBLE, 10, 10, 80, 20, configHWND, NULL, NULL, NULL);
 	CreateWindow(L"COMBOBOX", L"", WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST, 100, 10, 150, 200, configHWND, NULL, NULL, NULL);
@@ -75,10 +75,12 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 								CreateProcess(gamePath, NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
 								WaitForInputIdle(pi.hProcess, INFINITE);
 								// Creates subtitles window
-								subtitles = CreateWindowEx(WS_EX_LAYERED | WS_EX_TRANSPARENT, L"STATIC", L"", WS_VISIBLE | WS_POPUP, 50, 100, 640, 100, hwnd, NULL, NULL, NULL);
-								SetLayeredWindowAttributes(subtitles, RGB(255, 255, 255), 128, LWA_ALPHA);
+								subtitlesWin = CreateWindowEx(WS_EX_LAYERED | WS_EX_TRANSPARENT, L"MainWindowClass", L"Subtitles", WS_VISIBLE | WS_POPUP, 50, 100, 640, 100, NULL, NULL, NULL, NULL);
+								subtitles = CreateWindow(L"STATIC", L"No File", WS_CHILD | WS_VISIBLE, 0, 0, 640, 100, subtitlesWin, NULL, NULL, NULL);
+								SetLayeredWindowAttributes(subtitlesWin, RGB(255, 255, 255), 128, LWA_ALPHA);
 								SetWindowText(subtitles, L"Loading...");
 								CreateConfigWindow(hwnd);
+								PostMessage(hwnd, WM_SYSCOMMAND, SC_MINIMIZE, 0);
 								game_start(pi);
 							}
 							else

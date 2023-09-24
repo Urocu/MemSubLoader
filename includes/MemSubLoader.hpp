@@ -19,7 +19,7 @@
 extern HWND game_text;
 extern HWND file_text;
 extern HWND subtitles;
-extern HWND gameHWND;
+extern HWND subtitlesWin;
 extern HWND configHWND;
 extern wchar_t gamePath[MAX_PATH];
 extern wchar_t filePath[MAX_PATH];

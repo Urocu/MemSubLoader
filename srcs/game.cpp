@@ -57,11 +57,13 @@ void game_start(PROCESS_INFORMATION pi)
 		{
 			Width = GetSystemMetrics(SM_CXSCREEN);
 			Height = GetSystemMetrics(SM_CYSCREEN);
-			SetWindowPos(subtitles, HWND_TOPMOST, 0, Height-100, Width, 100, 0);
+			SetWindowPos(subtitlesWin, HWND_TOPMOST, 0, Height-100, Width, 100, 0);
+			SetWindowPos(subtitles, 0, 0, 0, Width, 100, 0);
 		}
 
 	}
 	CloseHandle(pi.hProcess);
 	CloseHandle(pi.hThread);
-	DestroyWindow(subtitles);
+	DestroyWindow(subtitlesWin);
+	DestroyWindow(configHWND);
 }

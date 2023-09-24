@@ -4,13 +4,10 @@
 HWND game_text = NULL;
 HWND file_text = NULL;
 HWND subtitles = NULL;
-HWND gameHWND = NULL;
+HWND subtitlesWin = NULL;
 HWND configHWND = NULL;
 wchar_t gamePath[MAX_PATH] = {};
 wchar_t filePath[MAX_PATH] = {};
-PROCESS_INFORMATION pi;
-STARTUPINFO si;
-HWND gWindow = NULL;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
