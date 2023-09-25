@@ -11,6 +11,12 @@ wchar_t filePath[MAX_PATH] = {};
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+	// Initialize common controls, needed for styling
+	INITCOMMONCONTROLSEX icex;
+	icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
+	icex.dwICC = ICC_STANDARD_CLASSES;
+	InitCommonControlsEx(&icex);
+
 	MSG msg = {};
 
 	int res = CreateMainWindow(hInstance, hPrevInstance, lpCmdLine, nCmdShow);

@@ -13,6 +13,7 @@
                 "-I${workspaceFolder}/includes",
                 "-lstdc++",
                 "-lcomdlg32",
+				"-lcomctl32",
                 "-lshlwapi",
                 "-lgdi32"
             ],

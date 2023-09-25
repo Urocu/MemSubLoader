@@ -1,13 +1,16 @@
 NAME = MemSubLoader
 CC = gcc
 CFLAGS = -Wall
-LINKS = -lstdc++ -lcomdlg32 -lshlwapi -lgdi32
+LINKS = -lstdc++ -lcomdlg32 -lcomctl32 -lshlwapi -lgdi32
 LIBLINKS = -I./includes
 SRC_PATH = srcs/
 OBJ_PATH = bin/
 C_EXTENSION = .cpp
 
 #		눈_눈			SOURCES			눈_눈
+
+RESOURCE_FILE = resource.rc
+RESOURCE_OBJ = $(OBJ_PATH)resource.o
 
 MAIN_PATH	=	
 MAIN_FILES 	= 	main game windows utils
@@ -25,16 +28,20 @@ RM = rm -rf
 
 all: $(NAME)
 
-$(NAME):  $(OBJS)
-	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(LINKS)
+$(NAME):  $(OBJS) $(RESOURCE_OBJ)
+	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(RESOURCE_OBJ) $(LINKS)
 
 .c.o:
-	@$(CC) $(FLAGS) -c ${LIBLINKS} $< -o ${<:.cpp=.o} 
+	@$(CC) $(FLAGS) -c ${LIBLINKS} $< -o ${<:.cpp=.o}
 
 
 $(OBJ_PATH)%.o: $(SRC_PATH)%.cpp
 	@mkdir -p $(dir $@)
 	${CC} ${CFLAGS} $(LIBLINKS) -c $< -o $@
+
+$(RESOURCE_OBJ): $(SRC_PATH)$(RESOURCE_FILE)
+	@mkdir -p $(dir $@)
+	windres $(LIBLINKS) -i $< -o $@
 
 clean:
 	@$(RM) -r $(OBJ_PATH)
