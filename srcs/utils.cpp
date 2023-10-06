@@ -16,7 +16,7 @@ bool OpenFileExplorer(HWND hwnd, wchar_t *filePath, int filePathSize, int button
 	};
 
 	ofn.hwndOwner = hwnd;
-	if (button == GAME)
+	if (button == GAME_BUTTON)
 		ofn.lpstrFilter = L"Executable Files (*.exe)\0*.exe\0All Files (*.*)\0*.*\0";
 	else
 		ofn.lpstrFilter = L"Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0";

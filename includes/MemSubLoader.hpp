@@ -11,13 +11,15 @@
 # include <string>
 # include <vector>
 # include <stdio.h>
-# define GAME 1
-# define TRANSLATION 2
-# define START 3
+# define GAME_BUTTON 1
+# define TRANSLATION_BUTTON 2
+# define START_BUTTON 3
+# define GAME_FIELD 4
+# define TRANSLATION_FIELD 5
 
 // Global variables definition
 extern HWND game_text;
-extern HWND file_text;
+extern HWND translation_text;
 extern HWND subtitles;
 extern HWND subtitlesWin;
 extern HWND configHWND;

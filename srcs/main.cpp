@@ -2,7 +2,7 @@
 
 // Global variables assignment
 HWND game_text = NULL;
-HWND file_text = NULL;
+HWND translation_text = NULL;
 HWND subtitles = NULL;
 HWND subtitlesWin = NULL;
 HWND configHWND = NULL;

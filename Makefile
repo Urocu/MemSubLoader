@@ -1,10 +1,11 @@
 NAME = MemSubLoader
-CC = gcc
+CC = g++
 CFLAGS = -Wall
 LINKS = -lstdc++ -lcomdlg32 -lshlwapi -lgdi32
 LIBLINKS = -I./includes
 SRC_PATH = srcs/
 OBJ_PATH = bin/
+OUT_PATH = bin/Release/
 C_EXTENSION = .cpp
 
 #		눈_눈			SOURCES			눈_눈
@@ -26,14 +27,14 @@ RM = rm -rf
 all: $(NAME)
 
 $(NAME):  $(OBJS)
-	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(LINKS)
+	@$(CC) $(CFLAGS) -o $(OUT_PATH)$(NAME) $(OBJS) $(LINKS)
 
 .c.o:
 	@$(CC) $(FLAGS) -c ${LIBLINKS} $< -o ${<:.cpp=.o} 
 
 
 $(OBJ_PATH)%.o: $(SRC_PATH)%.cpp
-	@mkdir -p $(dir $@)
+	@mkdir -p $(dir ${OUT_PATH})
 	${CC} ${CFLAGS} $(LIBLINKS) -c $< -o $@
 
 clean:
