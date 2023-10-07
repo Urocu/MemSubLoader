@@ -14,11 +14,15 @@
 // Bitmap resources
 //
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDB_BITMAP1        BITMAP         "C:\\Users\\baura\\MemSubLoader\\resources\\cog.bmp"
+COG_ICON           BITMAP         ".\\cog.bmp"
 
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDB_BITMAP2        BITMAP         "C:\\Users\\baura\\MemSubLoader\\resources\\folder.bmp"
+FOLDER_ICON        BITMAP         ".\\folder.bmp"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+MSL_LOGO           BITMAP         ".\\logo.bmp"
 
 
 
@@ -26,7 +30,7 @@ IDB_BITMAP2        BITMAP         "C:\\Users\\baura\\MemSubLoader\\resources\\fo
 // Menu resources
 //
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDR_MENU1 MENU
+MAIN_MENU MENU
 {
     POPUP "File"
     {
@@ -55,8 +59,8 @@ FONT 12, "Calibri"
 {
     PUSHBUTTON      "Browse", 0, 206, 66, 29, 12, 0, WS_EX_LEFT
     PUSHBUTTON      "Browse", 0, 206, 45, 29, 12, 0, WS_EX_LEFT
-    CONTROL         "", 0, WC_STATIC, SS_BLACKFRAME, 83, 7, 24, 24, WS_EX_LEFT
-    CTEXT           "SubMemLoader", 0, 116, 16, 51, 9, SS_CENTER, WS_EX_LEFT
+    CONTROL         MSL_LOGO, 0, WC_STATIC, SS_BITMAP, 79, 5, 32, 27, WS_EX_LEFT
+    CTEXT           "MemSubLoader", 0, 116, 16, 51, 9, SS_CENTER, WS_EX_LEFT
     GROUPBOX        "Path", 0, 12, 35, 225, 50, 0, WS_EX_LEFT
     RTEXT           "Game path", 0, 24, 47, 37, 9, SS_RIGHT, WS_EX_LEFT
     CONTROL         "Select a file...", 0, RICHEDIT_CLASS, WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 65, 45, 140, 12, WS_EX_LEFT

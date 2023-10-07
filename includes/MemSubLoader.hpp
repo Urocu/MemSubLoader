@@ -11,15 +11,18 @@
 # include <string>
 # include <vector>
 # include <stdio.h>
+# include "resource.h"
 # define GAME_BUTTON 1
-# define TRANSLATION_BUTTON 2
+# define SUBTITLES_BUTTON 2
 # define START_BUTTON 3
 # define GAME_FIELD 4
-# define TRANSLATION_FIELD 5
+# define SUBTITLES_FIELD 5
+# define MENU_EXIT 6
+# define MENU_CONFIG 7
 
 // Global variables definition
 extern HWND game_text;
-extern HWND translation_text;
+extern HWND subtitles_text;
 extern HWND subtitles;
 extern HWND subtitlesWin;
 extern HWND configHWND;
