@@ -71,6 +71,27 @@ FONT 12, "Calibri"
 
 
 
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+DLG_CONFIG DIALOG 0, 0, 300, 116
+STYLE DS_3DLOOK | DS_CENTER | DS_MODALFRAME | DS_SHELLFONT | WS_CAPTION | WS_VISIBLE | WS_POPUP | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "Ms Shell Dlg"
+{
+    PUSHBUTTON      "Apply", 0, 127, 92, 45, 14, 0, WS_EX_LEFT
+    LTEXT           "undefined", 0, 100, 22, 162, 9, SS_LEFT, WS_EX_LEFT
+    LTEXT           "undefined", 0, 100, 32, 162, 9, SS_LEFT, WS_EX_LEFT
+    LTEXT           "undefined", 0, 100, 42, 162, 9, SS_LEFT, WS_EX_LEFT
+    RTEXT           "Font style :", 0, 22, 42, 75, 9, SS_RIGHT, WS_EX_LEFT
+    RTEXT           "Font size :", 0, 22, 32, 75, 9, SS_RIGHT, WS_EX_LEFT
+    PUSHBUTTON      "Select Color", 0, 155, 68, 55, 14, 0, WS_EX_LEFT
+    PUSHBUTTON      "Select Font", 0, 90, 68, 55, 14, 0, WS_EX_LEFT
+    RTEXT           "Color :", 0, 22, 52, 75, 9, SS_RIGHT, WS_EX_LEFT
+    GROUPBOX        "Font settings", 0, 13, 7, 273, 80, 0, WS_EX_LEFT
+    RTEXT           "Font :", 0, 22, 22, 75, 9, SS_RIGHT, WS_EX_LEFT
+}
+
+
+
 //
 // Manifest resources
 //
