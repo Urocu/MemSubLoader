@@ -76,3 +76,25 @@ bool OpenColorDialog(HWND hwnd, COLORREF& subtitlesColor)
 
 	return false;
 }
+
+bool SaveConfig(const Config& config, const wchar_t* filename)
+{
+    FILE* file = _wfopen(filename, L"wb");
+    if (file) {
+        fwrite(&config, sizeof(Config), 1, file);
+        fclose(file);
+        return true;
+    }
+    return false;
+}
+
+bool LoadConfig(Config& config, const wchar_t* filename)
+{
+    FILE* file = _wfopen(filename, L"rb");
+    if (file) {
+        fread(&config, sizeof(Config), 1, file);
+        fclose(file);
+        return true;
+    }
+    return false;
+}

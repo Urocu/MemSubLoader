@@ -8,7 +8,7 @@ void game_start(PROCESS_INFORMATION pi)
 	uintptr_t baseaddress;
 	uintptr_t addressToRead;
 	std::vector <std::wstring> Text;
-	std::wstring ws( filePath );
+	std::wstring ws( config.subtitlesPath );
 	std::string SfilePath( ws.begin(), ws.end() );
 	std::wifstream subfile;
 
@@ -65,5 +65,5 @@ void game_start(PROCESS_INFORMATION pi)
 	CloseHandle(pi.hProcess);
 	CloseHandle(pi.hThread);
 	DestroyWindow(subtitlesWin);
-	DestroyWindow(configHWND);
+	DestroyWindow(settingsHWND);
 }
