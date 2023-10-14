@@ -60,7 +60,7 @@ bool OpenFileExplorer(HWND hwnd, wchar_t *filePath, int filePathSize, int button
 	}
 }
 
-bool OpenFontDialog(HWND hwnd, LOGFONT& lf, HFONT& subtitlesFont)
+bool OpenFontDialog(HWND hwnd, LOGFONT &lf, HFONT &subtitlesFont)
 {
 	CHOOSEFONT cf;
 	HFONT tmp;
@@ -86,7 +86,7 @@ bool OpenFontDialog(HWND hwnd, LOGFONT& lf, HFONT& subtitlesFont)
 	return false;
 }
 
-bool OpenColorDialog(HWND hwnd, COLORREF& subtitlesColor)
+bool OpenColorDialog(HWND hwnd, COLORREF &subtitlesColor)
 {
 	CHOOSECOLOR cc;
 	static COLORREF customColors[16] = { 0 };
@@ -107,47 +107,43 @@ bool OpenColorDialog(HWND hwnd, COLORREF& subtitlesColor)
 	return false;
 }
 
-std::wstring SaveConfig(const Config& config, const wchar_t* filename)
+bool SaveConfig(const Config &config, wchar_t *filename)
 {
-	std::wstring filePath(filename);
-	wprintf(L"+.dat = %S\n", filePath);
-
-	if (filePath.length() < 4 || filePath.substr(filePath.length() - 4) != L".dat")
+	if (wcslen(filename) < 4 || wcscmp(filename + wcslen(filename) - 4, L".dat") != 0)
 	{
-		filePath += L".dat";
-		wprintf(L"+.dat = %S\n", filePath);
+		if (wcslen(filename) + 4 < MAX_PATH)
+		{
+        	wcsncat(filename, L".dat", MAX_PATH - wcslen(filename) - 1);
+		}
 	}
 
-	FILE* file = _wfopen(filePath.c_str(), L"wb");
+	FILE *file = _wfopen(filename, L"wb");
 	if (file) {
 		fwrite(&config, sizeof(Config), 1, file);
 		fclose(file);
-		wprintf(L"return = %S\n", filePath);
-		return filePath;
+		return true;
 	}
-	return L"";
+	return false;
 }
 
-std::wstring LoadConfig(Config& config, const wchar_t* filename)
+bool LoadConfig(Config &config, const wchar_t *filename)
 {
-	FILE* file = _wfopen(filename, L"rb");
+	FILE *file = _wfopen(filename, L"rb");
 	if (file) {
 		fread(&config, sizeof(Config), 1, file);
 		fclose(file);
-		return filename;
+		return true;
 	}
-	return L"";
+	return false;
 }
 
-#include <Windows.h>
-
-bool SetAutoloadConfigPath(const wchar_t* path)
+bool SetAutoloadConfigPath(const wchar_t *path)
 {
 	wchar_t executablePath[MAX_PATH];
 
 	if (GetAutoloadPath(executablePath))
 	{
-		FILE* file = _wfopen(executablePath, L"w");
+		FILE *file = _wfopen(executablePath, L"w");
 		if (file)
 		{
 			fwprintf(file, L"%S", path);
@@ -159,13 +155,13 @@ bool SetAutoloadConfigPath(const wchar_t* path)
 	return false;
 }
 
-bool GetAutoloadConfigPath(wchar_t* path)
+bool GetAutoloadConfigPath(wchar_t *path)
 {
 	wchar_t executablePath[MAX_PATH];
 
 	if (GetAutoloadPath(executablePath))
 	{
-		FILE* file = _wfopen(executablePath, L"r");
+		FILE *file = _wfopen(executablePath, L"r");
 		if (file)
 		{
 			if (fgetws(path, MAX_PATH, file) != NULL)
@@ -180,11 +176,11 @@ bool GetAutoloadConfigPath(wchar_t* path)
 	return false;
 }
 
-bool GetAutoloadPath(wchar_t* executablePath)
+bool GetAutoloadPath(wchar_t *executablePath)
 {
 	if (GetModuleFileName(NULL, executablePath, MAX_PATH) != 0)
 	{
-		wchar_t* lastBackslash = wcsrchr(executablePath, L'\\');
+		wchar_t *lastBackslash = wcsrchr(executablePath, L'\\');
 		if (lastBackslash != nullptr)
 		{
 			*lastBackslash = L'\0';

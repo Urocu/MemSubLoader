@@ -23,26 +23,28 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	MSG msg = {};
 	Config tmp = {};
 	wchar_t autoloadPath[MAX_PATH] = {};
+	wchar_t message[MAX_PATH + 256] = {};
 
-	if (GetAutoloadConfigPath(autoloadPath))
+	if (GetAutoloadConfigPath(autoloadPath)) // Get autoloaded configuration path from autoload.dat
 	{
-		if (!LoadConfig(tmp, autoloadPath).empty())
+		if (LoadConfig(tmp, autoloadPath)) // Successfully loaded configuration
 		{
 			config = tmp;
 		}
-		else
+		else // Failed to load configuration
 		{
 			wchar_t autoload[MAX_PATH];
 			if (GetAutoloadPath(autoload))
 			{
 				DeleteFile(autoload);
 			}
-			MessageBox(NULL, L"Failed to load configuration set as autoload, deleted autoloaded configuration path", L"Getting configuration autoload", MB_ICONERROR);
+			wsprintf(message, L"Failed to autoload configuration :\n%s\nDeleted configuration autoload", autoloadPath);
+			MessageBox(NULL, message, L"Configuration autoload", MB_ICONERROR);
 			HFONT hSystemFont = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
 			GetObject(hSystemFont, sizeof(LOGFONT), &config.subtitlesFont);
 		}
 	}
-	else
+	else // No autoload.dat found
 	{
 		HFONT hSystemFont = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
 		GetObject(hSystemFont, sizeof(LOGFONT), &config.subtitlesFont);

@@ -67,21 +67,21 @@ void updateMainAttributes(HWND hwnd);
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 void CreateSettingsWindow(HWND parent);
-void updateSubtitlesSettingsAttributes(HWND hwnd, LOGFONT& lf);
+void updateSubtitlesSettingsAttributes(HWND hwnd, LOGFONT &lf);
 LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 // Utilities
 void findAddress(uintptr_t &address, int offset, HANDLE hProcess);
 
 bool OpenFileExplorer(HWND hwnd, wchar_t *filePath, int filePathSize, int button);
-bool OpenFontDialog(HWND hwnd, LOGFONT& lf, HFONT& subtitlesFont);
-bool OpenColorDialog(HWND hwnd, COLORREF& subtitlesColor);
+bool OpenFontDialog(HWND hwnd, LOGFONT &lf, HFONT &subtitlesFont);
+bool OpenColorDialog(HWND hwnd, COLORREF &subtitlesColor);
 
-std::wstring SaveConfig(const Config& config, const wchar_t* filename);
-std::wstring LoadConfig(Config& config, const wchar_t* filename);
-bool SetAutoloadConfigPath(const wchar_t* path);
-bool GetAutoloadConfigPath(wchar_t* path);
-bool GetAutoloadPath(wchar_t* executablePath);
+bool SaveConfig(const Config &config, wchar_t *filename);
+bool LoadConfig(Config &config, const wchar_t *filename);
+bool SetAutoloadConfigPath(const wchar_t *path);
+bool GetAutoloadConfigPath(wchar_t *path);
+bool GetAutoloadPath(wchar_t *executablePath);
 
 // Game
 void game_start(PROCESS_INFORMATION pi);

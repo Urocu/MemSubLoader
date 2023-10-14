@@ -77,7 +77,7 @@ LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 }
 
 // Config window update
-void updateSubtitlesSettingsAttributes(HWND hwnd, LOGFONT& lf)
+void updateSubtitlesSettingsAttributes(HWND hwnd, LOGFONT &lf)
 {
 	wchar_t fontSizeText[16];
 	int fontSizePixels = lf.lfHeight;

@@ -65,7 +65,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					{
 						Config tmp = config;
 
-						if (!LoadConfig(config, selectedFile).empty())
+						if (LoadConfig(config, selectedFile))
 						{
 							InvalidateRect(hwnd, NULL, TRUE);
 							updateSubtitlesSettingsAttributes(hwnd, config.subtitlesFont);
@@ -86,18 +86,17 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				case MENU_SAVE:
 				{
 					wchar_t selectedFile[MAX_PATH] = {};
-					std::wstring savedFile;
 					wchar_t message[MAX_PATH + 256] = {};
 
 					if (OpenFileExplorer(hwnd, selectedFile, MAX_PATH, MENU_SAVE))
 					{
-						savedFile = SaveConfig(config, selectedFile);
-						if (!savedFile.empty())
+						if (SaveConfig(config, selectedFile))
 						{
 							wsprintf(message, L"Configuration saved successfully :\n%s", selectedFile);
 							MessageBox(hwnd, message, L"Saving configuration", MB_ICONINFORMATION);
 						}
-						else {
+						else
+						{
 							wsprintf(message, L"Failed to save configuration :\n%s", selectedFile);
 							MessageBox(hwnd, message, L"Saving configuration", MB_ICONERROR);
 						}
