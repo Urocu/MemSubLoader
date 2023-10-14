@@ -34,8 +34,9 @@ MAIN_MENU MENU
 {
     POPUP "File"
     {
-        MENUITEM "Load profile", 0
-        MENUITEM "Save profile", 0
+        MENUITEM "Load configuration", 0
+        MENUITEM "Save configuration", 0
+		MENUITEM "Set autoloaded configuration", 0
         MENUITEM SEPARATOR
         MENUITEM "Exit", 0
     }

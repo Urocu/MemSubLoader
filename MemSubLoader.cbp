@@ -48,8 +48,9 @@
 		<Unit filename="resources/resource.h" />
 		<Unit filename="srcs/game.cpp" />
 		<Unit filename="srcs/main.cpp" />
+		<Unit filename="srcs/mainWindow.cpp" />
+		<Unit filename="srcs/settingsWindow.cpp" />
 		<Unit filename="srcs/utils.cpp" />
-		<Unit filename="srcs/windows.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>

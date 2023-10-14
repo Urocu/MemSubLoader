@@ -15,27 +15,43 @@ HWND settingsHWND = NULL;
 HWND fontValueLabel = NULL;
 HWND fontSizeValueLabel = NULL;
 HWND fontStyleValueLabel = NULL;
-COLORREF subtitlesColor = NULL;
+HWND alignmentComboBox = NULL;
 HFONT subtitlesHFont = NULL;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	MSG msg = {};
 	Config tmp = {};
-	if (!LoadConfig(tmp, L"config.dat"))
+	wchar_t autoloadPath[MAX_PATH] = {};
+
+	if (GetAutoloadConfigPath(autoloadPath))
 	{
-		HFONT hSystemFont = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
-		GetObject(hSystemFont, sizeof(LOGFONT), &config.subtitlesFont);
+		if (!LoadConfig(tmp, autoloadPath).empty())
+		{
+			config = tmp;
+		}
+		else
+		{
+			wchar_t autoload[MAX_PATH];
+			if (GetAutoloadPath(autoload))
+			{
+				DeleteFile(autoload);
+			}
+			MessageBox(NULL, L"Failed to load configuration set as autoload, deleted autoloaded configuration path", L"Getting configuration autoload", MB_ICONERROR);
+			HFONT hSystemFont = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
+			GetObject(hSystemFont, sizeof(LOGFONT), &config.subtitlesFont);
+		}
 	}
 	else
 	{
-		config = tmp;
+		HFONT hSystemFont = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
+		GetObject(hSystemFont, sizeof(LOGFONT), &config.subtitlesFont);
 	}
 
 	int res = CreateMainWindow(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 	if (res)
 	{
-		printf("Error: Couldn't initialize main window\n");
+		MessageBox(NULL, L"Error: Failed to initialize main window", L"Window initialization", MB_ICONERROR);
 		return 1;
 	}
 	while (GetMessage(&msg, NULL, 0, 0) > 0)
