@@ -40,6 +40,7 @@
 			<Add library="comctl32" />
 			<Add library="Shlwapi" />
 			<Add library="Comdlg32" />
+			<Add library="gdiplus" />
 		</Linker>
 		<Unit filename="includes/MemSubLoader.hpp" />
 		<Unit filename="resources/MemSubLoader.rc">
@@ -50,6 +51,7 @@
 		<Unit filename="srcs/main.cpp" />
 		<Unit filename="srcs/mainWindow.cpp" />
 		<Unit filename="srcs/settingsWindow.cpp" />
+		<Unit filename="srcs/subtitlesWindow.cpp" />
 		<Unit filename="srcs/utils.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />

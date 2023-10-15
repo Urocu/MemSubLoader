@@ -10,8 +10,10 @@
 # include <fstream>
 # include <string>
 # include <vector>
-# include <cstdio>
 # include <stdio.h>
+# include <chrono>
+# include <thread>
+# include <sstream>
 # include <gdiplus.h>
 # include "resource.h"
 # define GAME_BUTTON 1
@@ -58,8 +60,7 @@ extern Config config;
 
 extern HWND gamePathValueLabel;
 extern HWND subtitlesPathValueLabel;
-extern HWND subtitles;
-extern HWND subtitlesWin;
+extern HWND subtitlesHWND;
 extern HWND settingsHWND;
 
 extern HWND fontValueLabel;
@@ -76,6 +77,30 @@ extern Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 extern ULONG_PTR gdiplusToken;
 
 extern std::wstring textToDraw;
+
+class Subtitles
+{
+	private:
+	    uintptr_t bAddress_audio;
+	    std::vector <int> offset_audio;
+	    uintptr_t bAddress_play;
+	    std::vector <int> offset_play;
+	    void findAddress(uintptr_t &address, int offset, HANDLE hProcess);
+
+	public:
+	    uintptr_t address_audio;
+	    uintptr_t address_play;
+	    int AudioID;
+	    int lastAudioID;
+	    bool is_playing;
+	    std::vector <int> ID;
+	    std::vector <std::wstring> Text;
+
+	    void search_memory(HANDLE hProcess);
+	    bool check_audio(HANDLE hProcess);
+	    void file_memory(std::wifstream& file);
+	    void file_text(std::wifstream& file);
+};
 
 // Main
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);

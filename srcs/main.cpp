@@ -9,7 +9,7 @@ Config config = {};
 HWND gamePathValueLabel = NULL;
 HWND subtitlesPathValueLabel = NULL;
 HWND subtitles = NULL;
-HWND subtitlesWin = NULL;
+HWND subtitlesHWND = NULL;
 HWND settingsHWND = NULL;
 
 // Settings window

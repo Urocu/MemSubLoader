@@ -6,24 +6,24 @@ LRESULT CALLBACK subtitlesWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 	{
 		case WM_PAINT:
 		{
-			printf("%S\n", textToDraw.c_str());
-
 			Bitmap softwareBitmap(SUBTITLES_WIDTH, SUBTITLES_HEIGHT, PixelFormat32bppARGB);
 			HBITMAP bmp;
 			Gdiplus::Graphics graphics(&softwareBitmap);
-
-			SolidBrush blackBrush(Color(255, 255, 255, 0));
-			Font myFont(L"Arial", 16);
-			PointF origin(30.0f, 10.0f);
-			//Gdiplus::Font font(hdc, &config.subtitlesFont);
-			//Gdiplus::Color fontColor(GetRValue(config.subtitlesColor), GetGValue(config.subtitlesColor), GetBValue(config.subtitlesColor));
-			//Gdiplus::SolidBrush solidBrush(fontColor);
-
-
-			graphics.Clear(Gdiplus::Color(0, 0, 0, 0));
-			graphics.DrawString(textToDraw.c_str(), textToDraw.length(), &myFont, origin, &blackBrush);
-			softwareBitmap.GetHBITMAP(Color(0, 0, 0, 0), &bmp);
 			HDC hdc = GetDC(hwnd);
+
+			RectF rect(0, 0, SUBTITLES_WIDTH, SUBTITLES_HEIGHT);
+			Gdiplus::StringFormat format;
+			format.SetAlignment(StringAlignment::StringAlignmentCenter);
+			format.SetLineAlignment(StringAlignment::StringAlignmentCenter);
+			Gdiplus::Font font(hdc, &config.subtitlesFont);
+			Gdiplus::Color fontColor(GetRValue(config.subtitlesColor), GetGValue(config.subtitlesColor), GetBValue(config.subtitlesColor));
+			Gdiplus::SolidBrush solidBrush(fontColor);
+
+			graphics.SetTextRenderingHint(Gdiplus::TextRenderingHintAntiAlias);
+			graphics.Clear(Gdiplus::Color(0, 0, 0, 0));
+			graphics.DrawString(textToDraw.c_str(), -1, &font, rect, &format, &solidBrush);
+			softwareBitmap.GetHBITMAP(Color(0, 0, 0, 0), &bmp);
+			
 			HDC memdc = CreateCompatibleDC(hdc);
 			HGDIOBJ original = SelectObject(memdc, bmp);
 
@@ -31,8 +31,8 @@ LRESULT CALLBACK subtitlesWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 			blend.BlendOp = AC_SRC_OVER;
 			blend.SourceConstantAlpha = 255;
 			blend.AlphaFormat = AC_SRC_ALPHA;
-			POINT ptLocation = { 0, 300 };
-			SIZE szWnd = { 640, 100 };
+			POINT ptLocation = { 0, 0 };
+			SIZE szWnd = { SUBTITLES_WIDTH, SUBTITLES_HEIGHT };
 			POINT ptSrc = { 0, 0 };
 			UpdateLayeredWindow(hwnd, hdc, &ptLocation, &szWnd, memdc, &ptSrc, 0, &blend, ULW_ALPHA);
 			SelectObject(hdc, original);
@@ -47,7 +47,7 @@ LRESULT CALLBACK subtitlesWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 
 void createSubtitlesWindow(void)
 {
-	const wchar_t SETTINGS_CLASS_NAME[] = L"SubtitlesWindowClass";
+	const wchar_t SETTINGS_CLASS_NAME[] = L"subtitlesWindowClass";
 	WNDCLASS subtitlesWindowClass = {};
 
 	subtitlesWindowClass.lpfnWndProc = subtitlesWindowProc;
@@ -55,5 +55,5 @@ void createSubtitlesWindow(void)
 	subtitlesWindowClass.lpszClassName = SETTINGS_CLASS_NAME;
 	RegisterClass(&subtitlesWindowClass);
 
-	subtitlesWin = CreateWindowEx(WS_EX_LAYERED | WS_EX_TRANSPARENT, SETTINGS_CLASS_NAME, L"Subtitles", WS_VISIBLE | WS_POPUP, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, NULL, NULL, NULL, NULL);
+	subtitlesHWND = CreateWindowEx(WS_EX_LAYERED | WS_EX_TRANSPARENT, SETTINGS_CLASS_NAME, L"Subtitles", WS_VISIBLE | WS_POPUP, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, NULL, NULL, NULL, NULL);
 }
