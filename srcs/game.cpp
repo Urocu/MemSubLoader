@@ -1,7 +1,7 @@
 #include "MemSubLoader.hpp"
 
 // Used when the game starts
-void game_start(PROCESS_INFORMATION pi)
+void gameStart(PROCESS_INFORMATION pi)
 {
 	SIZE_T bytesRead;
 	int audID;
@@ -33,12 +33,18 @@ void game_start(PROCESS_INFORMATION pi)
 	int lastID = 0;
 	DWORD Width = 0;
 	DWORD Height = 0;
+
+	// GDI+ Init
+	HDC hdc = GetDC(subtitlesWin);
+
 	while (WaitForSingleObject( pi.hProcess, 0 ) == WAIT_TIMEOUT)
 	{
 		// Read memory of audioID's address
-		if (ReadProcessMemory(pi.hProcess, (LPCVOID)addressToRead, &audID, sizeof(audID), &bytesRead) && lastID!=audID && audID <Text.size() && audID >0)
+		if (ReadProcessMemory(pi.hProcess, (LPCVOID)addressToRead, &audID, sizeof(audID), &bytesRead) && lastID != audID && audID < Text.size() && audID > 0)
 		{
-			SetWindowText(subtitles, Text[audID].c_str());
+			textToDraw = Text[audID].c_str();
+			InvalidateRect(subtitlesWin, NULL, FALSE);
+
 			lastID=audID;
 		}
 		// process messages, otherwise the software will freeze

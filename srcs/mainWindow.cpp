@@ -1,7 +1,7 @@
 #include "MemSubLoader.hpp"
 
 // Main window controls handling
-LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
 	{
@@ -19,14 +19,14 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
 				case GAME_BUTTON:
 				{
-					if (OpenFileExplorer(hwnd, config.gamePath, MAX_PATH, LOWORD(wParam)))
+					if (openFileExplorer(hwnd, config.gamePath, MAX_PATH, LOWORD(wParam)))
 						SetWindowText(gamePathValueLabel, config.gamePath);
 				}
 				break;
 
 				case SUBTITLES_BUTTON:
 				{
-					if (OpenFileExplorer(hwnd, config.subtitlesPath, MAX_PATH, LOWORD(wParam)))
+					if (openFileExplorer(hwnd, config.subtitlesPath, MAX_PATH, LOWORD(wParam)))
 						SetWindowText(subtitlesPathValueLabel, config.subtitlesPath);
 				}
 				break;
@@ -37,19 +37,18 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					{
 						STARTUPINFO si;
 						PROCESS_INFORMATION pi;
+
 						ZeroMemory(&si, sizeof(si));
 						si.cb = sizeof(si);
 						ZeroMemory(&pi, sizeof(pi));
+
 						// Opens the game
 						CreateProcess(config.gamePath, NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
 						WaitForInputIdle(pi.hProcess, INFINITE);
-						// Creates subtitles window
-						subtitlesWin = CreateWindowEx(WS_EX_LAYERED | WS_EX_TRANSPARENT, L"MainWindowClass", L"Subtitles", WS_VISIBLE | WS_POPUP, 50, 100, 640, 100, NULL, NULL, NULL, NULL);
-						subtitles = CreateWindow(L"STATIC", L"No File", WS_CHILD | WS_VISIBLE, 0, 0, 640, 100, subtitlesWin, NULL, NULL, NULL);
-						SetLayeredWindowAttributes(subtitlesWin, RGB(255, 255, 255), 128, LWA_ALPHA);
-						SetWindowText(subtitles, L"Loading...");
+
+						createSubtitlesWindow();
 						PostMessage(hwnd, WM_SYSCOMMAND, SC_MINIMIZE, 0);
-						game_start(pi);
+						gameStart(pi);
 					}
 					else
 						MessageBox(hwnd, L"You must select both game and file", L"Warning", MB_ICONWARNING);
@@ -61,11 +60,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					wchar_t selectedFile[MAX_PATH] = {};
 					wchar_t message[MAX_PATH + 256] = {};
 
-					if (OpenFileExplorer(hwnd, selectedFile, MAX_PATH, MENU_LOAD))
+					if (openFileExplorer(hwnd, selectedFile, MAX_PATH, MENU_LOAD))
 					{
 						Config tmp = config;
 
-						if (LoadConfig(config, selectedFile))
+						if (loadConfig(config, selectedFile))
 						{
 							InvalidateRect(hwnd, NULL, TRUE);
 							updateSubtitlesSettingsAttributes(hwnd, config.subtitlesFont);
@@ -88,9 +87,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					wchar_t selectedFile[MAX_PATH] = {};
 					wchar_t message[MAX_PATH + 256] = {};
 
-					if (OpenFileExplorer(hwnd, selectedFile, MAX_PATH, MENU_SAVE))
+					if (openFileExplorer(hwnd, selectedFile, MAX_PATH, MENU_SAVE))
 					{
-						if (SaveConfig(config, selectedFile))
+						if (saveConfig(config, selectedFile))
 						{
 							wsprintf(message, L"Configuration saved successfully :\n%s", selectedFile);
 							MessageBox(hwnd, message, L"Saving configuration", MB_ICONINFORMATION);
@@ -109,9 +108,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					wchar_t selectedFile[MAX_PATH] = {};
 					wchar_t message[MAX_PATH + 256] = {};
 
-					if (OpenFileExplorer(hwnd, selectedFile, MAX_PATH, MENU_LOAD))
+					if (openFileExplorer(hwnd, selectedFile, MAX_PATH, MENU_LOAD))
 					{
-						if (SetAutoloadConfigPath(selectedFile))
+						if (setAutoloadConfigPath(selectedFile))
 						{
 							wsprintf(message, L"Configuration autoload set successfully :\n%s", selectedFile);
 							MessageBox(hwnd, message, L"Setting configuration autoload", MB_ICONINFORMATION);
@@ -134,7 +133,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				{
 					if (settingsHWND == NULL)
 					{
-						CreateSettingsWindow(hwnd);
+						createSettingsWindow(hwnd);
 					}
 					ShowWindow(settingsHWND, SW_SHOW);
 				}
@@ -175,7 +174,7 @@ void updateMainAttributes(HWND hwnd)
 }
 
 // Main window initialization
-int CreateMainWindow(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+int createMainWindow(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	const wchar_t CLASS_NAME[] = L"MainWindowClass";
 	WNDCLASS wc = {};
@@ -184,7 +183,7 @@ int CreateMainWindow(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	const HWND hDesktop = GetDesktopWindow();
 
 	GetWindowRect(hDesktop, &desktop);
-	wc.lpfnWndProc = WindowProc;
+	wc.lpfnWndProc = mainWindowProc;
 	wc.hInstance = hInstance;
 	wc.lpszClassName = CLASS_NAME;
 	RegisterClass(&wc);

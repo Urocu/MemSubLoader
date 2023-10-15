@@ -1,4 +1,5 @@
 #include "MemSubLoader.hpp"
+using namespace Gdiplus;
 
 // Global variables assignment
 
@@ -23,6 +24,12 @@ HFONT hFont = NULL;
 HFONT titleFont = NULL;
 HBITMAP logoBitmap = NULL;
 
+// GDI+
+Gdiplus::GdiplusStartupInput gdiplusStartupInput = NULL;
+ULONG_PTR gdiplusToken;
+
+std::wstring textToDraw;
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	MSG msg = {};
@@ -30,16 +37,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	wchar_t autoloadPath[MAX_PATH] = {};
 	wchar_t message[MAX_PATH + 256] = {};
 
-	if (GetAutoloadConfigPath(autoloadPath)) // Get autoloaded configuration path from autoload.dat
+	GpStatus gdiplusStatus = GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+	if (gdiplusStatus != GpStatus::Ok)
 	{
-		if (LoadConfig(tmp, autoloadPath)) // Successfully loaded configuration
+		MessageBox(NULL, L"Error: Failed to initialize GDI+", L"GDI+ Initialization", MB_ICONERROR);
+		cleanup();
+		return 1;
+	}
+	if (getAutoloadConfigPath(autoloadPath)) // Get autoloaded configuration path from autoload.dat
+	{
+		if (loadConfig(tmp, autoloadPath)) // Successfully loaded configuration
 		{
 			config = tmp;
 		}
 		else // Failed to load configuration
 		{
 			wchar_t autoload[MAX_PATH];
-			if (GetAutoloadPath(autoload))
+			if (getAutoloadPath(autoload))
 			{
 				DeleteFile(autoload);
 			}
@@ -55,10 +69,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		GetObject(hSystemFont, sizeof(LOGFONT), &config.subtitlesFont);
 	}
 
-	int res = CreateMainWindow(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
+	int res = createMainWindow(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 	if (res)
 	{
 		MessageBox(NULL, L"Error: Failed to initialize main window", L"Window initialization", MB_ICONERROR);
+		cleanup();
 		return 1;
 	}
 	while (GetMessage(&msg, NULL, 0, 0) > 0)

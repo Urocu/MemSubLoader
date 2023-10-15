@@ -12,6 +12,7 @@
 # include <vector>
 # include <cstdio>
 # include <stdio.h>
+# include <gdiplus.h>
 # include "resource.h"
 # define GAME_BUTTON 1
 # define SUBTITLES_BUTTON 2
@@ -29,6 +30,14 @@
 # define COLOR_BUTTON 14
 # define ALIGNMENT_COMBOBOX 15
 # define APPLY_BUTTON 16
+# define SCREEN_WIDTH 640
+# define SCREEN_HEIGHT 480
+# define SUBTITLES_XPOS 0
+# define SUBTITLES_YPOS 380
+# define SUBTITLES_WIDTH 640
+# define SUBTITLES_HEIGHT 100
+
+using namespace Gdiplus;
 
 enum TextAlignment {
 	ALIGN_LEFT = 0,
@@ -63,34 +72,42 @@ extern HFONT titleFont;
 extern HFONT subtitlesHFont;
 extern HBITMAP logoBitmap;
 
+extern Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+extern ULONG_PTR gdiplusToken;
+
+extern std::wstring textToDraw;
+
 // Main
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
 
 // Windows
-int CreateMainWindow(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
+int createMainWindow(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
 void updateMainAttributes(HWND hwnd);
-LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-void CreateSettingsWindow(HWND parent);
+void createSettingsWindow(HWND parent);
 void updateSubtitlesSettingsAttributes(HWND hwnd, LOGFONT &lf);
 LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+void createSubtitlesWindow(void);
+LRESULT CALLBACK subtitlesWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 // Utilities
 void findAddress(uintptr_t &address, int offset, HANDLE hProcess);
 
-bool OpenFileExplorer(HWND hwnd, wchar_t *filePath, int filePathSize, int button);
-bool OpenFontDialog(HWND hwnd, LOGFONT &lf, HFONT &subtitlesFont);
-bool OpenColorDialog(HWND hwnd, COLORREF &subtitlesColor);
+bool openFileExplorer(HWND hwnd, wchar_t *filePath, int filePathSize, int button);
+bool openFontDialog(HWND hwnd, LOGFONT &lf, HFONT &subtitlesFont);
+bool openColorDialog(HWND hwnd, COLORREF &subtitlesColor);
 
-bool SaveConfig(const Config &config, wchar_t *filename);
-bool LoadConfig(Config &config, const wchar_t *filename);
-bool SetAutoloadConfigPath(const wchar_t *path);
-bool GetAutoloadConfigPath(wchar_t *path);
-bool GetAutoloadPath(wchar_t *executablePath);
+bool saveConfig(const Config &config, wchar_t *filename);
+bool loadConfig(Config &config, const wchar_t *filename);
+bool setAutoloadConfigPath(const wchar_t *path);
+bool getAutoloadConfigPath(wchar_t *path);
+bool getAutoloadPath(wchar_t *executablePath);
 
 void cleanup(void);
 
 // Game
-void game_start(PROCESS_INFORMATION pi);
+void gameStart(PROCESS_INFORMATION pi);
 
 #endif

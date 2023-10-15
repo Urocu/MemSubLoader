@@ -11,7 +11,7 @@ C_EXTENSION = .cpp
 #		눈_눈			SOURCES			눈_눈
 
 MAIN_PATH	=	
-MAIN_FILES 	= 	main game mainWindow settingsWindow utils
+MAIN_FILES 	= 	main game mainWindow settingsWindow subtitlesWindow utils
 SRCS_FILES	+=	$(addprefix $(MAIN_PATH), $(MAIN_FILES))
 
 SRCS_FILES_EXT	+= 	$(addsuffix $(C_EXTENSION), $(SRCS_FILES))

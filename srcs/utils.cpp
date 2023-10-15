@@ -9,7 +9,7 @@ void findAddress(uintptr_t &address, int offset, HANDLE hProcess)
 }
 
 // Open File Explorer
-bool OpenFileExplorer(HWND hwnd, wchar_t *filePath, int filePathSize, int button)
+bool openFileExplorer(HWND hwnd, wchar_t *filePath, int filePathSize, int button)
 {
 	OPENFILENAME ofn = {
 		sizeof(OPENFILENAME)
@@ -60,7 +60,7 @@ bool OpenFileExplorer(HWND hwnd, wchar_t *filePath, int filePathSize, int button
 	}
 }
 
-bool OpenFontDialog(HWND hwnd, LOGFONT &lf, HFONT &subtitlesFont)
+bool openFontDialog(HWND hwnd, LOGFONT &lf, HFONT &subtitlesFont)
 {
 	CHOOSEFONT cf;
 	HFONT tmp;
@@ -91,7 +91,7 @@ bool OpenFontDialog(HWND hwnd, LOGFONT &lf, HFONT &subtitlesFont)
 	return false;
 }
 
-bool OpenColorDialog(HWND hwnd, COLORREF &subtitlesColor)
+bool openColorDialog(HWND hwnd, COLORREF &subtitlesColor)
 {
 	CHOOSECOLOR cc;
 	static COLORREF customColors[16] = { 0 };
@@ -112,7 +112,7 @@ bool OpenColorDialog(HWND hwnd, COLORREF &subtitlesColor)
 	return false;
 }
 
-bool SaveConfig(const Config &config, wchar_t *filename)
+bool saveConfig(const Config &config, wchar_t *filename)
 {
 	if (wcslen(filename) < 4 || wcscmp(filename + wcslen(filename) - 4, L".dat") != 0)
 	{
@@ -131,7 +131,7 @@ bool SaveConfig(const Config &config, wchar_t *filename)
 	return false;
 }
 
-bool LoadConfig(Config &config, const wchar_t *filename)
+bool loadConfig(Config &config, const wchar_t *filename)
 {
 	FILE *file = _wfopen(filename, L"rb");
 	if (file) {
@@ -142,16 +142,16 @@ bool LoadConfig(Config &config, const wchar_t *filename)
 	return false;
 }
 
-bool SetAutoloadConfigPath(const wchar_t *path)
+bool setAutoloadConfigPath(const wchar_t *path)
 {
 	wchar_t executablePath[MAX_PATH];
 
-	if (GetAutoloadPath(executablePath))
+	if (getAutoloadPath(executablePath))
 	{
 		FILE *file = _wfopen(executablePath, L"w");
 		if (file)
 		{
-			fwprintf(file, L"%S", path);
+			fwprintf(file, L"%s", path);
 			fclose(file);
 			return true;
 		}
@@ -160,11 +160,11 @@ bool SetAutoloadConfigPath(const wchar_t *path)
 	return false;
 }
 
-bool GetAutoloadConfigPath(wchar_t *path)
+bool getAutoloadConfigPath(wchar_t *path)
 {
 	wchar_t executablePath[MAX_PATH];
 
-	if (GetAutoloadPath(executablePath))
+	if (getAutoloadPath(executablePath))
 	{
 		FILE *file = _wfopen(executablePath, L"r");
 		if (file)
@@ -181,7 +181,7 @@ bool GetAutoloadConfigPath(wchar_t *path)
 	return false;
 }
 
-bool GetAutoloadPath(wchar_t *executablePath)
+bool getAutoloadPath(wchar_t *executablePath)
 {
 	if (GetModuleFileName(NULL, executablePath, MAX_PATH) != 0)
 	{
@@ -203,4 +203,5 @@ void cleanup(void)
 	DeleteObject(titleFont);
 	DeleteObject(subtitlesHFont);
 	DeleteObject(logoBitmap);
+	GdiplusShutdown(gdiplusToken);
 }
