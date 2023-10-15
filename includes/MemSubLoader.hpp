@@ -46,17 +46,22 @@ struct Config {
 
 // Global variables definition
 extern Config config;
-extern HWND game_text;
-extern HWND subtitles_text;
+
+extern HWND gamePathValueLabel;
+extern HWND subtitlesPathValueLabel;
 extern HWND subtitles;
 extern HWND subtitlesWin;
 extern HWND settingsHWND;
-extern HFONT subtitlesHFont;
 
 extern HWND fontValueLabel;
 extern HWND fontSizeValueLabel;
 extern HWND fontStyleValueLabel;
 extern HWND alignmentComboBox;
+
+extern HFONT hFont;
+extern HFONT titleFont;
+extern HFONT subtitlesHFont;
+extern HBITMAP logoBitmap;
 
 // Main
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
@@ -82,6 +87,8 @@ bool LoadConfig(Config &config, const wchar_t *filename);
 bool SetAutoloadConfigPath(const wchar_t *path);
 bool GetAutoloadConfigPath(wchar_t *path);
 bool GetAutoloadPath(wchar_t *executablePath);
+
+void cleanup(void);
 
 // Game
 void game_start(PROCESS_INFORMATION pi);

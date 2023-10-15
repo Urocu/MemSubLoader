@@ -95,7 +95,7 @@ void updateSubtitlesSettingsAttributes(HWND hwnd, LOGFONT &lf)
 			fontSizePixels = MulDiv(-fontSizePixels, logPixelsY, 72);
 		}
 	}
-	swprintf(fontSizeText, sizeof(fontSizeText) / sizeof(fontSizeText[0]), L"%d pixels", fontSizePixels);
+	swprintf(fontSizeText, L"%d pixels", fontSizePixels);
 	SetWindowText(fontSizeValueLabel, fontSizeText);
 
 	// Font style
@@ -144,7 +144,6 @@ void CreateSettingsWindow(HWND parent)
 	RegisterClass(&configWindowClass);
 
 	settingsHWND = CreateWindowEx(0, CONFIG_CLASS_NAME, L"Subtitles Settings", WS_SYSMENU | WS_MINIMIZEBOX, (desktop.right / 2) - (456 / 2), (desktop.bottom / 2) - (218 / 2), 456, 250, NULL, NULL, NULL, NULL);
-	HFONT hFont = CreateFont(16, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, L"Arial");
 
 	HWND fontSettingsGroup = CreateWindowEx(0, L"BUTTON", (L"Font settings"), WS_VISIBLE | WS_CHILD | 0x00000007, 20, 11, 410, 163, settingsHWND, (HMENU)0, configWindowClass.hInstance, 0);
 	SendMessage(fontSettingsGroup, WM_SETFONT, (WPARAM)hFont, FALSE);

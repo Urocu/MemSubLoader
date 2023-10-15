@@ -7,7 +7,7 @@
             ],
             "defines": [],
             "windowsSdkVersion": "10.0.19041.0",
-            "compilerPath": "C:\\cygwin64\\bin\\gcc.exe",
+            "compilerPath": "C:\\TDM-GCC-32\\bin\\mingw32-gcc.exe",
             "cStandard": "c17",
             "cppStandard": "c++17",
             "intelliSenseMode": "windows-gcc-x64",

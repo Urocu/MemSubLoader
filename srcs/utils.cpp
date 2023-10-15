@@ -78,6 +78,11 @@ bool OpenFontDialog(HWND hwnd, LOGFONT &lf, HFONT &subtitlesFont)
 		
 		if (tmp)
 		{
+			if (subtitlesFont)
+			{
+				DeleteObject(subtitlesFont);
+			}
+
 			subtitlesFont = tmp;
 			return true;
 		}
@@ -190,4 +195,12 @@ bool GetAutoloadPath(wchar_t *executablePath)
 		return true;
 	}
 	return false;
+}
+
+void cleanup(void)
+{
+	DeleteObject(hFont);
+	DeleteObject(titleFont);
+	DeleteObject(subtitlesHFont);
+	DeleteObject(logoBitmap);
 }

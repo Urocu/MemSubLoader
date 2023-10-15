@@ -5,8 +5,8 @@
 Config config = {};
 
 // Main window
-HWND game_text = NULL;
-HWND subtitles_text = NULL;
+HWND gamePathValueLabel = NULL;
+HWND subtitlesPathValueLabel = NULL;
 HWND subtitles = NULL;
 HWND subtitlesWin = NULL;
 HWND settingsHWND = NULL;
@@ -17,6 +17,11 @@ HWND fontSizeValueLabel = NULL;
 HWND fontStyleValueLabel = NULL;
 HWND alignmentComboBox = NULL;
 HFONT subtitlesHFont = NULL;
+
+// Resources
+HFONT hFont = NULL;
+HFONT titleFont = NULL;
+HBITMAP logoBitmap = NULL;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -61,6 +66,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
-
+	cleanup();
 	return 0;
 }

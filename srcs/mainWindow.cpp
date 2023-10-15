@@ -20,14 +20,14 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				case GAME_BUTTON:
 				{
 					if (OpenFileExplorer(hwnd, config.gamePath, MAX_PATH, LOWORD(wParam)))
-						SetWindowText(game_text, config.gamePath);
+						SetWindowText(gamePathValueLabel, config.gamePath);
 				}
 				break;
 
 				case SUBTITLES_BUTTON:
 				{
 					if (OpenFileExplorer(hwnd, config.subtitlesPath, MAX_PATH, LOWORD(wParam)))
-						SetWindowText(subtitles_text, config.subtitlesPath);
+						SetWindowText(subtitlesPathValueLabel, config.subtitlesPath);
 				}
 				break;
 
@@ -166,11 +166,11 @@ void updateMainAttributes(HWND hwnd)
 {
 	if (config.gamePath[0] != L'\0')
 	{
-		SetWindowText(game_text, config.gamePath);
+		SetWindowText(gamePathValueLabel, config.gamePath);
 	}
 	if (config.subtitlesPath[0] != L'\0')
 	{
-		SetWindowText(subtitles_text, config.subtitlesPath);
+		SetWindowText(subtitlesPathValueLabel, config.subtitlesPath);
 	}
 }
 
@@ -195,9 +195,9 @@ int CreateMainWindow(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		return 1;
 
 	// UI
-	HFONT hFont = CreateFont(16, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, L"Arial");
-	HFONT titleFont = CreateFont(24, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, L"Calibri");
-	HBITMAP logoBitmap = (HBITMAP)LoadImage(hInstance, MAKEINTRESOURCEW(MSL_LOGO), IMAGE_BITMAP, 0, 0, LR_DEFAULTSIZE);
+	hFont = CreateFont(16, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, L"Arial");
+	titleFont = CreateFont(24, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, L"Calibri");
+	logoBitmap = (HBITMAP)LoadImage(hInstance, MAKEINTRESOURCEW(MSL_LOGO), IMAGE_BITMAP, 0, 0, LR_DEFAULTSIZE);
 
 	// UI Menu
 	HMENU hMenu = CreateMenu();
@@ -223,14 +223,14 @@ int CreateMainWindow(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	SendMessage(pathGroup, WM_SETFONT, (WPARAM)hFont, FALSE);
 	HWND gameLabel = CreateWindowEx(0, L"STATIC", (L"Game path"), WS_VISIBLE | WS_CHILD | WS_GROUP | SS_RIGHT, 48, 112, 74, 21, mainHWND, (HMENU)0, hInstance, 0);
 	SendMessage(gameLabel, WM_SETFONT, (WPARAM)hFont, FALSE);
-	game_text = CreateWindowEx(0, L"EDIT", (L"Select a file..."), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL | ES_READONLY, 130, 107, 280, 29, mainHWND, (HMENU)GAME_FIELD, hInstance, 0);
-	SendMessage(game_text, WM_SETFONT, (WPARAM)hFont, FALSE);
+	gamePathValueLabel = CreateWindowEx(0, L"EDIT", (L"Select a file..."), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL | ES_READONLY, 130, 107, 280, 29, mainHWND, (HMENU)GAME_FIELD, hInstance, 0);
+	SendMessage(gamePathValueLabel, WM_SETFONT, (WPARAM)hFont, FALSE);
 	HWND gameExplorerButton = CreateWindowEx(0, L"BUTTON", (L"Browse"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 412, 107, 58, 29, mainHWND, (HMENU)GAME_BUTTON, hInstance, 0);
 	SendMessage(gameExplorerButton, WM_SETFONT, (WPARAM)hFont, FALSE);
 	HWND subtitlesLabel = CreateWindowEx(0, L"STATIC", (L"Subtitles path"), WS_VISIBLE | WS_CHILD | WS_GROUP | SS_RIGHT, 28, 159, 92, 21, mainHWND, (HMENU)0, hInstance, 0);
 	SendMessage(subtitlesLabel, WM_SETFONT, (WPARAM)hFont, FALSE);
-	subtitles_text = CreateWindowEx(0, L"EDIT", (L"Select a file..."), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL | ES_READONLY, 130, 157, 280, 29, mainHWND, (HMENU)SUBTITLES_FIELD, hInstance, 0);
-	SendMessage(subtitles_text, WM_SETFONT, (WPARAM)hFont, FALSE);
+	subtitlesPathValueLabel = CreateWindowEx(0, L"EDIT", (L"Select a file..."), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL | ES_READONLY, 130, 157, 280, 29, mainHWND, (HMENU)SUBTITLES_FIELD, hInstance, 0);
+	SendMessage(subtitlesPathValueLabel, WM_SETFONT, (WPARAM)hFont, FALSE);
 	HWND subtitlesExplorerButton = CreateWindowEx(0, L"BUTTON", (L"Browse"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 412, 157, 58, 29, mainHWND, (HMENU)SUBTITLES_BUTTON, hInstance, 0);
 	SendMessage(subtitlesExplorerButton, WM_SETFONT, (WPARAM)hFont, FALSE);
 	HWND startButton = CreateWindowEx(0, L"BUTTON", (L"Start game"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 210, 206, 80, 38, mainHWND, (HMENU)START_BUTTON, hInstance, 0);

@@ -24,7 +24,7 @@
 			"environment": [],
 			"externalConsole": false,
 			"MIMode": "gdb",
-			"miDebuggerPath": "C:/cygwin64/bin/gdb.exe",
+			"miDebuggerPath": "C:\\TDM-GCC-32\\bin\\gdb32.exe",
 			"setupCommands": [
 				{
 					"description": "Enable pretty printing for GDB",
