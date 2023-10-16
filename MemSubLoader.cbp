@@ -30,15 +30,23 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add option="-m32" />
+			<Add directory="includes" />
 		</Compiler>
 		<Linker>
+			<Add option="-m32" />
 			<Add library="gdi32" />
 			<Add library="user32" />
 			<Add library="kernel32" />
 			<Add library="comctl32" />
 			<Add library="Shlwapi" />
+			<Add library="Comdlg32" />
 		</Linker>
-		<Unit filename="main.cpp" />
+		<Unit filename="includes/MemSubLoader.hpp" />
+		<Unit filename="srcs/game.cpp" />
+		<Unit filename="srcs/main.cpp" />
+		<Unit filename="srcs/utils.cpp" />
+		<Unit filename="srcs/windows.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>
