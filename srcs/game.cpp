@@ -38,7 +38,8 @@ void gameStart(PROCESS_INFORMATION pi)
         }
         if (!is)
 		{
-			std::cout << "!is\n";
+			textToDraw = L"";
+			InvalidateRect(subtitlesHWND, NULL, FALSE);
 		}
 		// process messages, otherwise the software will freeze
         auto end_time = std::chrono::high_resolution_clock::now();
@@ -52,14 +53,6 @@ void gameStart(PROCESS_INFORMATION pi)
             elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
             std::this_thread::sleep_for((std::chrono::milliseconds)10);
 		}
-
-		if (Width != static_cast<DWORD>(GetSystemMetrics(SM_CXSCREEN)) && Height != static_cast<DWORD>(GetSystemMetrics(SM_CYSCREEN)))
-		{
-			Width = GetSystemMetrics(SM_CXSCREEN);
-			Height = GetSystemMetrics(SM_CYSCREEN);
-			SetWindowPos(subtitlesHWND, HWND_TOPMOST, 0, Height-100, Width = GetSystemMetrics(SM_CXSCREEN), 100, 0);
-		}
-
 	}
 	CloseHandle(pi.hProcess);
 	CloseHandle(pi.hThread);

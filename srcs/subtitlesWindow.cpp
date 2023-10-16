@@ -20,6 +20,8 @@ LRESULT CALLBACK subtitlesWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 			Gdiplus::SolidBrush solidBrush(fontColor);
 
 			graphics.SetTextRenderingHint(Gdiplus::TextRenderingHintAntiAlias);
+			graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+			graphics.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic);
 			graphics.Clear(Gdiplus::Color(0, 0, 0, 0));
 			graphics.DrawString(textToDraw.c_str(), -1, &font, rect, &format, &solidBrush);
 			subtitlesBitmap.GetHBITMAP(Color(0, 0, 0, 0), &bmp);
