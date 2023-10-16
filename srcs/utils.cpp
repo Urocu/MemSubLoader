@@ -12,9 +12,9 @@ void Subtitles::search_memory(HANDLE hProcess)
 {
 	address_audio = bAddress_audio;
 	address_play = bAddress_play;
-	for(int i = 0; i < offset_audio.size();i++)
+	for(size_t i = 0; i < offset_audio.size(); i++)
 		findAddress(address_audio,offset_audio[i],hProcess);
-	for(int i = 0; i < offset_play.size();i++)
+	for(size_t i = 0; i < offset_play.size(); i++)
 		findAddress(address_play,offset_play[i],hProcess);
 }
 
@@ -29,16 +29,16 @@ bool Subtitles::check_audio(HANDLE hProcess)
 	{
 		if(AudioID != lastAudioID && AudioID > 0)
 		{
-		lastAudioID = AudioID;
+			lastAudioID = AudioID;
 
-		for(int i = 0; i < ID.size(); i++)
-		{
-			if(AudioID == ID[i])
+			for(size_t i = 0; i < ID.size(); i++)
 			{
-				textToDraw = Text[i].c_str();
-				InvalidateRect(subtitlesHWND, NULL, FALSE);
+				if(AudioID == ID[i])
+				{
+					textToDraw = Text[i].c_str();
+					InvalidateRect(subtitlesHWND, NULL, FALSE);
+				}
 			}
-		}
 		}
 		return true;
 	}
@@ -53,7 +53,7 @@ void Subtitles::file_memory(std::wifstream& file)
 	file >> bAddress_audio;
 
 	file >> num;
-	for(int i = 0; i<num;i++)
+	for(int i = 0; i < num; i++)
 	{
 		file >> offset;
 
@@ -63,7 +63,7 @@ void Subtitles::file_memory(std::wifstream& file)
 	file >> bAddress_play;
 	file >> num;
 
-	for(int i = 0; i<num;i++)
+	for(int i = 0; i < num; i++)
 	{
 		file >> offset;
 
@@ -74,7 +74,6 @@ void Subtitles::file_memory(std::wifstream& file)
 void Subtitles::file_text(std::wifstream& file)
 {
 	std::wstring ws;
-	int num;
 	while(getline(file, ws))
 	{
 		if (ws == L"END")
@@ -287,4 +286,7 @@ void cleanup(void)
 	DeleteObject(subtitlesHFont);
 	DeleteObject(logoBitmap);
 	GdiplusShutdown(gdiplusToken);
+	DestroyWindow(settingsHWND);
+	DestroyWindow(subtitlesHWND);
+	DestroyWindow(mainHWND);
 }

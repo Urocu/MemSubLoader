@@ -3,32 +3,34 @@ using namespace Gdiplus;
 
 // Global variables assignment
 
+// Global resources
 Config config = {};
+std::wstring textToDraw;
 
-// Main window
-HWND gamePathValueLabel = NULL;
-HWND subtitlesPathValueLabel = NULL;
-HWND subtitles = NULL;
+// Windows
+HWND mainHWND = NULL;
 HWND subtitlesHWND = NULL;
 HWND settingsHWND = NULL;
 
-// Settings window
+// Main window handles
+HWND gamePathValueLabel = NULL;
+HWND subtitlesPathValueLabel = NULL;
+
+// Settings window handles & resources
 HWND fontValueLabel = NULL;
 HWND fontSizeValueLabel = NULL;
 HWND fontStyleValueLabel = NULL;
 HWND alignmentComboBox = NULL;
-HFONT subtitlesHFont = NULL;
 
 // Resources
 HFONT hFont = NULL;
 HFONT titleFont = NULL;
+HFONT subtitlesHFont = NULL;
 HBITMAP logoBitmap = NULL;
 
 // GDI+
 Gdiplus::GdiplusStartupInput gdiplusStartupInput = NULL;
-ULONG_PTR gdiplusToken;
-
-std::wstring textToDraw;
+ULONG_PTR gdiplusToken = 0UL;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -40,7 +42,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	GpStatus gdiplusStatus = GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 	if (gdiplusStatus != GpStatus::Ok)
 	{
-		MessageBox(NULL, L"Error: Failed to initialize GDI+", L"GDI+ Initialization", MB_ICONERROR);
+		MessageBox(NULL, L"Error: Failed to initialize GDI+", L"GDI+ initialization", MB_ICONERROR);
 		cleanup();
 		return 1;
 	}
@@ -58,7 +60,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				DeleteFile(autoload);
 			}
 			wsprintf(message, L"Failed to autoload configuration :\n%s\nDeleted configuration autoload", autoloadPath);
-			MessageBox(NULL, message, L"Configuration autoload", MB_ICONERROR);
+			MessageBox(NULL, message, L"Configuration autoloading", MB_ICONERROR);
 			HFONT hSystemFont = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
 			GetObject(hSystemFont, sizeof(LOGFONT), &config.subtitlesFont);
 		}

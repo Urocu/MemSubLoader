@@ -130,7 +130,7 @@ void updateSubtitlesSettingsAttributes(HWND hwnd, LOGFONT &lf)
 }
 
 // Settings window initialization
-void createSettingsWindow(HWND parent)
+int createSettingsWindow(HWND parent)
 {
 	const wchar_t SETTINGS_CLASS_NAME[] = L"ConfigWindowClass";
 	WNDCLASS settingsWindowClass = {};
@@ -144,6 +144,10 @@ void createSettingsWindow(HWND parent)
 	RegisterClass(&settingsWindowClass);
 
 	settingsHWND = CreateWindowEx(0, SETTINGS_CLASS_NAME, L"Subtitles Settings", WS_SYSMENU | WS_MINIMIZEBOX, (desktop.right / 2) - (456 / 2), (desktop.bottom / 2) - (218 / 2), 456, 250, NULL, NULL, NULL, NULL);
+	if (!IsWindow(settingsHWND))
+	{
+		return 1;
+	}
 
 	HWND fontSettingsGroup = CreateWindowEx(0, L"BUTTON", (L"Font settings"), WS_VISIBLE | WS_CHILD | 0x00000007, 20, 11, 410, 163, settingsHWND, (HMENU)0, settingsWindowClass.hInstance, 0);
 	SendMessage(fontSettingsGroup, WM_SETFONT, (WPARAM)hFont, FALSE);
@@ -176,4 +180,5 @@ void createSettingsWindow(HWND parent)
 	HWND applyButton = CreateWindowEx(0, L"BUTTON", (L"Apply"), WS_VISIBLE | WS_CHILD | WS_TABSTOP, 191, 187, 68, 23, settingsHWND, (HMENU)APPLY_BUTTON, settingsWindowClass.hInstance, 0);
 	SendMessage(applyButton, WM_SETFONT, (WPARAM)hFont, FALSE);
 	updateSubtitlesSettingsAttributes(settingsHWND, config.subtitlesFont);
+	return 0;
 }

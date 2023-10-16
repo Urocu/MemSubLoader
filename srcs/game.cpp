@@ -53,7 +53,7 @@ void gameStart(PROCESS_INFORMATION pi)
             std::this_thread::sleep_for((std::chrono::milliseconds)10);
 		}
 
-		if(Width != GetSystemMetrics(SM_CXSCREEN) && Height != GetSystemMetrics(SM_CYSCREEN))
+		if(Width != static_cast<DWORD>(GetSystemMetrics(SM_CXSCREEN)) && Height != static_cast<DWORD>(GetSystemMetrics(SM_CYSCREEN)))
 		{
 			Width = GetSystemMetrics(SM_CXSCREEN);
 			Height = GetSystemMetrics(SM_CYSCREEN);
@@ -64,5 +64,4 @@ void gameStart(PROCESS_INFORMATION pi)
 	CloseHandle(pi.hProcess);
 	CloseHandle(pi.hThread);
 	DestroyWindow(subtitlesHWND);
-	DestroyWindow(settingsHWND);
 }

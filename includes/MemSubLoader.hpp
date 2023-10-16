@@ -56,27 +56,36 @@ struct Config {
 };
 
 // Global variables definition
-extern Config config;
 
-extern HWND gamePathValueLabel;
-extern HWND subtitlesPathValueLabel;
+// Global resources
+extern Config config;
+extern std::wstring textToDraw;
+
+// Windows
+extern HWND mainHWND;
 extern HWND subtitlesHWND;
 extern HWND settingsHWND;
 
+// Main window handles
+extern HWND gamePathValueLabel;
+extern HWND subtitlesPathValueLabel;
+
+// Settings window handles & resources
 extern HWND fontValueLabel;
 extern HWND fontSizeValueLabel;
 extern HWND fontStyleValueLabel;
 extern HWND alignmentComboBox;
 
+
+// Resources
 extern HFONT hFont;
 extern HFONT titleFont;
 extern HFONT subtitlesHFont;
 extern HBITMAP logoBitmap;
 
+// GDI+
 extern Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 extern ULONG_PTR gdiplusToken;
-
-extern std::wstring textToDraw;
 
 class Subtitles
 {
@@ -110,11 +119,11 @@ int createMainWindow(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 void updateMainAttributes(HWND hwnd);
 LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-void createSettingsWindow(HWND parent);
+int createSettingsWindow(HWND parent);
 void updateSubtitlesSettingsAttributes(HWND hwnd, LOGFONT &lf);
 LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-void createSubtitlesWindow(void);
+int createSubtitlesWindow(void);
 LRESULT CALLBACK subtitlesWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 // Utilities

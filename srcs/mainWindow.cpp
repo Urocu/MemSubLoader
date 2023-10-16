@@ -46,12 +46,18 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 						CreateProcess(config.gamePath, NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
 						WaitForInputIdle(pi.hProcess, INFINITE);
 
-						createSubtitlesWindow();
+						if (createSubtitlesWindow())
+						{
+							MessageBox(hwnd, L"Error: Failed to initialize subtitles window", L"Window initialization", MB_ICONERROR);
+						}
+
 						PostMessage(hwnd, WM_SYSCOMMAND, SC_MINIMIZE, 0);
 						gameStart(pi);
 					}
 					else
+					{
 						MessageBox(hwnd, L"You must select both game and file", L"Warning", MB_ICONWARNING);
+					}
 				}
 				break;
 
@@ -70,13 +76,13 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 							updateSubtitlesSettingsAttributes(hwnd, config.subtitlesFont);
 							updateMainAttributes(hwnd);
 							wsprintf(message, L"Configuration loaded successfully :\n%s", selectedFile);
-							MessageBox(hwnd, message, L"Loading configuration", MB_ICONINFORMATION);
+							MessageBox(hwnd, message, L"Configuration loading", MB_ICONINFORMATION);
 						}
 						else
 						{
 							config = tmp;
 							wsprintf(message, L"Failed to load configuration :\n%s", selectedFile);
-							MessageBox(hwnd, message, L"Loading configuration", MB_ICONERROR);
+							MessageBox(hwnd, message, L"Configuration loading", MB_ICONERROR);
 						}
 					}
 				}
@@ -92,12 +98,12 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 						if (saveConfig(config, selectedFile))
 						{
 							wsprintf(message, L"Configuration saved successfully :\n%s", selectedFile);
-							MessageBox(hwnd, message, L"Saving configuration", MB_ICONINFORMATION);
+							MessageBox(hwnd, message, L"Configuration saving", MB_ICONINFORMATION);
 						}
 						else
 						{
 							wsprintf(message, L"Failed to save configuration :\n%s", selectedFile);
-							MessageBox(hwnd, message, L"Saving configuration", MB_ICONERROR);
+							MessageBox(hwnd, message, L"Configuration saving", MB_ICONERROR);
 						}
 					}
 				}
@@ -113,11 +119,11 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 						if (setAutoloadConfigPath(selectedFile))
 						{
 							wsprintf(message, L"Configuration autoload set successfully :\n%s", selectedFile);
-							MessageBox(hwnd, message, L"Setting configuration autoload", MB_ICONINFORMATION);
+							MessageBox(hwnd, message, L"Setting configuration autoloading", MB_ICONINFORMATION);
 						}
 						else {
 							wsprintf(message, L"Failed to save configuration :\n%s", selectedFile);
-							MessageBox(hwnd, message, L"Setting configuration autoload", MB_ICONERROR);
+							MessageBox(hwnd, message, L"Setting configuration autoloading", MB_ICONERROR);
 						}
 					}
 				}
@@ -131,13 +137,26 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 
 				case MENU_SETTINGS:
 				{
-					if (settingsHWND == NULL)
+					if (!IsWindow(settingsHWND))
 					{
-						createSettingsWindow(hwnd);
+						if (createSettingsWindow(hwnd))
+						{
+							MessageBox(hwnd, L"Error: Failed to initialize settings window", L"Window initialization", MB_ICONERROR);
+							break;
+						}
 					}
 					ShowWindow(settingsHWND, SW_SHOW);
 				}
 				break;
+			}
+		}
+		break;
+
+		case WM_SYSCOMMAND:
+		{
+			if (wParam == SC_RESTORE)
+			{
+				ShowWindow(hwnd, SW_RESTORE);
 			}
 		}
 		break;
@@ -178,7 +197,6 @@ int createMainWindow(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 {
 	const wchar_t CLASS_NAME[] = L"MainWindowClass";
 	WNDCLASS wc = {};
-	HWND mainHWND;
 	RECT desktop;
 	const HWND hDesktop = GetDesktopWindow();
 
@@ -190,8 +208,10 @@ int createMainWindow(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	// Creates main window and positions it at the middle of the screen
 	mainHWND = CreateWindowEx(0, CLASS_NAME, L"MemSubLoader", WS_OVERLAPPEDWINDOW &~WS_MAXIMIZEBOX &~WS_THICKFRAME, (desktop.right / 2) - (500 / 2), (desktop.bottom / 2) - (300 / 2), 500, 300, 0, 0, hInstance, NULL);
-	if (mainHWND == NULL)
+	if (!IsWindow(mainHWND))
+	{
 		return 1;
+	}
 
 	// UI
 	hFont = CreateFont(16, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, L"Arial");
