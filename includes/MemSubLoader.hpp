@@ -138,6 +138,7 @@ bool loadConfig(Config &config, const wchar_t *filename);
 bool setAutoloadConfigPath(const wchar_t *path);
 bool getAutoloadConfigPath(wchar_t *path);
 bool getAutoloadPath(wchar_t *executablePath);
+Gdiplus::StringAlignment getConfigAlignment(void);
 
 void cleanup(void);
 

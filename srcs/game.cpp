@@ -6,7 +6,7 @@ void gameStart(PROCESS_INFORMATION pi)
     int num;
 	std::vector <Subtitles> Sub;
 	std::wifstream subfile(config.subtitlesPath);
-	if(subfile.is_open() && !subfile.eof())
+	if (subfile.is_open() && !subfile.eof())
 	{
 	    subfile >> num;
 	    for(int i = 0; i <num; i++)
@@ -33,10 +33,10 @@ void gameStart(PROCESS_INFORMATION pi)
         {
             is = false;
             Sub[i].search_memory(pi.hProcess);
-            if(Sub[i].check_audio(pi.hProcess))
+            if (Sub[i].check_audio(pi.hProcess))
                 is = true;
         }
-        if(!is)
+        if (!is)
 		{
 			std::cout << "!is\n";
 		}
@@ -53,7 +53,7 @@ void gameStart(PROCESS_INFORMATION pi)
             std::this_thread::sleep_for((std::chrono::milliseconds)10);
 		}
 
-		if(Width != static_cast<DWORD>(GetSystemMetrics(SM_CXSCREEN)) && Height != static_cast<DWORD>(GetSystemMetrics(SM_CYSCREEN)))
+		if (Width != static_cast<DWORD>(GetSystemMetrics(SM_CXSCREEN)) && Height != static_cast<DWORD>(GetSystemMetrics(SM_CYSCREEN)))
 		{
 			Width = GetSystemMetrics(SM_CXSCREEN);
 			Height = GetSystemMetrics(SM_CYSCREEN);

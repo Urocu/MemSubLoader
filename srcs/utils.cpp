@@ -21,19 +21,19 @@ void Subtitles::search_memory(HANDLE hProcess)
 bool Subtitles::check_audio(HANDLE hProcess)
 {
 	SIZE_T bytesRead;
-	if(!ReadProcessMemory(hProcess, (LPCVOID)address_play, &is_playing, 1, &bytesRead))
+	if (!ReadProcessMemory(hProcess, (LPCVOID)address_play, &is_playing, 1, &bytesRead))
 		std::cout<<"play error: "<<GetLastError()<<std::endl;
-	if(!ReadProcessMemory(hProcess, (LPCVOID)address_audio, &AudioID, 4, &bytesRead))
+	if (!ReadProcessMemory(hProcess, (LPCVOID)address_audio, &AudioID, 4, &bytesRead))
 		std::cout<<"audio error: "<<GetLastError()<<std::endl;
 	if (is_playing)
 	{
-		if(AudioID != lastAudioID && AudioID > 0)
+		if (AudioID != lastAudioID && AudioID > 0)
 		{
 			lastAudioID = AudioID;
 
 			for(size_t i = 0; i < ID.size(); i++)
 			{
-				if(AudioID == ID[i])
+				if (AudioID == ID[i])
 				{
 					textToDraw = Text[i].c_str();
 					InvalidateRect(subtitlesHWND, NULL, FALSE);
@@ -74,7 +74,7 @@ void Subtitles::file_memory(std::wifstream& file)
 void Subtitles::file_text(std::wifstream& file)
 {
 	std::wstring ws;
-	while(getline(file, ws))
+	while (getline(file, ws))
 	{
 		if (ws == L"END")
 			break;
@@ -277,6 +277,23 @@ bool getAutoloadPath(wchar_t *executablePath)
 		return true;
 	}
 	return false;
+}
+
+Gdiplus::StringAlignment getConfigAlignment(void)
+{
+	switch (config.alignment) {
+		case ALIGN_LEFT:
+			return Gdiplus::StringAlignment::StringAlignmentNear;
+			break;
+		case ALIGN_CENTER:
+			return Gdiplus::StringAlignment::StringAlignmentCenter;
+			break;
+		case ALIGN_RIGHT:
+			return Gdiplus::StringAlignment::StringAlignmentFar;
+			break;
+		default:
+			return Gdiplus::StringAlignment::StringAlignmentCenter;
+	}
 }
 
 void cleanup(void)
