@@ -62,5 +62,6 @@ int createSubtitlesWindow(void)
 	{
 		return 1;
 	}
+	SetWindowPos(subtitlesHWND, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 	return 0;
 }
