@@ -22,8 +22,6 @@ void gameStart(PROCESS_INFORMATION pi)
 	}
 	subfile.close();
 
-	DWORD Width = 0;
-	DWORD Height = 0;
 	bool is;
 	const std::chrono::milliseconds frame_duration(1000 / 60);
 	while (WaitForSingleObject( pi.hProcess, 0 ) == WAIT_TIMEOUT)
