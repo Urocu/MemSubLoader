@@ -32,6 +32,7 @@
 			<Add option="-Wall" />
 			<Add directory="includes" />
 			<Add directory="resources" />
+			<Add directory="lib/OutlineText" />
 		</Compiler>
 		<Linker>
 			<Add library="gdi32" />
@@ -41,6 +42,7 @@
 			<Add library="Shlwapi" />
 			<Add library="Comdlg32" />
 			<Add library="gdiplus" />
+			<Add library="bin/Release/OutlineText.dll" />
 		</Linker>
 		<Unit filename="includes/MemSubLoader.hpp" />
 		<Unit filename="resources/MemSubLoader.rc">

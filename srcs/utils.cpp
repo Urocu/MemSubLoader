@@ -151,11 +151,11 @@ bool openFontDialog(HWND hwnd, LOGFONT &lf, HFONT &subtitlesFont)
 	cf.hwndOwner = hwnd;
 	cf.lpLogFont = &lf;
 	cf.Flags = CF_EFFECTS | CF_SCREENFONTS | CF_INITTOLOGFONTSTRUCT;
-	cf.rgbColors = config.subtitlesColor;
+	cf.rgbColors = config.fontColor;
 
 	if (ChooseFont(&cf))
 	{
-		config.subtitlesColor = cf.rgbColors;
+		config.fontColor = cf.rgbColors;
 		tmp = CreateFontIndirect(&lf);
 		
 		if (tmp)
@@ -279,9 +279,9 @@ bool getAutoloadPath(wchar_t *executablePath)
 	return false;
 }
 
-Gdiplus::StringAlignment getConfigAlignment(void)
+Gdiplus::StringAlignment getConfigAlignment(TextAlignment alignment)
 {
-	switch (config.alignment) {
+	switch (alignment) {
 		case ALIGN_LEFT:
 			return Gdiplus::StringAlignment::StringAlignmentNear;
 			break;

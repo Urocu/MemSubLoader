@@ -7,4 +7,4 @@
 #define COG_ICON                                118
 #define FOLDER_ICON                             119
 #define MSL_LOGO                                120
-#define DLG_CONFIG                              122
+#define DLG_SETTINGS                            122

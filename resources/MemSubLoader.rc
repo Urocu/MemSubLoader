@@ -36,7 +36,7 @@ MAIN_MENU MENU
     {
         MENUITEM "Load configuration", 0
         MENUITEM "Save configuration", 0
-		MENUITEM "Set autoloaded configuration", 0
+        MENUITEM "Set autoloaded configuration", 0
         MENUITEM SEPARATOR
         MENUITEM "Exit", 0
     }
@@ -52,6 +52,22 @@ MAIN_MENU MENU
 // Dialog resources
 //
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+DLG_CONFIGS DIALOG 0, 0, 320, 230
+STYLE DS_3DLOOK | DS_CENTER | DS_MODALFRAME | DS_SHELLFONT | WS_CAPTION | WS_VISIBLE | WS_POPUP | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "Ms Shell Dlg"
+{
+    LISTBOX         0, 7, 7, 235, 216, WS_TABSTOP | WS_VSCROLL | LBS_NOINTEGRALHEIGHT | LBS_SORT | LBS_NOTIFY, WS_EX_LEFT
+    PUSHBUTTON      "Modify", IDCANCEL, 250, 7, 62, 14, 0, WS_EX_LEFT
+    DEFPUSHBUTTON   "New", IDOK, 250, 24, 62, 14, 0, WS_EX_LEFT
+    PUSHBUTTON      "Delete", IDCANCEL, 250, 42, 62, 14, 0, WS_EX_LEFT
+    PUSHBUTTON      "Duplicate", IDCANCEL, 250, 59, 62, 14, 0, WS_EX_LEFT
+    PUSHBUTTON      "Copy to default", IDCANCEL, 250, 77, 62, 14, 0, WS_EX_LEFT
+}
+
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 DLG_MAIN DIALOG 0, 0, 250, 111
 STYLE DS_3DLOOK | DS_CENTER | DS_MODALFRAME | DS_SHELLFONT | WS_CAPTION | WS_VISIBLE | WS_POPUP | WS_SYSMENU
 EXSTYLE WS_EX_WINDOWEDGE
@@ -61,7 +77,7 @@ FONT 12, "Calibri"
     PUSHBUTTON      "Browse", 0, 206, 66, 29, 12, 0, WS_EX_LEFT
     PUSHBUTTON      "Browse", 0, 206, 45, 29, 12, 0, WS_EX_LEFT
     CONTROL         MSL_LOGO, 0, WC_STATIC, SS_BITMAP, 79, 5, 32, 27, WS_EX_LEFT
-    CTEXT           "MemSubLoader", 0, 116, 16, 51, 9, SS_CENTER, WS_EX_LEFT
+    CTEXT           "MemSubLoader", 0, 118, 16, 51, 9, SS_CENTER, WS_EX_LEFT
     GROUPBOX        "Path", 0, 12, 35, 225, 50, 0, WS_EX_LEFT
     RTEXT           "Game path", 0, 24, 47, 37, 9, SS_RIGHT, WS_EX_LEFT
     CONTROL         "Select a file...", 0, RICHEDIT_CLASS, WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 65, 45, 140, 12, WS_EX_LEFT
@@ -73,24 +89,70 @@ FONT 12, "Calibri"
 
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-DLG_CONFIG DIALOG 0, 0, 300, 136
+DLG_SETTINGS DIALOG 0, 0, 343, 248
 STYLE DS_3DLOOK | DS_CENTER | DS_MODALFRAME | DS_SHELLFONT | WS_CAPTION | WS_VISIBLE | WS_POPUP | WS_SYSMENU
 CAPTION "Dialog"
 FONT 8, "Ms Shell Dlg"
 {
-    COMBOBOX        0, 97, 57, 75, 30, CBS_DROPDOWN | CBS_HASSTRINGS, WS_EX_LEFT
-    RTEXT           "Alignment :", 0, 19, 59, 75, 9, SS_RIGHT, WS_EX_LEFT
-    PUSHBUTTON      "Apply", 0, 127, 115, 45, 14, 0, WS_EX_LEFT
-    LTEXT           "undefined", 0, 100, 22, 162, 9, SS_LEFT, WS_EX_LEFT
-    LTEXT           "undefined", 0, 100, 34, 162, 9, SS_LEFT, WS_EX_LEFT
-    LTEXT           "undefined", 0, 100, 44, 162, 9, SS_LEFT, WS_EX_LEFT
-    RTEXT           "Font style :", 0, 22, 44, 75, 9, SS_RIGHT, WS_EX_LEFT
-    RTEXT           "Font size :", 0, 22, 34, 75, 9, SS_RIGHT, WS_EX_LEFT
-    PUSHBUTTON      "Select Color", 0, 157, 90, 55, 14, 0, WS_EX_LEFT
-    PUSHBUTTON      "Select Font", 0, 92, 90, 55, 14, 0, WS_EX_LEFT
-    RTEXT           "Color :", 0, 17, 74, 75, 9, SS_RIGHT, WS_EX_LEFT
-    GROUPBOX        "Font settings", 0, 13, 7, 273, 100, 0, WS_EX_LEFT
-    RTEXT           "Font :", 0, 22, 22, 75, 9, SS_RIGHT, WS_EX_LEFT
+    GROUPBOX        "Font", 0, 7, 7, 180, 120, 0, WS_EX_LEFT
+    RTEXT           "Font :", 0, 14, 22, 40, 9, SS_RIGHT, WS_EX_LEFT
+    LTEXT           "undefined", 0, 57, 22, 125, 9, SS_LEFT, WS_EX_LEFT
+    RTEXT           "Font size :", 0, 14, 38, 40, 9, SS_RIGHT, WS_EX_LEFT
+    LTEXT           "undefined", 0, 57, 38, 125, 9, SS_LEFT, WS_EX_LEFT
+    RTEXT           "Font style :", 0, 14, 54, 40, 9, SS_RIGHT, WS_EX_LEFT
+    LTEXT           "undefined", 0, 57, 54, 125, 9, SS_LEFT, WS_EX_LEFT
+    RTEXT           "Font color :", 0, 14, 71, 40, 9, SS_RIGHT, WS_EX_LEFT
+    PUSHBUTTON      "Select", 0, 74, 69, 45, 14, 0, WS_EX_LEFT
+    RTEXT           "Color alpha :", 0, 14, 88, 40, 9, SS_RIGHT, WS_EX_LEFT
+    EDITTEXT        0, 57, 86, 115, 14, ES_AUTOHSCROLL | ES_NUMBER, WS_EX_LEFT
+    CONTROL         "", 0, UPDOWN_CLASS, UDS_ARROWKEYS, 173, 86, 11, 14, WS_EX_LEFT
+    PUSHBUTTON      "Select Font", 0, 74, 105, 45, 14, 0, WS_EX_LEFT
+    GROUPBOX        "Alignment", 0, 192, 7, 144, 50, 0, WS_EX_LEFT
+    RTEXT           "Horizontal alignment :", 0, 197, 22, 70, 9, SS_RIGHT, WS_EX_LEFT
+    COMBOBOX        0, 272, 21, 55, 30, CBS_DROPDOWN | CBS_HASSTRINGS, WS_EX_LEFT
+    RTEXT           "Vertical Alignment :", 0, 197, 37, 70, 9, SS_RIGHT, WS_EX_LEFT
+    COMBOBOX        0, 272, 36, 55, 30, CBS_DROPDOWN | CBS_HASSTRINGS, WS_EX_LEFT
+    GROUPBOX        "Outline", 0, 192, 57, 144, 70, 0, WS_EX_LEFT
+    RTEXT           "Outline width :", 0, 197, 72, 50, 9, SS_RIGHT, WS_EX_LEFT
+    EDITTEXT        0, 252, 70, 70, 14, ES_AUTOHSCROLL | ES_NUMBER, WS_EX_LEFT
+    CONTROL         "", 0, UPDOWN_CLASS, UDS_ARROWKEYS, 322, 70, 11, 14, WS_EX_LEFT
+    RTEXT           "Outline color :", 0, 196, 92, 50, 9, SS_RIGHT, WS_EX_LEFT
+    PUSHBUTTON      "Select", 0, 288, 90, 45, 14, 0, WS_EX_LEFT
+    RTEXT           "Color alpha :", 0, 202, 112, 40, 9, SS_RIGHT, WS_EX_LEFT
+    EDITTEXT        0, 252, 111, 70, 14, ES_AUTOHSCROLL | ES_NUMBER, WS_EX_LEFT
+    CONTROL         "", 0, UPDOWN_CLASS, UDS_ARROWKEYS, 322, 111, 11, 14, WS_EX_LEFT
+    GROUPBOX        "Shadows", 0, 7, 127, 143, 115, 0, WS_EX_LEFT
+    RTEXT           "Shadows width :", 0, 13, 142, 55, 9, SS_RIGHT, WS_EX_LEFT
+    EDITTEXT        0, 73, 140, 60, 14, ES_AUTOHSCROLL | ES_NUMBER, WS_EX_LEFT
+    CONTROL         "", 0, UPDOWN_CLASS, UDS_ARROWKEYS, 133, 140, 11, 14, WS_EX_LEFT
+    RTEXT           "Shadows color :", 0, 12, 162, 55, 9, SS_RIGHT, WS_EX_LEFT
+    PUSHBUTTON      "Select", 0, 99, 160, 45, 14, 0, WS_EX_LEFT
+    RTEXT           "Color alpha :", 0, 12, 180, 45, 9, SS_RIGHT, WS_EX_LEFT
+    EDITTEXT        0, 60, 179, 75, 14, ES_AUTOHSCROLL | ES_NUMBER, WS_EX_LEFT
+    CONTROL         "", 0, UPDOWN_CLASS, UDS_ARROWKEYS, 135, 179, 11, 14, WS_EX_LEFT
+    RTEXT           "X offset :", 0, 12, 196, 45, 9, SS_RIGHT, WS_EX_LEFT
+    EDITTEXT        0, 60, 194, 75, 14, ES_AUTOHSCROLL | ES_NUMBER, WS_EX_LEFT
+    CONTROL         "", 0, UPDOWN_CLASS, UDS_ARROWKEYS, 135, 194, 11, 14, WS_EX_LEFT
+    RTEXT           "Y offset :", 0, 12, 211, 45, 9, SS_RIGHT, WS_EX_LEFT
+    EDITTEXT        0, 60, 209, 75, 14, ES_AUTOHSCROLL | ES_NUMBER, WS_EX_LEFT
+    CONTROL         "", 0, UPDOWN_CLASS, UDS_ARROWKEYS, 135, 209, 11, 14, WS_EX_LEFT
+    AUTOCHECKBOX    "Diffuse shadows", 0, 47, 229, 68, 8, 0, WS_EX_LEFT
+    GROUPBOX        "Area", 0, 155, 127, 181, 65, 0, WS_EX_LEFT
+    RTEXT           "X Position :", 0, 160, 142, 40, 9, SS_RIGHT, WS_EX_LEFT
+    EDITTEXT        0, 204, 140, 35, 14, ES_AUTOHSCROLL | ES_NUMBER, WS_EX_LEFT
+    CONTROL         "", 0, UPDOWN_CLASS, UDS_ARROWKEYS, 239, 140, 11, 14, WS_EX_LEFT
+    RTEXT           "Y Position :", 0, 160, 157, 40, 9, SS_RIGHT, WS_EX_LEFT
+    EDITTEXT        0, 204, 155, 35, 14, ES_AUTOHSCROLL | ES_NUMBER, WS_EX_LEFT
+    CONTROL         "", 0, UPDOWN_CLASS, UDS_ARROWKEYS, 239, 155, 11, 14, WS_EX_LEFT
+    RTEXT           "Width :", 0, 250, 142, 30, 9, SS_RIGHT, WS_EX_LEFT
+    EDITTEXT        0, 284, 140, 35, 14, ES_AUTOHSCROLL | ES_NUMBER, WS_EX_LEFT
+    CONTROL         "", 0, UPDOWN_CLASS, UDS_ARROWKEYS, 319, 140, 11, 14, WS_EX_LEFT
+    RTEXT           "Height :", 0, 250, 157, 30, 9, SS_RIGHT, WS_EX_LEFT
+    EDITTEXT        0, 284, 155, 35, 14, ES_AUTOHSCROLL | ES_NUMBER, WS_EX_LEFT
+    CONTROL         "", 0, UPDOWN_CLASS, UDS_ARROWKEYS, 319, 155, 11, 14, WS_EX_LEFT
+    AUTOCHECKBOX    "Area preview", 0, 217, 177, 55, 8, 0, WS_EX_LEFT
+    PUSHBUTTON      "Save", 0, 187, 212, 55, 14, 0, WS_EX_LEFT
+    PUSHBUTTON      "Cancel", 0, 250, 212, 55, 14, 0, WS_EX_LEFT
 }
 
 

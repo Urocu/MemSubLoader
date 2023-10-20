@@ -20,7 +20,8 @@ HWND subtitlesPathValueLabel = NULL;
 HWND fontValueLabel = NULL;
 HWND fontSizeValueLabel = NULL;
 HWND fontStyleValueLabel = NULL;
-HWND alignmentComboBox = NULL;
+HWND alignmentHorizontalComboBox = NULL;
+HWND alignmentVerticalComboBox = NULL;
 
 // Resources
 HFONT hFont = NULL;
@@ -31,6 +32,27 @@ HBITMAP logoBitmap = NULL;
 // GDI+
 Gdiplus::GdiplusStartupInput gdiplusStartupInput = NULL;
 ULONG_PTR gdiplusToken = 0UL;
+
+// Old config values
+
+// Font
+int oldFontColorAlpha = 0;
+
+// Outline
+int oldOutlineWidth = 0;
+int oldOutlineColorAlpha;
+
+// Shadows
+int oldShadowsWidth = 0;
+int oldShadowsXOffset = 0;
+int oldShadowsYOffset = 0;
+int oldShadowsColorAlpha;
+
+// Area
+int oldAreaXPosition = 0;
+int oldAreaYPosition = 0;
+int oldAreaWidth = 0;
+int oldAreaHeight = 0;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {

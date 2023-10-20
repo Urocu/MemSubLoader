@@ -22,7 +22,7 @@ void gameStart(PROCESS_INFORMATION pi)
 	}
 	subfile.close();
 
-	bool is;
+	bool is = false;
 	const std::chrono::milliseconds frame_duration(1000 / 60);
 	while (WaitForSingleObject( pi.hProcess, 0 ) == WAIT_TIMEOUT)
 	{

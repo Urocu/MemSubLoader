@@ -10,34 +10,90 @@
 # include <fstream>
 # include <string>
 # include <vector>
+# include <map>
 # include <stdio.h>
 # include <chrono>
 # include <thread>
 # include <sstream>
 # include <gdiplus.h>
+# include "OutlineText.h"
 # include "resource.h"
+
+// Main controls
 # define GAME_BUTTON 1
 # define SUBTITLES_BUTTON 2
 # define START_BUTTON 3
 # define GAME_FIELD 4
 # define SUBTITLES_FIELD 5
+
+// Main menu controls
 # define MENU_LOAD 6
 # define MENU_SAVE 7
 # define MENU_SETAUTOLOAD 8
 # define MENU_EXIT 9
 # define MENU_SETTINGS 10
-# define FONT_NAME_LABEL 11
-# define FONT_SIZE_LABEL 12
-# define FONT_BUTTON 13
-# define COLOR_BUTTON 14
-# define ALIGNMENT_COMBOBOX 15
-# define APPLY_BUTTON 16
+
+// Settings controls
+# define FONT_COLOR_BUTTON 11
+# define FONT_BUTTON 12
+# define FONT_COLOR_ALPHA_EDIT 13
+# define FONT_COLOR_ALPHA_UPDOWN 14
+# define ALIGNMENT_HORIZONTAL_COMBOBOX 15
+# define ALIGNMENT_VERTICAL_COMBOBOX 16
+# define OUTLINE_WIDTH_EDIT 17
+# define OUTLINE_WIDTH_UPDOWN 18
+# define OUTLINE_COLOR_BUTTON 19
+# define OUTLINE_COLOR_ALPHA_EDIT 20
+# define OUTLINE_COLOR_ALPHA_UPDOWN 21
+# define SHADOWS_COLOR_BUTTON 22
+# define SHADOWS_COLOR_ALPHA_EDIT 23
+# define SHADOWS_COLOR_ALPHA_UPDOWN 24
+# define SHADOWS_WIDTH_EDIT 25
+# define SHADOWS_WIDTH_UPDOWN 26
+# define SHADOWS_XOFFSET_EDIT 27
+# define SHADOWS_XOFFSET_UPDOWN 28
+# define SHADOWS_YOFFSET_EDIT 29
+# define SHADOWS_YOFFSET_UPDOWN 30
+# define SHADOWS_DIFFUSE_CHECKBOX 31
+# define AREA_XPOS_EDIT 32
+# define AREA_XPOS_UPDOWN 33
+# define AREA_YPOS_EDIT 34
+# define AREA_YPOS_UPDOWN 35
+# define AREA_WIDTH_EDIT 36
+# define AREA_WIDTH_UPDOWN 37
+# define AREA_HEIGHT_EDIT 38
+# define AREA_HEIGHT_UPDOWN 39
+# define AREA_PREVIEW_CHECKBOX 40
+
+// Save & Cancel controls
+# define SAVE_BUTTON 41
+# define CANCEL_BUTTON 42
+
 # define SCREEN_WIDTH 640
 # define SCREEN_HEIGHT 480
-# define SUBTITLES_XPOS 0
-# define SUBTITLES_YPOS 380
-# define SUBTITLES_WIDTH 640
-# define SUBTITLES_HEIGHT 100
+
+# define FONT_ALPHA_MIN 0
+# define FONT_ALPHA_MAX 255
+# define OUTLINE_ALPHA_MIN 0
+# define OUTLINE_ALPHA_MAX 255
+# define SHADOWS_ALPHA_MIN 0
+# define SHADOWS_ALPHA_MAX 255
+# define OUTLINE_WIDTH_MIN 0
+# define OUTLINE_WIDTH_MAX 128
+# define SHADOWS_WIDTH_MIN 0
+# define SHADOWS_WIDTH_MAX 128
+# define SHADOWS_XOFFSET_MIN -640
+# define SHADOWS_XOFFSET_MAX 640
+# define SHADOWS_YOFFSET_MIN -480
+# define SHADOWS_YOFFSET_MAX 480
+# define AREA_XPOS_MIN 0
+# define AREA_XPOS_MAX 640
+# define AREA_YPOS_MIN 0
+# define AREA_YPOS_MAX 480
+# define AREA_WIDTH_MIN 0
+# define AREA_WIDTH_MAX 640
+# define AREA_HEIGHT_MIN 0
+# define AREA_HEIGHT_MAX 480
 
 using namespace Gdiplus;
 
@@ -50,15 +106,42 @@ enum TextAlignment {
 struct Config {
 	wchar_t gamePath[MAX_PATH];
 	wchar_t subtitlesPath[MAX_PATH];
-	COLORREF subtitlesColor;
+	
+	// Font
+	COLORREF fontColor;
 	LOGFONT subtitlesFont;
-	TextAlignment alignment;
+	int fontColorAlpha;
+
+	// Alignment
+	TextAlignment horizontalAlignment;
+	TextAlignment verticalAlignment;
+
+	// Outline
+	int outlineWidth;
+	COLORREF outlineColor;
+	int outlineColorAlpha;
+
+	// Shadows
+	int shadowsWidth;
+	COLORREF shadowsColor;
+	int shadowsXOffset;
+	int shadowsYOffset;
+	int shadowsColorAlpha;
+	bool shadowsDiffuse;
+
+	// Area
+	int areaXPosition;
+	int areaYPosition;
+	int areaWidth;
+	int areaHeight;
+	bool areaPreview;
 };
 
 // Global variables definition
 
 // Global resources
 extern Config config;
+extern std::map<std::wstring, Config> configs;
 extern std::wstring textToDraw;
 
 // Windows
@@ -70,12 +153,12 @@ extern HWND settingsHWND;
 extern HWND gamePathValueLabel;
 extern HWND subtitlesPathValueLabel;
 
-// Settings window handles & resources
+// Settings window handles
 extern HWND fontValueLabel;
 extern HWND fontSizeValueLabel;
 extern HWND fontStyleValueLabel;
-extern HWND alignmentComboBox;
-
+extern HWND alignmentHorizontalComboBox;
+extern HWND alignmentVerticalComboBox;
 
 // Resources
 extern HFONT hFont;
@@ -86,6 +169,27 @@ extern HBITMAP logoBitmap;
 // GDI+
 extern Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 extern ULONG_PTR gdiplusToken;
+
+// Old config values
+
+// Font
+extern int oldFontColorAlpha;
+
+// Outline
+extern int oldOutlineWidth;
+extern int oldOutlineColorAlpha;
+
+// Shadows
+extern int oldShadowsWidth;
+extern int oldShadowsXOffset;
+extern int oldShadowsYOffset;
+extern int oldShadowsColorAlpha;
+
+// Area
+extern int oldAreaXPosition;
+extern int oldAreaYPosition;
+extern int oldAreaWidth;
+extern int oldAreaHeight;
 
 class Subtitles
 {
@@ -125,6 +229,8 @@ LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 
 int createSubtitlesWindow(void);
 LRESULT CALLBACK subtitlesWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+void handleUpdown(HWND hwnd, int &value, int &oldValue, const wchar_t *name, int id, int min, int max, LPARAM lParam);
+void handleEdit(HWND hwnd, int &value, int &oldValue, const wchar_t *name, int id, int min, int max, WPARAM wParam);
 
 // Utilities
 void findAddress(uintptr_t &address, int offset, HANDLE hProcess);
@@ -133,12 +239,14 @@ bool openFileExplorer(HWND hwnd, wchar_t *filePath, int filePathSize, int button
 bool openFontDialog(HWND hwnd, LOGFONT &lf, HFONT &subtitlesFont);
 bool openColorDialog(HWND hwnd, COLORREF &subtitlesColor);
 
+void ShowBalloonTooltip(HWND hwnd, const std::wstring& description, int durationMilliseconds);
+
 bool saveConfig(const Config &config, wchar_t *filename);
 bool loadConfig(Config &config, const wchar_t *filename);
 bool setAutoloadConfigPath(const wchar_t *path);
 bool getAutoloadConfigPath(wchar_t *path);
 bool getAutoloadPath(wchar_t *executablePath);
-Gdiplus::StringAlignment getConfigAlignment(void);
+Gdiplus::StringAlignment getConfigAlignment(TextAlignment alignment);
 
 void cleanup(void);
 
