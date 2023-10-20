@@ -31,6 +31,11 @@ LRESULT CALLBACK subtitlesWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 			graphics.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic);
 			graphics.Clear(Gdiplus::Color(0, 0, 0, 0));
 
+			if (config.areaPreview)
+			{
+				Gdiplus::Pen outlinePen(Gdiplus::Color(255, 0, 0), 4);
+				graphics.DrawRectangle(&outlinePen, rect);
+			}
 			text.TextOutline(fontColor, outlineColor, config.outlineWidth);
 			text.EnableShadow(true);
 			if (config.shadowsDiffuse)
@@ -57,7 +62,7 @@ LRESULT CALLBACK subtitlesWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 			POINT ptSrc = { 0, 0 };
 			UpdateLayeredWindow(hwnd, hdc, &ptLocation, &szWnd, memdc, &ptSrc, 0, &blend, ULW_ALPHA);
 			SelectObject(hdc, original);
-	
+
 			DeleteObject(bmp);
 			DeleteObject(memdc);
 		}
