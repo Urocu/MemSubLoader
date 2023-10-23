@@ -293,6 +293,7 @@ bool loadConfig(const wchar_t *filename)
 	try {
 		inputFile >> root; // Parse the JSON data from the file
 	} catch (const std::exception &e) {
+		inputFile.close();
 		return true;
 	}
 
@@ -313,6 +314,7 @@ bool loadConfig(const wchar_t *filename)
 			gamePath[MAX_PATH - 1] = L'\0';
 		}
 		else {
+			inputFile.close();
 			return true;
 		}
 	}
@@ -325,6 +327,7 @@ bool loadConfig(const wchar_t *filename)
 			subtitlesPath[MAX_PATH - 1] = L'\0';
 		}
 		else {
+			inputFile.close();
 			return true;
 		}
 	}
