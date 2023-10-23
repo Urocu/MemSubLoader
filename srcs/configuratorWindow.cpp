@@ -36,6 +36,7 @@ LRESULT CALLBACK ConfiguratorWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPA
 								MessageBox(hwnd, L"Error: Failed to initialize settings window", L"Window initialization", MB_ICONERROR);
 								break;
 							}
+							livePreview = true;
 						}
 						else
 						{
@@ -49,6 +50,7 @@ LRESULT CALLBACK ConfiguratorWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPA
 									MessageBox(hwnd, L"Error: Failed to initialize settings window", L"Window initialization", MB_ICONERROR);
 									break;
 								}
+								livePreview = true;
 							}
 						}
 						updateSettingsWindowAttributes(settingsHWND);
@@ -187,9 +189,9 @@ LRESULT CALLBACK ConfiguratorWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPA
 						std::map<wchar_t *, Config, WStringCompare>::iterator iter2 = getConfig(buffer);
 						if (iter2 != configs.end())
 						{
-							wchar_t *defaultIdentifier = iter->second.identifier;
-							iter->second = iter2->second;
-							iter->second.identifier = defaultIdentifier;
+							wchar_t *defaultIdentifier = iter2->second.identifier;
+							iter2->second = iter->second;
+							iter2->second.identifier = defaultIdentifier;
 
 							wchar_t message[256] = {};
 							wsprintf(message, L"Configuration '%s' successfully copied to default", selectedIdentifier);

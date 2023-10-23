@@ -10,6 +10,7 @@ Config tmpConfig = {};
 wchar_t gamePath[MAX_PATH] = {};
 wchar_t subtitlesPath[MAX_PATH] = {};
 HINSTANCE hInst = NULL;
+bool livePreview = false;
 
 // Windows
 HWND mainHWND = NULL;

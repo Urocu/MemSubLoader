@@ -146,6 +146,7 @@ LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 				case SAVE_BUTTON:
 				{
 					configs[tmpConfig.identifier] = tmpConfig;
+					livePreview = false;
 					DestroyWindow(hwnd);
 				}
 				break;
@@ -155,11 +156,13 @@ LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 					int result = MessageBox(hwnd, L"Are you sure you want to continue ? You may lost unsaved changes", L"Cancel editing", MB_OKCANCEL | MB_ICONWARNING);
 					if (result == IDOK)
 					{
+						livePreview = false;
 						DestroyWindow(settingsHWND);
 					}
 				}
 				break;
 			}
+			InvalidateRect(subtitlesHWND, NULL, FALSE);
 			break;
 		}
 
@@ -242,6 +245,7 @@ LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 				}
 				break;
 			}
+			InvalidateRect(subtitlesHWND, NULL, FALSE);
 		}
 
 		case WM_PAINT:
@@ -281,6 +285,7 @@ LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 			int result = MessageBox(hwnd, L"Are you sure you want to continue ? You may lost unsaved changes", L"Cancel editing", MB_OKCANCEL | MB_ICONWARNING);
 			if (result == IDOK)
 			{
+				livePreview = false;
 				DestroyWindow(settingsHWND);
 			}
 			return true;
@@ -627,7 +632,7 @@ void handleUpdown(HWND hwnd, int &value, int &oldValue, const wchar_t *name, int
 	if (newValue > max)
 	{
 		wsprintf(title, L"%s out of range", name);
-		wsprintf(message, L"%s cannot be superior to %i pixels", name, max);
+		wsprintf(message, L"%s cannot be superior to %i", name, max);
 		MessageBox(NULL, message, title, MB_ICONWARNING);
 		int cursorPosition = SendDlgItemMessage(hwnd, id, EM_GETSEL, 0, 0);
     	value = oldValue;
@@ -637,7 +642,7 @@ void handleUpdown(HWND hwnd, int &value, int &oldValue, const wchar_t *name, int
 	else if (newValue < min)
 	{
 		wsprintf(title, L"%s out of range", name);
-		wsprintf(message, L"%s cannot be inferior to %i pixels", name, min);
+		wsprintf(message, L"%s cannot be inferior to %i", name, min);
 		MessageBox(NULL, message, title, MB_ICONWARNING);
 		int cursorPosition = SendDlgItemMessage(hwnd, id, EM_GETSEL, 0, 0);
     	value = oldValue;
@@ -668,7 +673,7 @@ void handleEdit(HWND hwnd, int &value, int &oldValue, const wchar_t *name, int i
 		if (newValue > max)
 		{
 			wsprintf(title, L"%s out of range", name);
-			wsprintf(message, L"%s cannot be superior to %i pixels", name, max);
+			wsprintf(message, L"%s cannot be superior to %i", name, max);
 			int cursorPosition = SendDlgItemMessage(hwnd, id, EM_GETSEL, 0, 0);
         	value = oldValue;
 			SetDlgItemInt(settingsHWND, id, value, TRUE);
@@ -677,7 +682,7 @@ void handleEdit(HWND hwnd, int &value, int &oldValue, const wchar_t *name, int i
 		else if (newValue < min)
 		{
 			wsprintf(title, L"%s out of range", name);
-			wsprintf(message, L"%s cannot be inferior to %i pixels", name, min);
+			wsprintf(message, L"%s cannot be inferior to %i", name, min);
 			int cursorPosition = SendDlgItemMessage(hwnd, id, EM_GETSEL, 0, 0);
         	value = oldValue;
 			SetDlgItemInt(settingsHWND, id, value, TRUE);

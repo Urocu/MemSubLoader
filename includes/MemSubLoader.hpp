@@ -162,6 +162,7 @@ extern Config tmpConfig;
 extern wchar_t gamePath[MAX_PATH];
 extern wchar_t subtitlesPath[MAX_PATH];
 extern HINSTANCE hInst;
+extern bool livePreview;
 
 // Windows
 extern HWND mainHWND;

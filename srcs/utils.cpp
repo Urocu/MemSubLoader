@@ -232,9 +232,9 @@ bool saveConfig(wchar_t *filename)
 
 		configObject["fontHeight"] = Json::Value(static_cast<Json::Int>(config.subtitlesFont.lfHeight));
 		configObject["fontWeight"] = Json::Value(static_cast<Json::Int>(config.subtitlesFont.lfWeight));
-		configObject["fontItalic"] = config.subtitlesFont.lfItalic;
-		configObject["fontUnderline"] = config.subtitlesFont.lfUnderline;
-		configObject["fontStrikeout"] = config.subtitlesFont.lfStrikeOut;
+		configObject["fontItalic"] = static_cast<bool>(config.subtitlesFont.lfItalic);
+		configObject["fontUnderline"] = static_cast<bool>(config.subtitlesFont.lfUnderline);
+		configObject["fontStrikeout"] = static_cast<bool>(config.subtitlesFont.lfStrikeOut);
 
 		// Alignment
 		configObject["horizontalAlignment"] = config.horizontalAlignment;

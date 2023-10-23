@@ -7,25 +7,41 @@ LRESULT CALLBACK subtitlesWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 	{
 		case WM_PAINT:
 		{
+			Config config = {};
+			if (livePreview)
+			{
+				config = tmpConfig;
+				textToDraw = L"This is an example text to test subtitles configuration.";
+			}
+			else
+			{
+				wchar_t identifier[] = L"DEFAULT"; // Replace here with identifier from current subtitles
+				std::map<wchar_t *, Config>::iterator iter = getConfig(identifier);
+				if (iter != configs.end())
+				{
+					config = iter->second;
+				}
+			}
+
 			// Initialization
-			Gdiplus::Bitmap subtitlesBitmap(tmpConfig.areaWidth, tmpConfig.areaHeight, PixelFormat32bppARGB);
+			Gdiplus::Bitmap subtitlesBitmap(config.areaWidth, config.areaHeight, PixelFormat32bppARGB);
 			HBITMAP bmp;
 			Gdiplus::Graphics graphics(&subtitlesBitmap);
 			HDC hdc = GetDC(hwnd);
 
-			Gdiplus::Rect rect(0, 0, tmpConfig.areaWidth, tmpConfig.areaHeight);
-			Gdiplus::Font font(hdc, &tmpConfig.subtitlesFont);
+			Gdiplus::Rect rect(0, 0, config.areaWidth, config.areaHeight);
+			Gdiplus::Font font(hdc, &config.subtitlesFont);
 			Gdiplus::FontFamily fontFamily;
 			font.GetFamily(&fontFamily);
 			Gdiplus::FontStyle fontStyle = static_cast<Gdiplus::FontStyle>(font.GetStyle());
 			int fontSize = font.GetSize();
 			Gdiplus::StringFormat format;
-			format.SetAlignment(getConfigAlignment(tmpConfig.horizontalAlignment));
-			format.SetLineAlignment(getConfigAlignment(tmpConfig.verticalAlignment));
+			format.SetAlignment(getConfigAlignment(config.horizontalAlignment));
+			format.SetLineAlignment(getConfigAlignment(config.verticalAlignment));
 
-			Gdiplus::Color fontColor(tmpConfig.fontColorAlpha, GetRValue(tmpConfig.fontColor), GetGValue(tmpConfig.fontColor), GetBValue(tmpConfig.fontColor));
-			Gdiplus::Color outlineColor(tmpConfig.outlineColorAlpha, GetRValue(tmpConfig.outlineColor), GetGValue(tmpConfig.outlineColor), GetBValue(tmpConfig.outlineColor));
-			Gdiplus::Color shadowsColor(tmpConfig.shadowsColorAlpha, GetRValue(tmpConfig.shadowsColor), GetGValue(tmpConfig.shadowsColor), GetBValue(tmpConfig.shadowsColor));
+			Gdiplus::Color fontColor(config.fontColorAlpha, GetRValue(config.fontColor), GetGValue(config.fontColor), GetBValue(config.fontColor));
+			Gdiplus::Color outlineColor(config.outlineColorAlpha, GetRValue(config.outlineColor), GetGValue(config.outlineColor), GetBValue(config.outlineColor));
+			Gdiplus::Color shadowsColor(config.shadowsColorAlpha, GetRValue(config.shadowsColor), GetGValue(config.shadowsColor), GetBValue(config.shadowsColor));
 			TextDesigner::OutlineText text;
 
 			// Rendering settings & clearing
@@ -35,16 +51,16 @@ LRESULT CALLBACK subtitlesWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 			graphics.Clear(Gdiplus::Color(0, 0, 0, 0));
 
 			// Enable/disable area preview
-			if (tmpConfig.areaPreview)
+			if (config.areaPreview)
 			{
 				Gdiplus::Pen outlinePen(Gdiplus::Color(255, 0, 0), 4);
 				graphics.DrawRectangle(&outlinePen, rect);
 			}
 
 			// Enable/diable outline
-			if (tmpConfig.outlineWidth > 0)
+			if (config.outlineWidth > 0)
 			{
-				text.TextOutline(fontColor, outlineColor, tmpConfig.outlineWidth);
+				text.TextOutline(fontColor, outlineColor, config.outlineWidth);
 			}
 			else
 			{
@@ -52,17 +68,17 @@ LRESULT CALLBACK subtitlesWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 			}
 			
 			// Enable/disable shadows
-			if (tmpConfig.shadowsWidth > 0)
+			if (config.shadowsWidth > 0)
 			{
 				text.EnableShadow(true);
 
-				if (tmpConfig.shadowsDiffuse)
+				if (config.shadowsDiffuse)
 				{
-					text.DiffusedShadow(shadowsColor, tmpConfig.shadowsWidth, Point(tmpConfig.shadowsXOffset, tmpConfig.shadowsYOffset));
+					text.DiffusedShadow(shadowsColor, config.shadowsWidth, Point(config.shadowsXOffset, config.shadowsYOffset));
 				}
 				else
 				{
-					text.Shadow(shadowsColor, tmpConfig.shadowsWidth, Point(tmpConfig.shadowsXOffset, tmpConfig.shadowsYOffset));
+					text.Shadow(shadowsColor, config.shadowsWidth, Point(config.shadowsXOffset, config.shadowsYOffset));
 				}
 			}
 
@@ -77,8 +93,8 @@ LRESULT CALLBACK subtitlesWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 			blend.BlendOp = AC_SRC_OVER;
 			blend.SourceConstantAlpha = 255;
 			blend.AlphaFormat = AC_SRC_ALPHA;
-			POINT ptLocation = { tmpConfig.areaXPosition, tmpConfig.areaYPosition };
-			SIZE szWnd = { tmpConfig.areaWidth, tmpConfig.areaHeight };
+			POINT ptLocation = { config.areaXPosition, config.areaYPosition };
+			SIZE szWnd = { config.areaWidth, config.areaHeight };
 			POINT ptSrc = { 0, 0 };
 
 			// Update subtitles window
