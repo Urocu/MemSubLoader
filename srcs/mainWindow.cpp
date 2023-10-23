@@ -19,21 +19,21 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 			{
 				case GAME_BUTTON:
 				{
-					if (openFileExplorer(hwnd, config.gamePath, MAX_PATH, LOWORD(wParam)))
-						SetWindowText(gamePathValueLabel, config.gamePath);
+					if (openFileExplorer(hwnd, gamePath, MAX_PATH, LOWORD(wParam)))
+						SetWindowText(gamePathValueLabel, gamePath);
 				}
 				break;
 
 				case SUBTITLES_BUTTON:
 				{
-					if (openFileExplorer(hwnd, config.subtitlesPath, MAX_PATH, LOWORD(wParam)))
-						SetWindowText(subtitlesPathValueLabel, config.subtitlesPath);
+					if (openFileExplorer(hwnd, subtitlesPath, MAX_PATH, LOWORD(wParam)))
+						SetWindowText(subtitlesPathValueLabel, subtitlesPath);
 				}
 				break;
 
 				case START_BUTTON: // When both game and file was selected
 				{
-					if (config.gamePath[0] != L'\0' && config.subtitlesPath[0] != L'\0')
+					if (gamePath[0] != L'\0' && subtitlesPath[0] != L'\0')
 					{
 						STARTUPINFO si;
 						PROCESS_INFORMATION pi;
@@ -43,7 +43,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 						ZeroMemory(&pi, sizeof(pi));
 
 						// Opens the game
-						CreateProcess(config.gamePath, NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
+						CreateProcess(gamePath, NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
 						WaitForInputIdle(pi.hProcess, INFINITE);
 
 						if (createSubtitlesWindow())
@@ -68,19 +68,18 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 
 					if (openFileExplorer(hwnd, selectedFile, MAX_PATH, MENU_LOAD))
 					{
-						Config tmp = config;
+						std::map<wchar_t *, Config, WStringCompare> tmp = configs;
 
-						if (loadConfig(config, selectedFile))
+						if (!loadConfig(selectedFile))
 						{
 							InvalidateRect(hwnd, NULL, TRUE);
-							updateSubtitlesSettingsAttributes(hwnd, config.subtitlesFont);
 							updateMainAttributes(hwnd);
 							wsprintf(message, L"Configuration loaded successfully :\n%s", selectedFile);
 							MessageBox(hwnd, message, L"Configuration loading", MB_ICONINFORMATION);
 						}
 						else
 						{
-							config = tmp;
+							configs = tmp;
 							wsprintf(message, L"Failed to load configuration :\n%s", selectedFile);
 							MessageBox(hwnd, message, L"Configuration loading", MB_ICONERROR);
 						}
@@ -95,7 +94,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 
 					if (openFileExplorer(hwnd, selectedFile, MAX_PATH, MENU_SAVE))
 					{
-						if (saveConfig(config, selectedFile))
+						if (!saveConfig(selectedFile))
 						{
 							wsprintf(message, L"Configuration saved successfully :\n%s", selectedFile);
 							MessageBox(hwnd, message, L"Configuration saving", MB_ICONINFORMATION);
@@ -137,15 +136,15 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 
 				case MENU_SETTINGS:
 				{
-					if (!IsWindow(settingsHWND))
+					if (!IsWindow(configuratorHWND))
 					{
-						if (createSettingsWindow(hwnd))
+						if (createConfiguratorWindow(hwnd))
 						{
-							MessageBox(hwnd, L"Error: Failed to initialize settings window", L"Window initialization", MB_ICONERROR);
+							MessageBox(hwnd, L"Error: Failed to initialize configurator window", L"Window initialization", MB_ICONERROR);
 							break;
 						}
 					}
-					ShowWindow(settingsHWND, SW_SHOW);
+					ShowWindow(configuratorHWND, SW_SHOW);
 				}
 				break;
 			}
@@ -183,13 +182,13 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 // Update paths text
 void updateMainAttributes(HWND hwnd)
 {
-	if (config.gamePath[0] != L'\0')
+	if (gamePath[0] != L'\0')
 	{
-		SetWindowText(gamePathValueLabel, config.gamePath);
+		SetWindowText(gamePathValueLabel, gamePath);
 	}
-	if (config.subtitlesPath[0] != L'\0')
+	if (subtitlesPath[0] != L'\0')
 	{
-		SetWindowText(subtitlesPathValueLabel, config.subtitlesPath);
+		SetWindowText(subtitlesPathValueLabel, subtitlesPath);
 	}
 }
 

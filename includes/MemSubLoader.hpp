@@ -4,7 +4,9 @@
 # define UNICODE
 #endif
 # define _WIN32_WINNT 0x0501
+# define _WIN32_IE 0x0300
 # include <windows.h>
+# include <commctrl.h>
 # include <iostream>
 # include <shlwapi.h>
 # include <fstream>
@@ -17,6 +19,8 @@
 # include <sstream>
 # include <gdiplus.h>
 # include "OutlineText.h"
+# include "json.h"
+# include "Win32InputBox.h"
 # include "resource.h"
 
 // Main controls
@@ -64,6 +68,11 @@
 # define AREA_HEIGHT_EDIT 38
 # define AREA_HEIGHT_UPDOWN 39
 # define AREA_PREVIEW_CHECKBOX 40
+# define CONFIGURATOR_EDIT_BUTTON 41
+# define CONFIGURATOR_NEW_BUTTON 42
+# define CONFIGURATOR_DELETE_BUTTON 43
+# define CONFIGURATOR_DUPLICATE_BUTTON 44
+# define CONFIGURATOR_TODEFAULT_BUTTON 45
 
 // Save & Cancel controls
 # define SAVE_BUTTON 41
@@ -104,9 +113,8 @@ enum TextAlignment {
 };
 
 struct Config {
-	wchar_t gamePath[MAX_PATH];
-	wchar_t subtitlesPath[MAX_PATH];
-	
+	wchar_t *identifier;
+
 	// Font
 	COLORREF fontColor;
 	LOGFONT subtitlesFont;
@@ -137,17 +145,29 @@ struct Config {
 	bool areaPreview;
 };
 
+struct WStringCompare
+{
+	bool operator()(const wchar_t* str1, const wchar_t* str2) const
+	{
+		return wcscmp(str1, str2) < 0;
+	}
+};
+
 // Global variables definition
 
 // Global resources
-extern Config config;
-extern std::map<std::wstring, Config> configs;
+extern std::map<wchar_t *, Config, WStringCompare> configs;
 extern std::wstring textToDraw;
+extern Config tmpConfig;
+extern wchar_t gamePath[MAX_PATH];
+extern wchar_t subtitlesPath[MAX_PATH];
+extern HINSTANCE hInst;
 
 // Windows
 extern HWND mainHWND;
 extern HWND subtitlesHWND;
 extern HWND settingsHWND;
+extern HWND configuratorHWND;
 
 // Main window handles
 extern HWND gamePathValueLabel;
@@ -159,6 +179,9 @@ extern HWND fontSizeValueLabel;
 extern HWND fontStyleValueLabel;
 extern HWND alignmentHorizontalComboBox;
 extern HWND alignmentVerticalComboBox;
+
+// Configurator window handles
+extern HWND configList;
 
 // Resources
 extern HFONT hFont;
@@ -194,25 +217,25 @@ extern int oldAreaHeight;
 class Subtitles
 {
 	private:
-	    uintptr_t bAddress_audio;
-	    std::vector <int> offset_audio;
-	    uintptr_t bAddress_play;
-	    std::vector <int> offset_play;
-	    void findAddress(uintptr_t &address, int offset, HANDLE hProcess);
+		uintptr_t bAddress_audio;
+		std::vector <int> offset_audio;
+		uintptr_t bAddress_play;
+		std::vector <int> offset_play;
+		void findAddress(uintptr_t &address, int offset, HANDLE hProcess);
 
 	public:
-	    uintptr_t address_audio;
-	    uintptr_t address_play;
-	    int AudioID;
-	    int lastAudioID;
-	    bool is_playing;
-	    std::vector <int> ID;
-	    std::vector <std::wstring> Text;
+		uintptr_t address_audio;
+		uintptr_t address_play;
+		int AudioID;
+		int lastAudioID;
+		bool is_playing;
+		std::vector <int> ID;
+		std::vector <std::wstring> Text;
 
-	    void search_memory(HANDLE hProcess);
-	    bool check_audio(HANDLE hProcess);
-	    void file_memory(std::wifstream& file);
-	    void file_text(std::wifstream& file);
+		void search_memory(HANDLE hProcess);
+		bool check_audio(HANDLE hProcess);
+		void file_memory(std::wifstream& file);
+		void file_text(std::wifstream& file);
 };
 
 // Main
@@ -224,7 +247,7 @@ void updateMainAttributes(HWND hwnd);
 LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 int createSettingsWindow(HWND parent);
-void updateSubtitlesSettingsAttributes(HWND hwnd, LOGFONT &lf);
+void updateSettingsWindowAttributes(HWND hwnd);
 LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 int createSubtitlesWindow(void);
@@ -232,21 +255,27 @@ LRESULT CALLBACK subtitlesWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 void handleUpdown(HWND hwnd, int &value, int &oldValue, const wchar_t *name, int id, int min, int max, LPARAM lParam);
 void handleEdit(HWND hwnd, int &value, int &oldValue, const wchar_t *name, int id, int min, int max, WPARAM wParam);
 
+int createConfiguratorWindow(HWND parent);
+void updateConfiguratorWindowAttributes();
+LRESULT CALLBACK ConfiguratorWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
 // Utilities
 void findAddress(uintptr_t &address, int offset, HANDLE hProcess);
 
 bool openFileExplorer(HWND hwnd, wchar_t *filePath, int filePathSize, int button);
-bool openFontDialog(HWND hwnd, LOGFONT &lf, HFONT &subtitlesFont);
+bool openFontDialog(HWND hwnd, LOGFONT &lf, HFONT &subtitlesFont, COLORREF &subtitlesColor);
 bool openColorDialog(HWND hwnd, COLORREF &subtitlesColor);
 
 void ShowBalloonTooltip(HWND hwnd, const std::wstring& description, int durationMilliseconds);
 
-bool saveConfig(const Config &config, wchar_t *filename);
-bool loadConfig(Config &config, const wchar_t *filename);
+bool saveConfig(wchar_t *filename);
+bool loadConfig(const wchar_t *filename);
 bool setAutoloadConfigPath(const wchar_t *path);
 bool getAutoloadConfigPath(wchar_t *path);
 bool getAutoloadPath(wchar_t *executablePath);
 Gdiplus::StringAlignment getConfigAlignment(TextAlignment alignment);
+std::map<wchar_t *, Config, WStringCompare>::iterator getConfig(wchar_t * identifier);
+wchar_t *getSelectedIdentifier(void);
 
 void cleanup(void);
 

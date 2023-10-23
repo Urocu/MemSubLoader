@@ -54,6 +54,12 @@
 		"sstream": "cpp",
 		"stop_token": "cpp",
 		"thread": "cpp",
-		"map": "cpp"
+		"map": "cpp",
+		"cstring": "cpp",
+		"set": "cpp",
+		"iomanip": "cpp",
+		"codecvt": "cpp",
+		"list": "cpp",
+		"condition_variable": "cpp"
 	}
 }

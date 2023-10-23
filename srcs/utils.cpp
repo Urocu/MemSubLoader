@@ -117,13 +117,13 @@ bool openFileExplorer(HWND hwnd, wchar_t *filePath, int filePathSize, int button
 
 		case MENU_LOAD:
 		{
-			ofn.lpstrFilter = L"Configuration Files (*.dat)\0*.dat\0All Files (*.*)\0*.*\0";
+			ofn.lpstrFilter = L"Configuration Files (*.json)\0*.json\0All Files (*.*)\0*.*\0";
 		}
 		break;
 
 		case MENU_SAVE:
 		{
-			ofn.lpstrFilter = L"Configuration Files (*.dat)\0*.dat\0All Files (*.*)\0*.*\0";
+			ofn.lpstrFilter = L"Configuration Files (*.json)\0*.json\0All Files (*.*)\0*.*\0";
 		}
 		break;
 	}
@@ -142,7 +142,7 @@ bool openFileExplorer(HWND hwnd, wchar_t *filePath, int filePathSize, int button
 	}
 }
 
-bool openFontDialog(HWND hwnd, LOGFONT &lf, HFONT &subtitlesFont)
+bool openFontDialog(HWND hwnd, LOGFONT &lf, HFONT &subtitlesFont, COLORREF &subtitlesColor)
 {
 	CHOOSEFONT cf;
 	HFONT tmp;
@@ -151,11 +151,11 @@ bool openFontDialog(HWND hwnd, LOGFONT &lf, HFONT &subtitlesFont)
 	cf.hwndOwner = hwnd;
 	cf.lpLogFont = &lf;
 	cf.Flags = CF_EFFECTS | CF_SCREENFONTS | CF_INITTOLOGFONTSTRUCT;
-	cf.rgbColors = config.fontColor;
+	cf.rgbColors = subtitlesColor;
 
 	if (ChooseFont(&cf))
 	{
-		config.fontColor = cf.rgbColors;
+		subtitlesColor = cf.rgbColors;
 		tmp = CreateFontIndirect(&lf);
 		
 		if (tmp)
@@ -194,33 +194,250 @@ bool openColorDialog(HWND hwnd, COLORREF &subtitlesColor)
 	return false;
 }
 
-bool saveConfig(const Config &config, wchar_t *filename)
+bool saveConfig(wchar_t *filename)
 {
-	if (wcslen(filename) < 4 || wcscmp(filename + wcslen(filename) - 4, L".dat") != 0)
+	if (wcslen(filename) < 5 || wcscmp(filename + wcslen(filename) - 5, L".json") != 0)
 	{
-		if (wcslen(filename) + 4 < MAX_PATH)
+		if (wcslen(filename) + 5 < MAX_PATH)
 		{
-			wcsncat(filename, L".dat", MAX_PATH - wcslen(filename) - 1);
+			wcsncat(filename, L".json", MAX_PATH - wcslen(filename) - 1);
 		}
 	}
 
-	FILE *file = _wfopen(filename, L"wb");
-	if (file) {
-		fwrite(&config, sizeof(Config), 1, file);
-		fclose(file);
+	Json::Value root;
+
+	std::wstring gamePathWString(gamePath);
+	std::string gamePathString(gamePathWString.begin(), gamePathWString.end());
+	std::wstring subtitlesPathWString(gamePath);
+	std::string subtitlesPathString(subtitlesPathWString.begin(), subtitlesPathWString.end());
+	root["gamePath"] = Json::Value(gamePathString);
+	root["subtitlesPath"] = Json::Value(subtitlesPathString);
+
+	for (const std::pair<wchar_t *, Config> &entry : configs)
+	{
+		const wchar_t* identifier = entry.first;
+		std::wstring identifierWString(identifier);
+		std::string identifierString(identifierWString.begin(), identifierWString.end());
+		const Config& config = entry.second;
+
+		Json::Value configObject;
+
+		// Font
+		configObject["fontColor"] = Json::Value(static_cast<Json::UInt>(config.fontColor));
+		configObject["fontColorAlpha"] = config.fontColorAlpha;
+		
+		std::wstring fontFaceNameWString(config.subtitlesFont.lfFaceName);
+		std::string fontFaceNameString(fontFaceNameWString.begin(), fontFaceNameWString.end());
+		configObject["fontFaceName"] = Json::Value(static_cast<Json::String>(fontFaceNameString));
+
+		configObject["fontHeight"] = Json::Value(static_cast<Json::Int>(config.subtitlesFont.lfHeight));
+		configObject["fontWeight"] = Json::Value(static_cast<Json::Int>(config.subtitlesFont.lfWeight));
+		configObject["fontItalic"] = config.subtitlesFont.lfItalic;
+		configObject["fontUnderline"] = config.subtitlesFont.lfUnderline;
+		configObject["fontStrikeout"] = config.subtitlesFont.lfStrikeOut;
+
+		// Alignment
+		configObject["horizontalAlignment"] = config.horizontalAlignment;
+		configObject["verticalAlignment"] = config.verticalAlignment;
+
+		// Outline
+		configObject["outlineWidth"] = config.outlineWidth;
+		configObject["outlineColor"] = Json::Value(static_cast<Json::UInt>(config.outlineColor));
+		configObject["outlineColorAlpha"] = config.outlineColorAlpha;
+
+		// Shadows
+		configObject["shadowsWidth"] = config.shadowsWidth;
+		configObject["shadowsColor"] = Json::Value(static_cast<Json::UInt>(config.shadowsColor));
+		configObject["shadowsXOffset"] = config.shadowsXOffset;
+		configObject["shadowsYOffset"] = config.shadowsYOffset;
+		configObject["shadowsColorAlpha"] = config.shadowsColorAlpha;
+		configObject["shadowsDiffuse"] = config.shadowsDiffuse;
+
+		// Area
+		configObject["areaXPosition"] = config.areaXPosition;
+		configObject["areaYPosition"] = config.areaYPosition;
+		configObject["areaWidth"] = config.areaWidth;
+		configObject["areaHeight"] = config.areaHeight;
+		configObject["areaPreview"] = config.areaPreview;
+
+		root[identifierString] = configObject;
+	}
+
+	// Create a JSON writer
+	Json::StreamWriterBuilder writer;
+	writer["indentation"] = "\t";
+
+	std::string jsonStr = Json::writeString(writer, root);
+
+	// Write JSON string to file
+	std::ofstream outputFile(filename);
+	if (!outputFile.is_open()) {
 		return true;
 	}
+	outputFile << jsonStr;
+	outputFile.close();
 	return false;
 }
 
-bool loadConfig(Config &config, const wchar_t *filename)
+bool loadConfig(const wchar_t *filename)
 {
-	FILE *file = _wfopen(filename, L"rb");
-	if (file) {
-		fread(&config, sizeof(Config), 1, file);
-		fclose(file);
+	std::ifstream inputFile(filename);
+	if (!inputFile.is_open()) {
 		return true;
 	}
+	if (!inputFile.good()) {
+		inputFile.close();
+		return true;
+	}
+	Json::Value root;
+	try {
+		inputFile >> root; // Parse the JSON data from the file
+	} catch (const std::exception &e) {
+		return true;
+	}
+
+	// Alignement conversion map
+	std::map<TextAlignment, std::string> alignmentToString =
+	{
+		{ALIGN_LEFT, "ALIGN_LEFT"},
+		{ALIGN_CENTER, "ALIGN_CENTER"},
+		{ALIGN_RIGHT, "ALIGN_RIGHT"}
+	};
+
+	// Parse global variables
+	if (root.isMember("gamePath") && root["gamePath"].isString()) {
+		const char* gamePathStr = root["gamePath"].asCString();
+		size_t gamePathLength = strlen(gamePathStr);
+		if (gamePathLength < MAX_PATH) {
+			mbstowcs(gamePath, gamePathStr, MAX_PATH);
+			gamePath[MAX_PATH - 1] = L'\0';
+		}
+		else {
+			return true;
+		}
+	}
+
+	if (root.isMember("subtitlesPath") && root["subtitlesPath"].isString()) {
+		const char* subtitlesPathStr = root["subtitlesPath"].asCString();
+		size_t subtitlesPathLength = strlen(subtitlesPathStr);
+		if (subtitlesPathLength < MAX_PATH) {
+			mbstowcs(subtitlesPath, subtitlesPathStr, MAX_PATH);
+			subtitlesPath[MAX_PATH - 1] = L'\0';
+		}
+		else {
+			return true;
+		}
+	}
+
+	// Parse configurations
+	configs.clear();
+	for (Json::Value::const_iterator itr = root.begin(); itr != root.end(); ++itr) {
+		const std::string identifierString = itr.key().asString();
+		if (identifierString == "gamePath" || identifierString == "subtitlesPath") {
+			continue;
+		}
+
+		const std::wstring identifierWString(identifierString.begin(), identifierString.end());
+		wchar_t *identifier = wcsdup(identifierWString.c_str());
+		const Json::Value &configObject = *itr;
+		Config config;
+
+		config.identifier = identifier;
+
+		// Font
+		if (configObject.isMember("fontColor")) {
+			config.fontColor = static_cast<COLORREF>(configObject["fontColor"].asUInt());
+		}
+		if (configObject.isMember("fontColorAlpha")) {
+			config.fontColorAlpha = configObject["fontColorAlpha"].asInt();
+		}
+		if (configObject.isMember("fontFaceName") && configObject["fontFaceName"].isString()) {
+			if (configObject["fontFaceName"].size() < LF_FACESIZE) {
+				std::string faceNameString = configObject["fontFaceName"].asString();
+				std::wstring wFaceName = std::wstring(faceNameString.begin(), faceNameString.end());
+				wcsncpy(config.subtitlesFont.lfFaceName, wFaceName.c_str(), LF_FACESIZE);
+			}
+		}
+		if (configObject.isMember("fontHeight")) {
+			config.subtitlesFont.lfHeight = configObject["fontHeight"].asInt();
+		}
+
+		if (configObject.isMember("fontWeight")) {
+			config.subtitlesFont.lfWeight = configObject["fontWeight"].asInt();
+		}
+
+		if (configObject.isMember("fontItalic")) {
+			config.subtitlesFont.lfItalic = configObject["fontItalic"].asBool();
+		}
+
+		if (configObject.isMember("fontUnderline")) {
+			config.subtitlesFont.lfUnderline = configObject["fontUnderline"].asBool();
+		}
+
+		if (configObject.isMember("fontStrikeout")) {
+			config.subtitlesFont.lfStrikeOut = configObject["fontStrikeout"].asBool();
+		}
+
+		// Alignement
+		if (configObject.isMember("horizontalAlignment")) {
+			config.horizontalAlignment = static_cast<TextAlignment>(configObject["horizontalAlignment"].asInt());
+		}
+		if (configObject.isMember("verticalAlignment")) {
+			config.verticalAlignment = static_cast<TextAlignment>(configObject["verticalAlignment"].asInt());
+		}
+
+		// Outline
+		if (configObject.isMember("outlineWidth")) {
+			config.outlineWidth = configObject["outlineWidth"].asInt();
+		}
+		if (configObject.isMember("outlineColor")) {
+			config.outlineColor = static_cast<COLORREF>(configObject["outlineColor"].asUInt());
+		}
+		if (configObject.isMember("outlineColorAlpha")) {
+			config.outlineColorAlpha = configObject["outlineColorAlpha"].asInt();
+		}
+
+		// Shadows
+		if (configObject.isMember("shadowsWidth")) {
+			config.shadowsWidth = configObject["shadowsWidth"].asInt();
+		}
+		if (configObject.isMember("shadowsColor")) {
+			config.shadowsColor = static_cast<COLORREF>(configObject["shadowsColor"].asUInt());
+		}
+		if (configObject.isMember("shadowsXOffset")) {
+			config.shadowsXOffset = configObject["shadowsXOffset"].asInt();
+		}
+		if (configObject.isMember("shadowsYOffset")) {
+			config.shadowsYOffset = configObject["shadowsYOffset"].asInt();
+		}
+		if (configObject.isMember("shadowsColorAlpha")) {
+			config.shadowsColorAlpha = configObject["shadowsColorAlpha"].asInt();
+		}
+		if (configObject.isMember("shadowsDiffuse")) {
+			config.shadowsDiffuse = configObject["shadowsDiffuse"].asInt();
+		}
+
+		// Area
+		if (configObject.isMember("areaXPosition")) {
+			config.areaXPosition = configObject["areaXPosition"].asInt();
+		}
+		if (configObject.isMember("areaYPosition")) {
+			config.areaYPosition = configObject["areaYPosition"].asInt();
+		}
+		if (configObject.isMember("areaWidth")) {
+			config.areaWidth = configObject["areaWidth"].asInt();
+		}
+		if (configObject.isMember("areaHeight")) {
+			config.areaHeight = configObject["areaHeight"].asInt();
+		}
+		if (configObject.isMember("areaPreview")) {
+			config.areaPreview = configObject["areaPreview"].asInt();
+		}
+
+		configs[identifier] = config;
+	}
+
+	inputFile.close();
 	return false;
 }
 
@@ -296,8 +513,42 @@ Gdiplus::StringAlignment getConfigAlignment(TextAlignment alignment)
 	}
 }
 
+std::map<wchar_t *, Config, WStringCompare>::iterator getConfig(wchar_t *identifier)
+{
+	std::map<wchar_t *, Config, WStringCompare>::iterator iter = configs.find(identifier);
+	return iter;
+}
+
+wchar_t *getSelectedIdentifier(void)
+{
+	int selectedIndex = ListView_GetNextItem(configList, -1, LVNI_SELECTED);
+	
+	if (selectedIndex != -1)
+	{
+		LVITEM item;
+		item.mask = LVIF_PARAM;
+		item.iItem = selectedIndex;
+		item.iSubItem = 0;
+		ListView_GetItem(configList, &item);
+		if (!item.lParam)
+		{
+			return NULL;
+		}
+		wchar_t *identifier = reinterpret_cast<wchar_t *>(item.lParam);
+		return identifier;
+	}
+	return NULL;
+}
+
 void cleanup(void)
 {
+	for (std::map<wchar_t *, Config, WStringCompare>::iterator iter = configs.begin(); iter != configs.end(); iter++)
+	{
+		free(iter->first);
+		free(iter->second.identifier);
+	}
+	configs.clear();
+
 	DeleteObject(hFont);
 	DeleteObject(titleFont);
 	DeleteObject(subtitlesHFont);

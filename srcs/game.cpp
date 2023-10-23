@@ -5,7 +5,7 @@ void gameStart(PROCESS_INFORMATION pi)
 {
     int num;
 	std::vector <Subtitles> Sub;
-	std::wifstream subfile(config.subtitlesPath);
+	std::wifstream subfile(subtitlesPath);
 	if (subfile.is_open() && !subfile.eof())
 	{
 	    subfile >> num;

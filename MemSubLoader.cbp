@@ -32,6 +32,8 @@
 			<Add option="-Wall" />
 			<Add directory="includes" />
 			<Add directory="resources" />
+			<Add directory="lib" />
+			<Add directory="lib/json" />
 			<Add directory="lib/OutlineText" />
 		</Compiler>
 		<Linker>
@@ -43,12 +45,16 @@
 			<Add library="Comdlg32" />
 			<Add library="gdiplus" />
 			<Add library="bin/Release/OutlineText.dll" />
+			<Add library="bin/Release/JsonCpp.dll" />
 		</Linker>
 		<Unit filename="includes/MemSubLoader.hpp" />
+		<Unit filename="includes/Win32InputBox.h" />
 		<Unit filename="resources/MemSubLoader.rc">
 			<Option compilerVar="WINDRES" />
 		</Unit>
 		<Unit filename="resources/resource.h" />
+		<Unit filename="srcs/Win32InputBox.cpp" />
+		<Unit filename="srcs/configuratorWindow.cpp" />
 		<Unit filename="srcs/game.cpp" />
 		<Unit filename="srcs/main.cpp" />
 		<Unit filename="srcs/mainWindow.cpp" />
