@@ -208,7 +208,7 @@ bool saveConfig(wchar_t *filename)
 
 	std::wstring gamePathWString(gamePath);
 	std::string gamePathString(gamePathWString.begin(), gamePathWString.end());
-	std::wstring subtitlesPathWString(gamePath);
+	std::wstring subtitlesPathWString(subtitlesPath);
 	std::string subtitlesPathString(subtitlesPathWString.begin(), subtitlesPathWString.end());
 	root["gamePath"] = Json::Value(gamePathString);
 	root["subtitlesPath"] = Json::Value(subtitlesPathString);
