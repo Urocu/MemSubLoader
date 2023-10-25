@@ -120,7 +120,7 @@ int createSubtitlesWindow(void)
 	subtitlesWindowClass.lpszClassName = SETTINGS_CLASS_NAME;
 	RegisterClass(&subtitlesWindowClass);
 
-	subtitlesHWND = CreateWindowEx(WS_EX_LAYERED | WS_EX_TRANSPARENT, SETTINGS_CLASS_NAME, L"Subtitles", WS_VISIBLE | WS_POPUP, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, NULL, NULL, NULL, NULL);
+	subtitlesHWND = CreateWindowEx(WS_EX_LAYERED | WS_EX_TRANSPARENT, SETTINGS_CLASS_NAME, L"Subtitles", WS_VISIBLE | WS_POPUP, 0, 0, screenWidth, screenHeight, NULL, NULL, NULL, NULL);
 	if (!IsWindow(subtitlesHWND))
 	{
 		return 1;

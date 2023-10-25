@@ -75,11 +75,8 @@
 # define CONFIGURATOR_TODEFAULT_BUTTON 45
 
 // Save & Cancel controls
-# define SAVE_BUTTON 41
-# define CANCEL_BUTTON 42
-
-# define SCREEN_WIDTH 640
-# define SCREEN_HEIGHT 480
+# define SAVE_BUTTON 46
+# define CANCEL_BUTTON 47
 
 # define FONT_ALPHA_MIN 0
 # define FONT_ALPHA_MAX 255
@@ -91,18 +88,10 @@
 # define OUTLINE_WIDTH_MAX 128
 # define SHADOWS_WIDTH_MIN 0
 # define SHADOWS_WIDTH_MAX 128
-# define SHADOWS_XOFFSET_MIN -640
-# define SHADOWS_XOFFSET_MAX 640
-# define SHADOWS_YOFFSET_MIN -480
-# define SHADOWS_YOFFSET_MAX 480
 # define AREA_XPOS_MIN 0
-# define AREA_XPOS_MAX 640
 # define AREA_YPOS_MIN 0
-# define AREA_YPOS_MAX 480
 # define AREA_WIDTH_MIN 0
-# define AREA_WIDTH_MAX 640
 # define AREA_HEIGHT_MIN 0
-# define AREA_HEIGHT_MAX 480
 
 using namespace Gdiplus;
 
@@ -163,6 +152,8 @@ extern wchar_t gamePath[MAX_PATH];
 extern wchar_t subtitlesPath[MAX_PATH];
 extern HINSTANCE hInst;
 extern bool livePreview;
+extern int screenWidth;
+extern int screenHeight;
 
 // Windows
 extern HWND mainHWND;
@@ -267,7 +258,7 @@ bool openFileExplorer(HWND hwnd, wchar_t *filePath, int filePathSize, int button
 bool openFontDialog(HWND hwnd, LOGFONT &lf, HFONT &subtitlesFont, COLORREF &subtitlesColor);
 bool openColorDialog(HWND hwnd, COLORREF &subtitlesColor);
 
-void ShowBalloonTooltip(HWND hwnd, const std::wstring& description, int durationMilliseconds);
+void invalidateWindow(HWND hwnd);
 
 bool saveConfig(wchar_t *filename);
 bool loadConfig(const wchar_t *filename);

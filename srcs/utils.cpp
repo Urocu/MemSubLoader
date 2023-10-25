@@ -36,7 +36,7 @@ bool Subtitles::check_audio(HANDLE hProcess)
 				if (AudioID == ID[i])
 				{
 					textToDraw = Text[i].c_str();
-					InvalidateRect(subtitlesHWND, NULL, FALSE);
+					invalidateWindow(subtitlesHWND);
 				}
 			}
 		}
@@ -541,6 +541,14 @@ wchar_t *getSelectedIdentifier(void)
 		return identifier;
 	}
 	return NULL;
+}
+
+void invalidateWindow(HWND hwnd)
+{
+	if (hwnd != NULL)
+	{
+		InvalidateRect(hwnd, NULL, FALSE);
+	}
 }
 
 void cleanup(void)

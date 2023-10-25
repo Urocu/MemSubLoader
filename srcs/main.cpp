@@ -11,6 +11,8 @@ wchar_t gamePath[MAX_PATH] = {};
 wchar_t subtitlesPath[MAX_PATH] = {};
 HINSTANCE hInst = NULL;
 bool livePreview = false;
+int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+int screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
 // Windows
 HWND mainHWND = NULL;
@@ -63,6 +65,10 @@ int oldAreaYPosition = 0;
 int oldAreaWidth = 0;
 int oldAreaHeight = 0;
 
+# define SCREEN_WIDTH 640
+# define SCREEN_HEIGHT 480
+# define AREA_WIDTH_MAX 640
+# define AREA_HEIGHT_MAX 480
 
 // Main
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)

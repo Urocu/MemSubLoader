@@ -1,5 +1,8 @@
 #include "MemSubLoader.hpp"
 
+static bool oldShadowsDiffuse = false;
+static bool oldAreaPreview = false;
+
 // Settings window controls handling
 LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -22,6 +25,7 @@ LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 					if (openColorDialog(hwnd, tmpConfig.fontColor))
 					{
 						InvalidateRect(hwnd, NULL, TRUE);
+						invalidateWindow(subtitlesHWND);
 					}
 				}
 				break;
@@ -33,6 +37,7 @@ LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 						InvalidateRect(hwnd, NULL, TRUE);
 						GetObject(subtitlesHFont, sizeof(LOGFONT), &tmpConfig.subtitlesFont);
 						updateSettingsWindowAttributes(hwnd);
+						invalidateWindow(subtitlesHWND);
 					}
 				}
 				break;
@@ -47,6 +52,7 @@ LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 				{
 					int selectedAlignment = SendMessage(alignmentHorizontalComboBox, CB_GETCURSEL, 0, 0);
 					tmpConfig.horizontalAlignment = static_cast<TextAlignment>(selectedAlignment);
+					invalidateWindow(subtitlesHWND);
 				}
 				break;
 
@@ -54,6 +60,7 @@ LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 				{
 					int selectedAlignment = SendMessage(alignmentVerticalComboBox, CB_GETCURSEL, 0, 0);
 					tmpConfig.verticalAlignment = static_cast<TextAlignment>(selectedAlignment);
+					invalidateWindow(subtitlesHWND);
 				}
 				break;
 
@@ -68,6 +75,7 @@ LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 					if (openColorDialog(hwnd, tmpConfig.outlineColor))
 					{
 						InvalidateRect(hwnd, NULL, TRUE);
+						invalidateWindow(subtitlesHWND);
 					}
 				}
 				break;
@@ -83,6 +91,7 @@ LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 					if (openColorDialog(hwnd, tmpConfig.shadowsColor))
 					{
 						InvalidateRect(hwnd, NULL, TRUE);
+						invalidateWindow(subtitlesHWND);
 					}
 				}
 				break;
@@ -101,45 +110,37 @@ LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 
 				case SHADOWS_XOFFSET_EDIT:
 				{
-					handleEdit(hwnd, tmpConfig.shadowsXOffset, oldShadowsXOffset, L"Shadows X offset", SHADOWS_XOFFSET_EDIT, SHADOWS_XOFFSET_MIN, SHADOWS_XOFFSET_MAX, wParam);
+					handleEdit(hwnd, tmpConfig.shadowsXOffset, oldShadowsXOffset, L"Shadows X offset", SHADOWS_XOFFSET_EDIT, -screenWidth, screenWidth, wParam);
 				}
 				break;
 
 				case SHADOWS_YOFFSET_EDIT:
 				{
-					handleEdit(hwnd, tmpConfig.shadowsYOffset, oldShadowsYOffset, L"Shadows Y offset", SHADOWS_YOFFSET_EDIT, SHADOWS_YOFFSET_MIN, SHADOWS_YOFFSET_MAX, wParam);
+					handleEdit(hwnd, tmpConfig.shadowsYOffset, oldShadowsYOffset, L"Shadows Y offset", SHADOWS_YOFFSET_EDIT, -screenHeight, screenHeight, wParam);
 				}
 				break;
 
-				case SHADOWS_DIFFUSE_CHECKBOX:
-				{
-					if (HIWORD(wParam) == BN_CLICKED)
-					{
-						tmpConfig.shadowsDiffuse = (IsDlgButtonChecked(hwnd, SHADOWS_DIFFUSE_CHECKBOX) == BST_CHECKED);
-					}
-				}
-
 				case AREA_XPOS_EDIT:
 				{
-					handleEdit(hwnd, tmpConfig.areaXPosition, oldAreaXPosition, L"Area X position", AREA_XPOS_EDIT, AREA_XPOS_MIN, AREA_XPOS_MAX, wParam);
+					handleEdit(hwnd, tmpConfig.areaXPosition, oldAreaXPosition, L"Area X position", AREA_XPOS_EDIT, AREA_XPOS_MIN, screenWidth, wParam);
 				}
 				break;
 
 				case AREA_YPOS_EDIT:
 				{
-					handleEdit(hwnd, tmpConfig.areaYPosition, oldAreaYPosition, L"Area Y position", AREA_YPOS_EDIT, AREA_YPOS_MIN, AREA_YPOS_MAX, wParam);
+					handleEdit(hwnd, tmpConfig.areaYPosition, oldAreaYPosition, L"Area Y position", AREA_YPOS_EDIT, AREA_YPOS_MIN, screenHeight, wParam);
 				}
 				break;
 
 				case AREA_WIDTH_EDIT:
 				{
-					handleEdit(hwnd, tmpConfig.areaWidth, oldAreaWidth, L"Area width", AREA_WIDTH_EDIT, AREA_WIDTH_MIN, AREA_WIDTH_MAX, wParam);
+					handleEdit(hwnd, tmpConfig.areaWidth, oldAreaWidth, L"Area width", AREA_WIDTH_EDIT, AREA_WIDTH_MIN, screenWidth, wParam);
 				}
 				break;
 
 				case AREA_HEIGHT_EDIT:
 				{
-					handleEdit(hwnd, tmpConfig.areaHeight, oldAreaHeight, L"Area height", AREA_HEIGHT_EDIT, AREA_HEIGHT_MIN, AREA_HEIGHT_MAX, wParam);
+					handleEdit(hwnd, tmpConfig.areaHeight, oldAreaHeight, L"Area height", AREA_HEIGHT_EDIT, AREA_HEIGHT_MIN, screenHeight, wParam);
 				}
 				break;
 
@@ -148,6 +149,7 @@ LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 					configs[tmpConfig.identifier] = tmpConfig;
 					livePreview = false;
 					DestroyWindow(hwnd);
+					invalidateWindow(subtitlesHWND);
 				}
 				break;
 
@@ -158,13 +160,13 @@ LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 					{
 						livePreview = false;
 						DestroyWindow(settingsHWND);
+						invalidateWindow(subtitlesHWND);
 					}
 				}
 				break;
 			}
-			InvalidateRect(subtitlesHWND, NULL, FALSE);
-			break;
 		}
+		break;
 
 		case WM_NOTIFY:
 		{
@@ -196,13 +198,13 @@ LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 
 				case SHADOWS_XOFFSET_UPDOWN:
 				{
-					handleUpdown(hwnd, tmpConfig.shadowsXOffset, oldShadowsXOffset, L"Shadows X offset", SHADOWS_XOFFSET_EDIT, SHADOWS_XOFFSET_MIN, SHADOWS_XOFFSET_MAX, lParam);
+					handleUpdown(hwnd, tmpConfig.shadowsXOffset, oldShadowsXOffset, L"Shadows X offset", SHADOWS_XOFFSET_EDIT, -screenWidth, screenWidth, lParam);
 				}
 				break;
 
 				case SHADOWS_YOFFSET_UPDOWN:
 				{
-					handleUpdown(hwnd, tmpConfig.shadowsYOffset, oldShadowsYOffset, L"Shadows Y offset", SHADOWS_YOFFSET_EDIT, SHADOWS_YOFFSET_MIN, SHADOWS_YOFFSET_MAX, lParam);
+					handleUpdown(hwnd, tmpConfig.shadowsYOffset, oldShadowsYOffset, L"Shadows Y offset", SHADOWS_YOFFSET_EDIT, -screenHeight, screenHeight, lParam);
 				}
 				break;
 
@@ -214,25 +216,36 @@ LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 
 				case AREA_XPOS_UPDOWN:
 				{
-					handleUpdown(hwnd, tmpConfig.areaXPosition, oldAreaXPosition, L"Area X position", AREA_XPOS_EDIT, AREA_XPOS_MIN, AREA_XPOS_MAX, lParam);
+					handleUpdown(hwnd, tmpConfig.areaXPosition, oldAreaXPosition, L"Area X position", AREA_XPOS_EDIT, AREA_XPOS_MIN, screenWidth, lParam);
 				}
 				break;
 
 				case AREA_YPOS_UPDOWN:
 				{
-					handleUpdown(hwnd, tmpConfig.areaYPosition, oldAreaYPosition, L"Area Y position", AREA_YPOS_EDIT, AREA_YPOS_MIN, AREA_YPOS_MAX, lParam);
+					handleUpdown(hwnd, tmpConfig.areaYPosition, oldAreaYPosition, L"Area Y position", AREA_YPOS_EDIT, AREA_YPOS_MIN, screenHeight, lParam);
 				}
 				break;
 
 				case AREA_WIDTH_UPDOWN:
 				{
-					handleUpdown(hwnd, tmpConfig.areaWidth, oldAreaWidth, L"Area width", AREA_WIDTH_EDIT, AREA_WIDTH_MIN, AREA_WIDTH_MAX, lParam);
+					handleUpdown(hwnd, tmpConfig.areaWidth, oldAreaWidth, L"Area width", AREA_WIDTH_EDIT, AREA_WIDTH_MIN, screenWidth, lParam);
 				}
 				break;
 
 				case AREA_HEIGHT_UPDOWN:
 				{
-					handleUpdown(hwnd, tmpConfig.areaHeight, oldAreaHeight, L"Area height", AREA_HEIGHT_EDIT, AREA_HEIGHT_MIN, AREA_HEIGHT_MAX, lParam);
+					handleUpdown(hwnd, tmpConfig.areaHeight, oldAreaHeight, L"Area height", AREA_HEIGHT_EDIT, AREA_HEIGHT_MIN, screenHeight, lParam);
+				}
+				break;
+
+				case SHADOWS_DIFFUSE_CHECKBOX:
+				{
+					if (HIWORD(wParam) == BN_CLICKED)
+					{
+						oldShadowsDiffuse = tmpConfig.shadowsDiffuse;
+						tmpConfig.shadowsDiffuse = (IsDlgButtonChecked(hwnd, SHADOWS_DIFFUSE_CHECKBOX) == BST_CHECKED);
+						invalidateWindow(subtitlesHWND);
+					}
 				}
 				break;
 
@@ -240,13 +253,15 @@ LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 				{
 					if (HIWORD(wParam) == BN_CLICKED)
 					{
+						oldAreaPreview = tmpConfig.areaPreview;
 						tmpConfig.areaPreview = (IsDlgButtonChecked(hwnd, AREA_PREVIEW_CHECKBOX) == BST_CHECKED);
+						invalidateWindow(subtitlesHWND);
 					}
 				}
 				break;
 			}
-			InvalidateRect(subtitlesHWND, NULL, FALSE);
 		}
+		break;
 
 		case WM_PAINT:
 		{
@@ -552,7 +567,7 @@ int createSettingsWindow(HWND parent)
 	SendMessage(shadowsXOffsetEdit, WM_SETFONT, (WPARAM)hFont, FALSE);
 	HWND shadowsXOffsetUpdown = CreateWindowEx(0, UPDOWN_CLASS, (L""), WS_VISIBLE | WS_CHILD | UDS_ARROWKEYS, 203, 315, 17, 23, settingsHWND, (HMENU)SHADOWS_XOFFSET_UPDOWN, settingsWindowClass.hInstance, 0);
 	SendMessage(shadowsXOffsetUpdown, WM_SETFONT, (WPARAM)hFont, FALSE);
-	SendMessage(shadowsXOffsetUpdown, UDM_SETRANGE, 0, MAKELPARAM(SHADOWS_XOFFSET_MAX, SHADOWS_XOFFSET_MIN));
+	SendMessage(shadowsXOffsetUpdown, UDM_SETRANGE, 0, MAKELPARAM(screenWidth, -screenWidth));
 	SendMessage(shadowsXOffsetUpdown, UDM_SETPOS, 0, MAKELPARAM(tmpConfig.shadowsXOffset, 0));
 	HWND shadowsYOffsetLabel = CreateWindowEx(0, WC_STATIC, (L"Y offset :"), WS_VISIBLE | WS_CHILD | WS_GROUP | SS_RIGHT, 18, 343, 68, 15, settingsHWND, (HMENU)0, settingsWindowClass.hInstance, 0);
 	SendMessage(shadowsYOffsetLabel, WM_SETFONT, (WPARAM)hFont, FALSE);
@@ -560,7 +575,7 @@ int createSettingsWindow(HWND parent)
 	SendMessage(shadowsYOffsetEdit, WM_SETFONT, (WPARAM)hFont, FALSE);
 	HWND shadowsYOffsetUpdown = CreateWindowEx(0, UPDOWN_CLASS, (L""), WS_VISIBLE | WS_CHILD | UDS_ARROWKEYS, 203, 340, 17, 23, settingsHWND, (HMENU)SHADOWS_YOFFSET_UPDOWN, settingsWindowClass.hInstance, 0);
 	SendMessage(shadowsYOffsetUpdown, WM_SETFONT, (WPARAM)hFont, FALSE);
-	SendMessage(shadowsYOffsetUpdown, UDM_SETRANGE, 0, MAKELPARAM(SHADOWS_YOFFSET_MAX, SHADOWS_YOFFSET_MIN));
+	SendMessage(shadowsYOffsetUpdown, UDM_SETRANGE, 0, MAKELPARAM(screenHeight, -screenHeight));
 	SendMessage(shadowsYOffsetUpdown, UDM_SETPOS, 0, MAKELPARAM(tmpConfig.shadowsYOffset, 0));
 	HWND shadowsDiffuseCheckbox = CreateWindowEx(0, WC_BUTTON, (L"Diffuse shadows"), WS_VISIBLE | WS_CHILD | WS_TABSTOP | 0x00000003, 71, 372, 102, 13, settingsHWND, (HMENU)SHADOWS_DIFFUSE_CHECKBOX, settingsWindowClass.hInstance, 0);
 	SendMessage(shadowsDiffuseCheckbox, WM_SETFONT, (WPARAM)hFont, FALSE);
@@ -574,7 +589,7 @@ int createSettingsWindow(HWND parent)
 	SendMessage(areaXPositionEdit, WM_SETFONT, (WPARAM)hFont, FALSE);
 	HWND areaXPositionUpdown = CreateWindowEx(0, UPDOWN_CLASS, (L""), WS_VISIBLE | WS_CHILD | UDS_ARROWKEYS, 359, 228, 17, 23, settingsHWND, (HMENU)AREA_XPOS_UPDOWN, settingsWindowClass.hInstance, 0);
 	SendMessage(areaXPositionUpdown, WM_SETFONT, (WPARAM)hFont, FALSE);
-	SendMessage(areaXPositionUpdown, UDM_SETRANGE, 0, MAKELPARAM(AREA_XPOS_MAX, AREA_XPOS_MIN));
+	SendMessage(areaXPositionUpdown, UDM_SETRANGE, 0, MAKELPARAM(screenWidth, AREA_XPOS_MIN));
 	SendMessage(areaXPositionUpdown, UDM_SETPOS, 0, MAKELPARAM(tmpConfig.areaXPosition, 0));
 	HWND areaYPositionLabel = CreateWindowEx(0, WC_STATIC, (L"Y Position :"), WS_VISIBLE | WS_CHILD | WS_GROUP | SS_RIGHT, 240, 255, 60, 15, settingsHWND, (HMENU)0, settingsWindowClass.hInstance, 0);
 	SendMessage(areaYPositionLabel, WM_SETFONT, (WPARAM)hFont, FALSE);
@@ -582,7 +597,7 @@ int createSettingsWindow(HWND parent)
 	SendMessage(areaYPositionEdit, WM_SETFONT, (WPARAM)hFont, FALSE);
 	HWND areaYPositionUpdown = CreateWindowEx(0, UPDOWN_CLASS, (L""), WS_VISIBLE | WS_CHILD | UDS_ARROWKEYS, 359, 252, 17, 23, settingsHWND, (HMENU)AREA_YPOS_UPDOWN, settingsWindowClass.hInstance, 0);
 	SendMessage(areaYPositionUpdown, WM_SETFONT, (WPARAM)hFont, FALSE);
-	SendMessage(areaYPositionUpdown, UDM_SETRANGE, 0, MAKELPARAM(AREA_YPOS_MAX, AREA_YPOS_MIN));
+	SendMessage(areaYPositionUpdown, UDM_SETRANGE, 0, MAKELPARAM(screenHeight, AREA_YPOS_MIN));
 	SendMessage(areaYPositionUpdown, UDM_SETPOS, 0, MAKELPARAM(tmpConfig.areaYPosition, 0));
 	HWND areaWidthLabel = CreateWindowEx(0, WC_STATIC, (L"Width :"), WS_VISIBLE | WS_CHILD | WS_GROUP | SS_RIGHT, 375, 231, 45, 15, settingsHWND, (HMENU)0, settingsWindowClass.hInstance, 0);
 	SendMessage(areaWidthLabel, WM_SETFONT, (WPARAM)hFont, FALSE);
@@ -590,7 +605,7 @@ int createSettingsWindow(HWND parent)
 	SendMessage(areaWidthEdit, WM_SETFONT, (WPARAM)hFont, FALSE);
 	HWND areaWidthUpdown = CreateWindowEx(0, UPDOWN_CLASS, (L""), WS_VISIBLE | WS_CHILD | UDS_ARROWKEYS, 479, 228, 17, 23, settingsHWND, (HMENU)AREA_WIDTH_UPDOWN, settingsWindowClass.hInstance, 0);
 	SendMessage(areaWidthUpdown, WM_SETFONT, (WPARAM)hFont, FALSE);
-	SendMessage(areaWidthUpdown, UDM_SETRANGE, 0, MAKELPARAM(AREA_WIDTH_MAX, AREA_WIDTH_MIN));
+	SendMessage(areaWidthUpdown, UDM_SETRANGE, 0, MAKELPARAM(screenWidth, AREA_WIDTH_MIN));
 	SendMessage(areaWidthUpdown, UDM_SETPOS, 0, MAKELPARAM(tmpConfig.areaWidth, 0));
 	HWND areaHeightLabel = CreateWindowEx(0, WC_STATIC, (L"Height :"), WS_VISIBLE | WS_CHILD | WS_GROUP | SS_RIGHT, 375, 255, 45, 15, settingsHWND, (HMENU)0, settingsWindowClass.hInstance, 0);
 	SendMessage(areaHeightLabel, WM_SETFONT, (WPARAM)hFont, FALSE);
@@ -598,7 +613,7 @@ int createSettingsWindow(HWND parent)
 	SendMessage(areaHeightEdit, WM_SETFONT, (WPARAM)hFont, FALSE);
 	HWND areaHeightUpdown = CreateWindowEx(0, UPDOWN_CLASS, (L""), WS_VISIBLE | WS_CHILD | UDS_ARROWKEYS, 479, 252, 17, 23, settingsHWND, (HMENU)AREA_HEIGHT_UPDOWN, settingsWindowClass.hInstance, 0);
 	SendMessage(areaHeightUpdown, WM_SETFONT, (WPARAM)hFont, FALSE);
-	SendMessage(areaHeightUpdown, UDM_SETRANGE, 0, MAKELPARAM(AREA_HEIGHT_MAX, AREA_HEIGHT_MIN));
+	SendMessage(areaHeightUpdown, UDM_SETRANGE, 0, MAKELPARAM(screenHeight, AREA_HEIGHT_MIN));
 	SendMessage(areaHeightUpdown, UDM_SETPOS, 0, MAKELPARAM(tmpConfig.areaHeight, 0));
 	HWND areaPreviewCheckbox = CreateWindowEx(0, WC_BUTTON, (L"Area preview"), WS_VISIBLE | WS_CHILD | WS_TABSTOP | 0x00000003, 326, 288, 83, 13, settingsHWND, (HMENU)AREA_PREVIEW_CHECKBOX, settingsWindowClass.hInstance, 0);
 	SendMessage(areaPreviewCheckbox, WM_SETFONT, (WPARAM)hFont, FALSE);
@@ -656,6 +671,7 @@ void handleUpdown(HWND hwnd, int &value, int &oldValue, const wchar_t *name, int
 		oldValue = value;
 		SetDlgItemInt(settingsHWND, id, value, TRUE);
 		SendDlgItemMessage(hwnd, id, EM_SETSEL, cursorPosition, cursorPosition);
+		invalidateWindow(subtitlesHWND);
 	}
 }
 
@@ -695,6 +711,7 @@ void handleEdit(HWND hwnd, int &value, int &oldValue, const wchar_t *name, int i
 			oldValue = value;
 			SetDlgItemInt(settingsHWND, id, value, TRUE);
 			SendDlgItemMessage(hwnd, id, EM_SETSEL, cursorPosition, cursorPosition);
+			invalidateWindow(subtitlesHWND);
 		}
     }
 }
