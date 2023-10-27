@@ -65,11 +65,6 @@ int oldAreaYPosition = 0;
 int oldAreaWidth = 0;
 int oldAreaHeight = 0;
 
-# define SCREEN_WIDTH 640
-# define SCREEN_HEIGHT 480
-# define AREA_WIDTH_MAX 640
-# define AREA_HEIGHT_MAX 480
-
 // Main
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -77,6 +72,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	MSG msg = {};
 	wchar_t autoloadPath[MAX_PATH] = {};
 	wchar_t message[MAX_PATH + 256] = {};
+	Config defaultConfig;
 
 	GpStatus gdiplusStatus = GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 	if (gdiplusStatus != GpStatus::Ok)
@@ -85,6 +81,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		cleanup();
 		return 1;
 	}
+	setDefaultConfig(defaultConfig);
 	if (getAutoloadConfigPath(autoloadPath)) // Get autoloaded configuration path from autoload.dat
 	{
 		if (loadConfig(autoloadPath)) // Failed to load configuration
@@ -96,20 +93,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			}
 			wsprintf(message, L"Failed to autoload configuration :\n%s\nDeleted configuration autoload", autoloadPath);
 			MessageBox(NULL, message, L"Configuration autoloading", MB_ICONERROR);
-			
-			Config defaultConfig = {};
-			defaultConfig.identifier = wcsdup(L"DEFAULT");
-			HFONT hSystemFont = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
-			GetObject(hSystemFont, sizeof(LOGFONT), &defaultConfig.subtitlesFont);
 			configs.insert({ wcsdup(L"DEFAULT"), defaultConfig });
 		}
 	}
 	else // No autoload.dat found
 	{
-		Config defaultConfig = {};
-		defaultConfig.identifier = wcsdup(L"DEFAULT");
-		HFONT hSystemFont = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
-		GetObject(hSystemFont, sizeof(LOGFONT), &defaultConfig.subtitlesFont);
 		configs.insert({ wcsdup(L"DEFAULT"), defaultConfig });
 	}
 

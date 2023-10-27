@@ -267,6 +267,7 @@ bool getAutoloadConfigPath(wchar_t *path);
 bool getAutoloadPath(wchar_t *executablePath);
 Gdiplus::StringAlignment getConfigAlignment(TextAlignment alignment);
 std::map<wchar_t *, Config, WStringCompare>::iterator getConfig(wchar_t * identifier);
+void setDefaultConfig(Config &defaultConfig);
 wchar_t *getSelectedIdentifier(void);
 
 void cleanup(void);

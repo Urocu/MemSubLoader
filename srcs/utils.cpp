@@ -522,6 +522,40 @@ std::map<wchar_t *, Config, WStringCompare>::iterator getConfig(wchar_t *identif
 	return iter;
 }
 
+void setDefaultConfig(Config &defaultConfig)
+{
+	// Font
+	defaultConfig.fontColor = RGB(255, 255, 255);
+	defaultConfig.identifier = wcsdup(L"DEFAULT");
+	HFONT hSystemFont = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
+	GetObject(hSystemFont, sizeof(LOGFONT), &defaultConfig.subtitlesFont);
+	defaultConfig.fontColorAlpha = 255;
+
+	// Alignment
+	defaultConfig.horizontalAlignment = ALIGN_CENTER;
+	defaultConfig.verticalAlignment = ALIGN_RIGHT;
+
+	// Outline
+	defaultConfig.outlineWidth = 4;
+	defaultConfig.outlineColor = RGB(0, 0, 0);
+	defaultConfig.outlineColorAlpha = 128;
+
+	// Shadows
+	defaultConfig.shadowsWidth = 0;
+	defaultConfig.shadowsColor = RGB(0, 0, 0);
+	defaultConfig.shadowsXOffset = 0;
+	defaultConfig.shadowsYOffset = 0;
+	defaultConfig.shadowsColorAlpha = 255;
+	defaultConfig.shadowsDiffuse = false;
+
+	// Area
+	defaultConfig.areaXPosition = 0;
+	defaultConfig.areaYPosition = 0;
+	defaultConfig.areaWidth = 0;
+	defaultConfig.areaHeight = 0;
+	defaultConfig.areaPreview = false;
+}
+
 wchar_t *getSelectedIdentifier(void)
 {
 	int selectedIndex = ListView_GetNextItem(configList, -1, LVNI_SELECTED);

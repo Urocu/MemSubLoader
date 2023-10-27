@@ -1,8 +1,5 @@
 #include "MemSubLoader.hpp"
 
-static bool oldShadowsDiffuse = false;
-static bool oldAreaPreview = false;
-
 // Settings window controls handling
 LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -242,7 +239,6 @@ LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 				{
 					if (HIWORD(wParam) == BN_CLICKED)
 					{
-						oldShadowsDiffuse = tmpConfig.shadowsDiffuse;
 						tmpConfig.shadowsDiffuse = (IsDlgButtonChecked(hwnd, SHADOWS_DIFFUSE_CHECKBOX) == BST_CHECKED);
 						invalidateWindow(subtitlesHWND);
 					}
@@ -253,7 +249,6 @@ LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 				{
 					if (HIWORD(wParam) == BN_CLICKED)
 					{
-						oldAreaPreview = tmpConfig.areaPreview;
 						tmpConfig.areaPreview = (IsDlgButtonChecked(hwnd, AREA_PREVIEW_CHECKBOX) == BST_CHECKED);
 						invalidateWindow(subtitlesHWND);
 					}
