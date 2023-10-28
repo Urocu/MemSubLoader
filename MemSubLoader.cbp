@@ -37,6 +37,7 @@
 			<Add directory="lib/OutlineText" />
 		</Compiler>
 		<Linker>
+			<Add option="-m32" />
 			<Add library="gdi32" />
 			<Add library="user32" />
 			<Add library="kernel32" />
