@@ -5,10 +5,8 @@ void gameStart(PROCESS_INFORMATION pi)
 {
     int num;
 	std::vector <Subtitles> Sub;
-
 	std::wifstream subfile(subtitlesPath);
 	if (subfile.is_open() && !subfile.eof())
-
 	{
 	    subfile >> num;
 	    for(int i = 0; i <num; i++)
@@ -25,7 +23,6 @@ void gameStart(PROCESS_INFORMATION pi)
 	subfile.close();
 
 	bool is = false;
-
 	const std::chrono::milliseconds frame_duration(1000 / 60);
 	while (WaitForSingleObject( pi.hProcess, 0 ) == WAIT_TIMEOUT)
 	{
@@ -42,13 +39,11 @@ void gameStart(PROCESS_INFORMATION pi)
 			textToDraw = L"";
 			invalidateWindow(subtitlesHWND);
 		}
-
 		// process messages, otherwise the software will freeze
         auto end_time = std::chrono::high_resolution_clock::now();
         auto elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
 		MSG msg = { };
 		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE) || elapsed_time < frame_duration)
-
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
@@ -61,7 +56,6 @@ void gameStart(PROCESS_INFORMATION pi)
 			screenWidth = GetSystemMetrics(SM_CXSCREEN);
 			screenHeight = GetSystemMetrics(SM_CYSCREEN);
 			SetWindowPos(subtitlesHWND, HWND_TOPMOST, 0, 0, screenWidth, screenHeight, SWP_NOMOVE);
-
 		}
 	}
 	CloseHandle(pi.hProcess);
