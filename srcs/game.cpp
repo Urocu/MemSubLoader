@@ -1,12 +1,14 @@
 #include "MemSubLoader.hpp"
 
 // Used when the game starts
-void game_start(PROCESS_INFORMATION pi)
+void gameStart(PROCESS_INFORMATION pi)
 {
     int num;
 	std::vector <Subtitles> Sub;
-	std::wifstream subfile(filePath);
-	if(subfile.is_open() && !subfile.eof())
+
+	std::wifstream subfile(subtitlesPath);
+	if (subfile.is_open() && !subfile.eof())
+
 	{
 	    subfile >> num;
 	    for(int i = 0; i <num; i++)
@@ -20,13 +22,10 @@ void game_start(PROCESS_INFORMATION pi)
         }
 
 	}
-	else
-		SetWindowText(subtitles, L"File failed to open");
 	subfile.close();
 
-	DWORD Width = 0;
-	DWORD Height = 0;
-	bool is;
+	bool is = false;
+
 	const std::chrono::milliseconds frame_duration(1000 / 60);
 	while (WaitForSingleObject( pi.hProcess, 0 ) == WAIT_TIMEOUT)
 	{
@@ -35,16 +34,21 @@ void game_start(PROCESS_INFORMATION pi)
         {
             is = false;
             Sub[i].search_memory(pi.hProcess);
-            if(Sub[i].check_audio(pi.hProcess))
+            if (Sub[i].check_audio(pi.hProcess))
                 is = true;
         }
-        if(!is)
-            SetWindowText(subtitles, L"");
+        if (!is)
+		{
+			textToDraw = L"";
+			invalidateWindow(subtitlesHWND);
+		}
+
 		// process messages, otherwise the software will freeze
         auto end_time = std::chrono::high_resolution_clock::now();
         auto elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
 		MSG msg = { };
-		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)|| elapsed_time < frame_duration)
+		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE) || elapsed_time < frame_duration)
+
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
@@ -52,18 +56,15 @@ void game_start(PROCESS_INFORMATION pi)
             elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
             std::this_thread::sleep_for((std::chrono::milliseconds)10);
 		}
-
-		if(Width != GetSystemMetrics(SM_CXSCREEN) && Height != GetSystemMetrics(SM_CYSCREEN))
+		if(screenWidth != GetSystemMetrics(SM_CXSCREEN) && screenHeight != GetSystemMetrics(SM_CYSCREEN))
 		{
-			Width = GetSystemMetrics(SM_CXSCREEN);
-			Height = GetSystemMetrics(SM_CYSCREEN);
-			SetWindowPos(subtitlesWin, HWND_TOPMOST, 0, Height-100, Width = GetSystemMetrics(SM_CXSCREEN), 100, 0);
-			SetWindowPos(subtitles, 0, 0, 0, Width, 100, 0);
-		}
+			screenWidth = GetSystemMetrics(SM_CXSCREEN);
+			screenHeight = GetSystemMetrics(SM_CYSCREEN);
+			SetWindowPos(subtitlesHWND, HWND_TOPMOST, 0, 0, screenWidth, screenHeight, SWP_NOMOVE);
 
+		}
 	}
 	CloseHandle(pi.hProcess);
 	CloseHandle(pi.hThread);
-	DestroyWindow(subtitlesWin);
-	DestroyWindow(configHWND);
+	DestroyWindow(subtitlesHWND);
 }

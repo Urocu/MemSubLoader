@@ -3,30 +3,20 @@
         {
             "type": "cppbuild",
             "label": "build",
-            "command": "C:\\cygwin64\\bin\\g++.exe",
+            "command": "make",
             "args": [
-                "-fdiagnostics-color=always",
-                "-g",
-                "${workspaceFolder}/srcs/*.cpp",
-                "-o",
-                "${workspaceFolder}/bin/Release/MemSubLoader.exe",
-                "-I${workspaceFolder}/includes",
-                "-lstdc++",
-                "-lcomdlg32",
-                "-lshlwapi",
-                "-lgdi32"
+				"re"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
             "problemMatcher": [
-                "$gcc"
             ],
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
-            "detail": "Tâche générée par le débogueur."
+            "detail": "Compiles with g++ every .cpp file inside 'srcs' and link every file inside 'includes'"
         }
     ],
     "version": "2.0.0"

@@ -1,6 +1,8 @@
 *.layout
 *.depend
 *.exe
+*.gch
+*.o
 # generated directories
 bin/
 obj/
