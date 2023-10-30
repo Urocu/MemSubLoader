@@ -458,6 +458,10 @@ int createSettingsWindow(HWND parent)
 		return 1;
 	}
 
+	// Window icon
+	SendMessage(settingsHWND, WM_SETICON, ICON_SMALL, (LPARAM)iconLogo);
+	SendMessage(settingsHWND, WM_SETICON, ICON_BIG, (LPARAM)iconLogo);
+
 	// Font
 	HWND fontGroup = CreateWindowEx(0, WC_BUTTON, (L"Font"), WS_VISIBLE | WS_CHILD | 0x00000007, 11, 11, 270, 195, settingsHWND, (HMENU)0, settingsWindowClass.hInstance, 0);
 	SendMessage(fontGroup, WM_SETFONT, (WPARAM)hFont, FALSE);

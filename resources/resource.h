@@ -7,5 +7,6 @@
 #define COG_ICON                                118
 #define FOLDER_ICON                             119
 #define MSL_LOGO                                120
-#define DLG_SETTINGS                            122
-#define IDD_DIALOG1                             123
+#define DLG_SETTINGS                            121
+#define MSL_ICON                                122
+#define SUBTITLES_ICON                          123

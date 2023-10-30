@@ -135,7 +135,7 @@ INT_PTR CWin32InputBox::InputBoxEx(WIN32INPUTBOX_PARAM *param)
     return 0;
   }
 
-  LPDLGTEMPLATE dlgTemplate;
+  LPDLGTEMPLATE dlgTemplate = nullptr;
 
   if (param->DlgTemplateName != 0)
   {

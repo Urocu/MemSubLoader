@@ -77,7 +77,7 @@ FONT 12, "Calibri"
     PUSHBUTTON      "Browse", 0, 206, 66, 29, 12, 0, WS_EX_LEFT
     PUSHBUTTON      "Browse", 0, 206, 45, 29, 12, 0, WS_EX_LEFT
     CONTROL         MSL_LOGO, 0, WC_STATIC, SS_BITMAP, 79, 5, 32, 27, WS_EX_LEFT
-    CTEXT           "MemSubLoader", 0, 118, 16, 51, 9, SS_CENTER, WS_EX_LEFT
+    CTEXT           "MemSubLoader", 0, 118, 16, 60, 9, SS_CENTER, WS_EX_LEFT
     GROUPBOX        "Path", 0, 12, 35, 225, 50, 0, WS_EX_LEFT
     RTEXT           "Game path", 0, 24, 47, 37, 9, SS_RIGHT, WS_EX_LEFT
     CONTROL         "Select a file...", 0, RICHEDIT_CLASS, WS_TABSTOP | WS_BORDER | ES_AUTOHSCROLL, 65, 45, 140, 12, WS_EX_LEFT
@@ -112,7 +112,7 @@ FONT 8, "Ms Shell Dlg"
     COMBOBOX        0, 272, 21, 55, 30, CBS_DROPDOWN | CBS_HASSTRINGS, WS_EX_LEFT
     RTEXT           "Vertical Alignment :", 0, 197, 37, 70, 9, SS_RIGHT, WS_EX_LEFT
     COMBOBOX        0, 272, 36, 55, 30, CBS_DROPDOWN | CBS_HASSTRINGS, WS_EX_LEFT
-    GROUPBOX        "Outline", 0, 192, 57, 144, 70, 0, WS_EX_LEFT
+    GROUPBOX        "Outline", 0, 192, 56, 144, 71, 0, WS_EX_LEFT
     RTEXT           "Outline width :", 0, 197, 72, 50, 9, SS_RIGHT, WS_EX_LEFT
     EDITTEXT        0, 252, 70, 70, 14, ES_AUTOHSCROLL | ES_NUMBER, WS_EX_LEFT
     CONTROL         "", 0, UPDOWN_CLASS, UDS_ARROWKEYS, 322, 70, 11, 14, WS_EX_LEFT
@@ -154,6 +154,18 @@ FONT 8, "Ms Shell Dlg"
     PUSHBUTTON      "Save", 0, 187, 212, 55, 14, 0, WS_EX_LEFT
     PUSHBUTTON      "Cancel", 0, 250, 212, 55, 14, 0, WS_EX_LEFT
 }
+
+
+
+//
+// Icon resources
+//
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+MSL_ICON           ICON           ".\\logo.ico"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+SUBTITLES_ICON     ICON           ".\\subtitles.ico"
 
 
 

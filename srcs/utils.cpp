@@ -595,6 +595,8 @@ void cleanup(void)
 	configs.clear();
 
 	DeleteObject(hFont);
+	DeleteObject(iconLogo);
+	DeleteObject(iconSubtitles);
 	DeleteObject(titleFont);
 	DeleteObject(subtitlesHFont);
 	DeleteObject(logoBitmap);

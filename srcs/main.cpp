@@ -36,6 +36,8 @@ HWND configList = NULL;
 
 // Resources
 HFONT hFont = NULL;
+HICON iconLogo = NULL;
+HICON iconSubtitles = NULL;
 HFONT titleFont = NULL;
 HFONT subtitlesHFont = NULL;
 HBITMAP logoBitmap = NULL;

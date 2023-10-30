@@ -213,6 +213,12 @@ int createMainWindow(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		return 1;
 	}
 
+	// Window icon & subtitles icon
+	iconLogo = LoadIcon(hInstance, MAKEINTRESOURCE(MSL_ICON));
+	iconSubtitles = LoadIcon(hInstance, MAKEINTRESOURCE(SUBTITLES_ICON));
+	SendMessage(mainHWND, WM_SETICON, ICON_SMALL, (LPARAM)iconLogo);
+	SendMessage(mainHWND, WM_SETICON, ICON_BIG, (LPARAM)iconLogo);
+
 	// UI
 	hFont = CreateFont(15, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, L"Ms Shell Dlg");
 	titleFont = CreateFont(24, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, L"Calibri");

@@ -250,6 +250,10 @@ int createConfiguratorWindow(HWND parent)
 		return 1;
 	}
 
+	// Window icon
+	SendMessage(configuratorHWND, WM_SETICON, ICON_SMALL, (LPARAM)iconLogo);
+	SendMessage(configuratorHWND, WM_SETICON, ICON_BIG, (LPARAM)iconLogo);
+
 	configList = CreateWindowEx(0, WC_LISTVIEW, (L""), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | LVS_EX_GRIDLINES, 11, 11, 353, 351, configuratorHWND, (HMENU)0, configuratorWindowClass.hInstance, 0);
 	SendMessage(configList, WM_SETFONT, (WPARAM)hFont, FALSE);
 	ListView_SetExtendedListViewStyle(configList, LVS_EX_FULLROWSELECT);
