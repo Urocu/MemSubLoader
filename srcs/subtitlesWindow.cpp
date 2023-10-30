@@ -19,6 +19,12 @@ LRESULT CALLBACK subtitlesWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 				std::map<wchar_t *, Config>::iterator iter = getConfig(identifier);
 				if (iter != configs.end())
 				{
+				    if(screenWidth != GetSystemMetrics(SM_CXSCREEN) || screenHeight != GetSystemMetrics(SM_CYSCREEN))
+                    {
+                    screenWidth = GetSystemMetrics(SM_CXSCREEN);
+                    screenHeight = GetSystemMetrics(SM_CYSCREEN);
+                    checkConfig(iter->second);
+                    }
 					config = iter->second;
 				}
 			}
@@ -66,7 +72,7 @@ LRESULT CALLBACK subtitlesWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 			{
 				text.TextNoOutline(fontColor);
 			}
-			
+
 			// Enable/disable shadows
 			if (config.shadowsWidth > 0)
 			{
@@ -83,7 +89,7 @@ LRESULT CALLBACK subtitlesWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 			}
 
 			// Drawing subtitles
-			text.DrawString(&graphics, &fontFamily, fontStyle, fontSize, textToDraw.c_str(), rect, &format); 
+			text.DrawString(&graphics, &fontFamily, fontStyle, fontSize, textToDraw.c_str(), rect, &format);
 
 			// Transparency
 			subtitlesBitmap.GetHBITMAP(Color(0, 0, 0, 0), &bmp);

@@ -34,7 +34,7 @@ void gameStart(PROCESS_INFORMATION pi)
             if (Sub[i].check_audio(pi.hProcess))
                 is = true;
         }
-        if (!is)
+        if (!is && textToDraw !=L"")
 		{
 			textToDraw = L"";
 			invalidateWindow(subtitlesHWND);
@@ -50,12 +50,6 @@ void gameStart(PROCESS_INFORMATION pi)
 			end_time = std::chrono::high_resolution_clock::now();
             elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
             std::this_thread::sleep_for((std::chrono::milliseconds)10);
-		}
-		if(screenWidth != GetSystemMetrics(SM_CXSCREEN) && screenHeight != GetSystemMetrics(SM_CYSCREEN))
-		{
-			screenWidth = GetSystemMetrics(SM_CXSCREEN);
-			screenHeight = GetSystemMetrics(SM_CYSCREEN);
-			SetWindowPos(subtitlesHWND, HWND_TOPMOST, 0, 0, screenWidth, screenHeight, SWP_NOMOVE);
 		}
 	}
 	CloseHandle(pi.hProcess);

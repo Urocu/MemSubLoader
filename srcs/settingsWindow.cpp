@@ -689,6 +689,7 @@ void handleEdit(HWND hwnd, int &value, int &oldValue, const wchar_t *name, int i
 		{
 			wsprintf(title, L"%s out of range", name);
 			wsprintf(message, L"%s cannot be superior to %i", name, max);
+			MessageBox(NULL, message, title, MB_ICONWARNING);
 			int cursorPosition = SendDlgItemMessage(hwnd, id, EM_GETSEL, 0, 0);
         	value = oldValue;
 			SetDlgItemInt(settingsHWND, id, value, TRUE);
@@ -698,6 +699,7 @@ void handleEdit(HWND hwnd, int &value, int &oldValue, const wchar_t *name, int i
 		{
 			wsprintf(title, L"%s out of range", name);
 			wsprintf(message, L"%s cannot be inferior to %i", name, min);
+			MessageBox(NULL, message, title, MB_ICONWARNING);
 			int cursorPosition = SendDlgItemMessage(hwnd, id, EM_GETSEL, 0, 0);
         	value = oldValue;
 			SetDlgItemInt(settingsHWND, id, value, TRUE);

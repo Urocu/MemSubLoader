@@ -30,20 +30,23 @@ bool Subtitles::check_audio(HANDLE hProcess)
 		if (AudioID != lastAudioID && AudioID > 0)
 		{
 			lastAudioID = AudioID;
-
 			for(size_t i = 0; i < ID.size(); i++)
 			{
 				if (AudioID == ID[i])
 				{
 					textToDraw = Text[i].c_str();
 					invalidateWindow(subtitlesHWND);
+					break;
 				}
 			}
 		}
 		return true;
 	}
 	else
-		return false;
+    {
+        lastAudioID = 0;
+        return false;
+    }
 }
 
 void Subtitles::file_memory(std::wifstream& file)
@@ -436,7 +439,7 @@ bool loadConfig(const wchar_t *filename)
 		if (configObject.isMember("areaPreview")) {
 			config.areaPreview = configObject["areaPreview"].asInt();
 		}
-
+        checkConfig(config);
 		configs[identifier] = config;
 	}
 
@@ -550,10 +553,22 @@ void setDefaultConfig(Config &defaultConfig)
 
 	// Area
 	defaultConfig.areaXPosition = 0;
-	defaultConfig.areaYPosition = 0;
-	defaultConfig.areaWidth = 0;
-	defaultConfig.areaHeight = 0;
+	defaultConfig.areaYPosition = screenHeight-100;
+	defaultConfig.areaWidth = screenWidth;
+	defaultConfig.areaHeight = 100;
 	defaultConfig.areaPreview = false;
+}
+
+void checkConfig(Config &config)
+{
+    if(config.areaXPosition > screenWidth)
+        config.areaXPosition = 0;
+    if(config.areaYPosition > screenHeight)
+        config.areaYPosition = 0;
+    if(config.areaWidth > screenWidth)
+        config.areaWidth = screenWidth;
+    if(config.areaHeight > screenHeight)
+        config.areaHeight = 100;
 }
 
 wchar_t *getSelectedIdentifier(void)
