@@ -213,6 +213,12 @@ int createMainWindow(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		return 1;
 	}
 
+	// Window icon & subtitles icon
+	iconLogo = LoadIcon(hInstance, MAKEINTRESOURCE(MSL_ICON));
+	iconSubtitles = LoadIcon(hInstance, MAKEINTRESOURCE(SUBTITLES_ICON));
+	SendMessage(mainHWND, WM_SETICON, ICON_SMALL, (LPARAM)iconLogo);
+	SendMessage(mainHWND, WM_SETICON, ICON_BIG, (LPARAM)iconLogo);
+
 	// UI
 	hFont = CreateFont(15, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, L"Ms Shell Dlg");
 	titleFont = CreateFont(24, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, L"Calibri");
@@ -236,7 +242,7 @@ int createMainWindow(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	// UI Controls
 	HWND logo = CreateWindowEx(0, L"STATIC", NULL, WS_VISIBLE | WS_CHILD | SS_BITMAP, 158, 12, 64, 64, mainHWND, (HMENU)0, hInstance, 0);
 	SendMessage(logo, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)logoBitmap);
-	HWND titleText = CreateWindowEx(0, L"STATIC", (L"MemSubLoader"), WS_VISIBLE | WS_CHILD | WS_GROUP | SS_CENTER, 232, 38, 150, 21, mainHWND, (HMENU)0, hInstance, 0);
+	HWND titleText = CreateWindowEx(0, L"STATIC", (L"MemSubLoader"), WS_VISIBLE | WS_CHILD | WS_GROUP | SS_CENTER, 226, 38, 160, 21, mainHWND, (HMENU)0, hInstance, 0);
 	SendMessage(titleText, WM_SETFONT, (WPARAM)titleFont, FALSE);
 	HWND pathGroup = CreateWindowEx(0, L"BUTTON", (L"Path"), WS_VISIBLE | WS_CHILD | 0x00000007, 24, 83, 450, 119, mainHWND, (HMENU)0, hInstance, 0);
 	SendMessage(pathGroup, WM_SETFONT, (WPARAM)hFont, FALSE);

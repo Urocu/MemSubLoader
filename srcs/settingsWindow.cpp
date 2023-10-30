@@ -458,6 +458,10 @@ int createSettingsWindow(HWND parent)
 		return 1;
 	}
 
+	// Window icon
+	SendMessage(settingsHWND, WM_SETICON, ICON_SMALL, (LPARAM)iconLogo);
+	SendMessage(settingsHWND, WM_SETICON, ICON_BIG, (LPARAM)iconLogo);
+
 	// Font
 	HWND fontGroup = CreateWindowEx(0, WC_BUTTON, (L"Font"), WS_VISIBLE | WS_CHILD | 0x00000007, 11, 11, 270, 195, settingsHWND, (HMENU)0, settingsWindowClass.hInstance, 0);
 	SendMessage(fontGroup, WM_SETFONT, (WPARAM)hFont, FALSE);
@@ -510,7 +514,7 @@ int createSettingsWindow(HWND parent)
 	SendMessage(alignmentVerticalComboBox, CB_SETCURSEL, 0, 0);
 
 	// Outline
-	HWND outlineGroup = CreateWindowEx(0, WC_BUTTON, (L"Outline"), WS_VISIBLE | WS_CHILD | 0x00000007, 288, 93, 216, 114, settingsHWND, (HMENU)0, settingsWindowClass.hInstance, 0);
+	HWND outlineGroup = CreateWindowEx(0, WC_BUTTON, (L"Outline"), WS_VISIBLE | WS_CHILD | 0x00000007, 288, 91, 216, 115, settingsHWND, (HMENU)0, settingsWindowClass.hInstance, 0);
 	SendMessage(outlineGroup, WM_SETFONT, (WPARAM)hFont, FALSE);
 	HWND outlineWidthLabel = CreateWindowEx(0, WC_STATIC, (L"Outline width :"), WS_VISIBLE | WS_CHILD | WS_GROUP | SS_RIGHT, 296, 117, 75, 15, settingsHWND, (HMENU)0, settingsWindowClass.hInstance, 0);
 	SendMessage(outlineWidthLabel, WM_SETFONT, (WPARAM)hFont, FALSE);

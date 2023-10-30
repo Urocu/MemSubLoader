@@ -125,6 +125,11 @@ int createSubtitlesWindow(void)
 	{
 		return 1;
 	}
+
+	// Window icon
+	SendMessage(subtitlesHWND, WM_SETICON, ICON_SMALL, (LPARAM)iconSubtitles);
+	SendMessage(subtitlesHWND, WM_SETICON, ICON_BIG, (LPARAM)iconSubtitles);
+
 	SetWindowPos(subtitlesHWND, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 	return 0;
 }

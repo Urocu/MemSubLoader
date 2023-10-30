@@ -177,6 +177,8 @@ extern HWND configList;
 
 // Resources
 extern HFONT hFont;
+extern HICON iconLogo;
+extern HICON iconSubtitles;
 extern HFONT titleFont;
 extern HFONT subtitlesHFont;
 extern HBITMAP logoBitmap;
