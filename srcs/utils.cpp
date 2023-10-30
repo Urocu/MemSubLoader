@@ -553,9 +553,9 @@ void setDefaultConfig(Config &defaultConfig)
 
 	// Area
 	defaultConfig.areaXPosition = 0;
-	defaultConfig.areaYPosition = 0;
-	defaultConfig.areaWidth = 0;
-	defaultConfig.areaHeight = 0;
+	defaultConfig.areaYPosition = screenHeight-100;
+	defaultConfig.areaWidth = screenWidth;
+	defaultConfig.areaHeight = 100;
 	defaultConfig.areaPreview = false;
 }
 
