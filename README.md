@@ -73,6 +73,6 @@ At this moment, MemSubLoader does not handle others subtitles configurations tha
 
 - **Font outline (3)** : Similarly to font customization, you can customize outline color (including alpha blending), as well as the outline width.
 
-- **Font shadows (4)** : Similarly to outline customization, you can customize shadows color (including alpha blending), but you can also set how far from the text the shadow will be rendered. You can optionnally enable shadows diffusing, but you will need to tweak settings before getting something that looks great. General recommandations are thickness from 8 to 12, and color alpha between 12 and 32.
+- **Font shadows (4)** : Similarly to outline customization, you can customize shadows color (including alpha blending), but you can also set how far from the text the shadow will be rendered. You can optionally enable shadows diffusing, but you will need to tweak settings before getting something that looks great. General recommandations are thickness from 8 to 12, and color alpha between 12 and 32.
 
 - **Area positioniong and sizing (5)** : The area is where text is rendered on your screen. For 640x480 resolution we recommend a 640 width and at least 100 height for great readability. Checking *Area preview* will draw a red outline around the area to help you positionning it.
