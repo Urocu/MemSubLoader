@@ -142,9 +142,30 @@ struct WStringCompare
 	}
 };
 
+struct Subtitles
+{
+		uintptr_t bAddress_audio;
+		std::vector <int> offset_audio;
+		uintptr_t bAddress_play;
+		std::vector <int> offset_play;
+		void findAddress(uintptr_t &address, int offset, HANDLE hProcess);
+
+		uintptr_t address_audio;
+		uintptr_t address_play;
+		int AudioID;
+		int lastAudioID;
+		bool is_playing;
+		std::vector <int> ID;
+		std::vector <std::wstring> Text;
+		std::vector <std::wstring> identifier;
+		void search_memory(HANDLE hProcess);
+		bool check_audio(HANDLE hProcess);
+};
+
 // Global variables definition
 
 // Global resources
+extern std::vector <Subtitles> subtitles;
 extern std::map<wchar_t *, Config, WStringCompare> configs;
 extern std::wstring textToDraw;
 extern Config tmpConfig;
@@ -208,30 +229,6 @@ extern int oldAreaYPosition;
 extern int oldAreaWidth;
 extern int oldAreaHeight;
 
-class Subtitles
-{
-	private:
-		uintptr_t bAddress_audio;
-		std::vector <int> offset_audio;
-		uintptr_t bAddress_play;
-		std::vector <int> offset_play;
-		void findAddress(uintptr_t &address, int offset, HANDLE hProcess);
-
-	public:
-		uintptr_t address_audio;
-		uintptr_t address_play;
-		int AudioID;
-		int lastAudioID;
-		bool is_playing;
-		std::vector <int> ID;
-		std::vector <std::wstring> Text;
-
-		void search_memory(HANDLE hProcess);
-		bool check_audio(HANDLE hProcess);
-		void file_memory(std::wifstream& file);
-		void file_text(std::wifstream& file);
-};
-
 // Main
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
 
@@ -261,6 +258,8 @@ bool openFontDialog(HWND hwnd, LOGFONT &lf, HFONT &subtitlesFont, COLORREF &subt
 bool openColorDialog(HWND hwnd, COLORREF &subtitlesColor);
 
 void invalidateWindow(HWND hwnd);
+
+bool SubtitlesLoad(wchar_t *fileName);
 
 bool saveConfig(wchar_t *filename);
 bool loadConfig(const wchar_t *filename);

@@ -1,5 +1,7 @@
 #include "MemSubLoader.hpp"
 
+std::vector <Subtitles> subtitles;
+
 // Find address containing audio ID
 void Subtitles::findAddress(uintptr_t &address, int offset, HANDLE hProcess)
 {
@@ -25,6 +27,7 @@ bool Subtitles::check_audio(HANDLE hProcess)
 		std::cout<<"play error: "<<GetLastError()<<std::endl;
 	if (!ReadProcessMemory(hProcess, (LPCVOID)address_audio, &AudioID, 4, &bytesRead))
 		std::cout<<"audio error: "<<GetLastError()<<std::endl;
+		std::cout<<AudioID<<std::endl;
 	if (is_playing)
 	{
 		if (AudioID != lastAudioID && AudioID > 0)
@@ -49,48 +52,76 @@ bool Subtitles::check_audio(HANDLE hProcess)
     }
 }
 
-void Subtitles::file_memory(std::wifstream& file)
+bool SubtitlesLoad(wchar_t *fileName)
 {
-	int num;
-	int offset;
-	file >> bAddress_audio;
-
-	file >> num;
-	for(int i = 0; i < num; i++)
-	{
-		file >> offset;
-
-		offset_audio.push_back(offset);
+    std::ifstream inputFile(fileName);
+	if (!inputFile.is_open()) {
+		return true;
 	}
-
-	file >> bAddress_play;
-	file >> num;
-
-	for(int i = 0; i < num; i++)
-	{
-		file >> offset;
-
-		offset_play.push_back(offset);
+	if (!inputFile.good()) {
+		inputFile.close();
+		return true;
 	}
-}
-
-void Subtitles::file_text(std::wifstream& file)
-{
-	std::wstring ws;
-	while (getline(file, ws))
-	{
-		if (ws == L"END")
-			break;
-
-		int num;
-		std::wstring text;
-		std::wistringstream iss(ws);
-		iss >> num;
-		std::getline(iss, text);
-
-		ID.push_back(num);
-		Text.push_back(text);
+	Json::Value root;
+	try {
+		inputFile >> root; // Parse the JSON data from the file
+	} catch (const std::exception &e) {
+		inputFile.close();
+		return true;
 	}
+	if(root.isMember("Addresses"))
+	{
+	    for(int i = 0; i < root["Addresses"].size(); i++)
+	    {
+	        subtitles.push_back(Subtitles());
+	        Json::Value address;
+	        address = root["Addresses"][i];
+
+	        subtitles[i].bAddress_audio = address["BaseAddressAudio"].asInt();
+	        std::cout<<subtitles[i].bAddress_audio<<":  ";
+	        for(int j = 0; j < address["OffsetsAudio"].size();j++)
+                subtitles[i].offset_audio.push_back(address["OffsetsAudio"][j].asInt());
+
+            subtitles[i].bAddress_play = address["BaseAddressPlay"].asInt();
+            std::cout<<subtitles[i].bAddress_play<<std::endl;
+	        for(int j = 0; j < address["OffsetsPlay"].size();j++)
+                subtitles[i].offset_play.push_back(address["OffsetsPlay"][j].asInt());
+	    }
+	}
+    std::string sub = "Subtitles";
+    for(int i = 0; i < root["Addresses"].size(); i++)
+    {
+        if(root.isMember(sub+std::to_string(i)))
+        {
+            int s = root[sub+std::to_string(i)].size();
+            for(int j = 0; j< s; j++)
+            {
+                Json::Value dialog;
+                dialog =root[sub+std::to_string(i)][j];
+                if(dialog.isMember("ID"))
+                {
+                    subtitles[i].ID.push_back(dialog["ID"].asInt());
+                }
+
+                if(dialog.isMember("Identifier"))
+                {
+                    const std::string identString = dialog["Identifier"].asString();
+                    const std::wstring identWString(identString.begin(), identString.end());
+                    subtitles[i].identifier.push_back(identWString);
+                }
+
+                if(dialog.isMember("Text"))
+                {
+                    const std::string textString = dialog["Text"].asString();
+                    const std::wstring textWString(textString.begin(), textString.end());
+                    subtitles[i].Text.push_back(textWString);
+                }
+            }
+        }
+    }
+
+	inputFile.close();
+	return false;
 }
 
 // Open File Explorer

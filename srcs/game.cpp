@@ -3,25 +3,8 @@
 // Used when the game starts
 void gameStart(PROCESS_INFORMATION pi)
 {
-    int num;
-	std::vector <Subtitles> Sub;
-	std::wifstream subfile(subtitlesPath);
-	if (subfile.is_open() && !subfile.eof())
-	{
-	    subfile >> num;
-	    for(int i = 0; i <num; i++)
-        {
-            Sub.push_back(Subtitles());
-            Sub[i].file_memory(subfile);
-        }
-        for(int i = 0; i < num; i++)
-        {
-            Sub[i].file_text(subfile);
-        }
-
-	}
-	subfile.close();
-
+	SubtitlesLoad(subtitlesPath);
+    int num = subtitles.size();
 	bool is = false;
 	const std::chrono::milliseconds frame_duration(1000 / 60);
 	while (WaitForSingleObject( pi.hProcess, 0 ) == WAIT_TIMEOUT)
@@ -30,8 +13,8 @@ void gameStart(PROCESS_INFORMATION pi)
 	    for(int i = 0; i < num; i++)
         {
             is = false;
-            Sub[i].search_memory(pi.hProcess);
-            if (Sub[i].check_audio(pi.hProcess))
+            subtitles[i].search_memory(pi.hProcess);
+            if (subtitles[i].check_audio(pi.hProcess))
                 is = true;
         }
         if (!is && textToDraw !=L"")
