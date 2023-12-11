@@ -168,6 +168,7 @@ struct Subtitles
 extern std::vector <Subtitles> subtitles;
 extern std::map<wchar_t *, Config, WStringCompare> configs;
 extern std::wstring textToDraw;
+extern std::wstring testidentifier;
 extern Config tmpConfig;
 extern wchar_t gamePath[MAX_PATH];
 extern wchar_t subtitlesPath[MAX_PATH];

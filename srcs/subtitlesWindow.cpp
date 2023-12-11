@@ -15,7 +15,8 @@ LRESULT CALLBACK subtitlesWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 			}
 			else
 			{
-				wchar_t identifier[] = L"DEFAULT"; // Replace here with identifier from current subtitles
+			    wchar_t identifier[255];
+                wcscpy(identifier, testidentifier.c_str());
 				std::map<wchar_t *, Config>::iterator iter = getConfig(identifier);
 				if (iter != configs.end())
 				{

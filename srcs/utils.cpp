@@ -38,6 +38,7 @@ bool Subtitles::check_audio(HANDLE hProcess)
 				if (AudioID == ID[i])
 				{
 					textToDraw = Text[i].c_str();
+					testidentifier = identifier[i].c_str();
 					invalidateWindow(subtitlesHWND);
 					break;
 				}

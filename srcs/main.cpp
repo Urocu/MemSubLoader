@@ -6,6 +6,7 @@ using namespace Gdiplus;
 // Global resources
 std::map<wchar_t *, Config, WStringCompare> configs;
 std::wstring textToDraw;
+std::wstring testidentifier;
 Config tmpConfig = {};
 wchar_t gamePath[MAX_PATH] = {};
 wchar_t subtitlesPath[MAX_PATH] = {};
@@ -109,9 +110,31 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	{
 		configs.insert({ wcsdup(L"DEFAULT"), defaultConfig });
 	}
-	if(nArgs > 1 && wcsstr(ArgList[1], L"-test"))
+	if(nArgs > 1 && wcsstr(ArgList[1], L"-translate"))
     {
-        MessageBox(NULL, L"Shortcut works", L"Shortcut", MB_ICONERROR);
+        if (gamePath[0] != L'\0' && subtitlesPath[0] != L'\0')
+        {
+						STARTUPINFO si;
+						PROCESS_INFORMATION pi;
+
+						ZeroMemory(&si, sizeof(si));
+						si.cb = sizeof(si);
+						ZeroMemory(&pi, sizeof(pi));
+
+						// Opens the game
+						CreateProcess(gamePath, NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
+						WaitForInputIdle(pi.hProcess, INFINITE);
+
+						if (createSubtitlesWindow())
+						{
+							MessageBox(NULL, L"Error: Failed to initialize subtitles window", L"Window initialization", MB_ICONERROR);
+						}
+						gameStart(pi);
+        }
+        else
+        {
+            MessageBox(NULL, message, L"Something went wrong :(", MB_ICONERROR);
+        }
         return 0;
     }
     else
