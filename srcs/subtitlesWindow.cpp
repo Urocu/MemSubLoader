@@ -7,7 +7,8 @@ LRESULT CALLBACK subtitlesWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 	{
 		case WM_PAINT:
 		{
-			Config config = {};
+			Config config;
+			setDefaultConfig(config);// set to default in case the identifier is wrong
 			if (livePreview)
 			{
 				config = tmpConfig;

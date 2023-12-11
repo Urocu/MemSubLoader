@@ -23,11 +23,9 @@ void Subtitles::search_memory(HANDLE hProcess)
 bool Subtitles::check_audio(HANDLE hProcess)
 {
 	SIZE_T bytesRead;
-	if (!ReadProcessMemory(hProcess, (LPCVOID)address_play, &is_playing, 1, &bytesRead))
-		std::cout<<"play error: "<<GetLastError()<<std::endl;
-	if (!ReadProcessMemory(hProcess, (LPCVOID)address_audio, &AudioID, 4, &bytesRead))
-		std::cout<<"audio error: "<<GetLastError()<<std::endl;
-		std::cout<<AudioID<<std::endl;
+	ReadProcessMemory(hProcess, (LPCVOID)address_play, &is_playing, 1, &bytesRead);
+    ReadProcessMemory(hProcess, (LPCVOID)address_audio, &AudioID, 4, &bytesRead);
+
 	if (is_playing)
 	{
 		if (AudioID != lastAudioID && AudioID > 0)
@@ -79,12 +77,10 @@ bool SubtitlesLoad(wchar_t *fileName)
 	        address = root["Addresses"][i];
 
 	        subtitles[i].bAddress_audio = address["BaseAddressAudio"].asInt();
-	        std::cout<<subtitles[i].bAddress_audio<<":  ";
 	        for(int j = 0; j < address["OffsetsAudio"].size();j++)
                 subtitles[i].offset_audio.push_back(address["OffsetsAudio"][j].asInt());
 
             subtitles[i].bAddress_play = address["BaseAddressPlay"].asInt();
-            std::cout<<subtitles[i].bAddress_play<<std::endl;
 	        for(int j = 0; j < address["OffsetsPlay"].size();j++)
                 subtitles[i].offset_play.push_back(address["OffsetsPlay"][j].asInt());
 	    }
