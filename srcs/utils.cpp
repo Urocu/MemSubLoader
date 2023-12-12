@@ -53,6 +53,7 @@ bool Subtitles::check_audio(HANDLE hProcess)
 
 bool SubtitlesLoad(wchar_t *fileName)
 {
+    subtitles.clear();
     std::ifstream inputFile(fileName);
 	if (!inputFile.is_open()) {
 		return true;
@@ -142,7 +143,7 @@ bool openFileExplorer(HWND hwnd, wchar_t *filePath, int filePathSize, int button
 
 		case SUBTITLES_BUTTON:
 		{
-			ofn.lpstrFilter = L"Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0";
+			ofn.lpstrFilter = L"Subtitles Files (*.json)\0*.json\0All Files (*.*)\0*.*\0";
 		}
 		break;
 

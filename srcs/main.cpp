@@ -105,6 +105,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			MessageBox(NULL, message, L"Configuration autoloading", MB_ICONERROR);
 			configs.insert({ wcsdup(L"DEFAULT"), defaultConfig });
 		}
+		if(SubtitlesLoad(subtitlesPath))
+        {
+            MessageBox(NULL, L"Failed to load subtitles file", L"Configuration autoloading", MB_ICONERROR);
+            subtitlesPath[0] = '\0';
+        }
 	}
 	else // No autoload.dat found
 	{

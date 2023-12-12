@@ -3,7 +3,6 @@
 // Used when the game starts
 void gameStart(PROCESS_INFORMATION pi)
 {
-	SubtitlesLoad(subtitlesPath);
     int num = subtitles.size();
 	bool is = false;
 	const std::chrono::milliseconds frame_duration(1000 / 60);
