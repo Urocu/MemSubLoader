@@ -32,12 +32,11 @@ LRESULT CALLBACK subtitlesWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 			}
 
 			// Initialization
-			Gdiplus::Bitmap subtitlesBitmap(config.areaWidth, config.areaHeight, PixelFormat32bppARGB);
+			Gdiplus::Bitmap subtitlesBitmap(config.areaWidth*screenWidth/100, config.areaHeight*screenHeight/100, PixelFormat32bppARGB);
 			HBITMAP bmp;
 			Gdiplus::Graphics graphics(&subtitlesBitmap);
 			HDC hdc = GetDC(hwnd);
-
-			Gdiplus::Rect rect(0, 0, config.areaWidth, config.areaHeight);
+			Gdiplus::Rect rect(0, 0, config.areaWidth*screenWidth/100, config.areaHeight*screenHeight/100);
 			Gdiplus::Font font(hdc, &config.subtitlesFont);
 			Gdiplus::FontFamily fontFamily;
 			font.GetFamily(&fontFamily);
@@ -101,8 +100,8 @@ LRESULT CALLBACK subtitlesWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 			blend.BlendOp = AC_SRC_OVER;
 			blend.SourceConstantAlpha = 255;
 			blend.AlphaFormat = AC_SRC_ALPHA;
-			POINT ptLocation = { config.areaXPosition, config.areaYPosition };
-			SIZE szWnd = { config.areaWidth, config.areaHeight };
+			POINT ptLocation = { config.areaXPosition*screenWidth/100, config.areaYPosition*screenHeight/100 };
+			SIZE szWnd = { config.areaWidth*screenWidth/100, config.areaHeight*screenHeight/100 };
 			POINT ptSrc = { 0, 0 };
 
 			// Update subtitles window

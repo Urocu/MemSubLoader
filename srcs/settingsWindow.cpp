@@ -119,25 +119,25 @@ LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 
 				case AREA_XPOS_EDIT:
 				{
-					handleEdit(hwnd, tmpConfig.areaXPosition, oldAreaXPosition, L"Area X position", AREA_XPOS_EDIT, AREA_XPOS_MIN, screenWidth, wParam);
+					handleEdit(hwnd, tmpConfig.areaXPosition, oldAreaXPosition, L"Area X position", AREA_XPOS_EDIT, AREA_XPOS_MIN, 100, wParam);
 				}
 				break;
 
 				case AREA_YPOS_EDIT:
 				{
-					handleEdit(hwnd, tmpConfig.areaYPosition, oldAreaYPosition, L"Area Y position", AREA_YPOS_EDIT, AREA_YPOS_MIN, screenHeight, wParam);
+					handleEdit(hwnd, tmpConfig.areaYPosition, oldAreaYPosition, L"Area Y position", AREA_YPOS_EDIT, AREA_YPOS_MIN, 100, wParam);
 				}
 				break;
 
 				case AREA_WIDTH_EDIT:
 				{
-					handleEdit(hwnd, tmpConfig.areaWidth, oldAreaWidth, L"Area width", AREA_WIDTH_EDIT, AREA_WIDTH_MIN, screenWidth, wParam);
+					handleEdit(hwnd, tmpConfig.areaWidth, oldAreaWidth, L"Area width", AREA_WIDTH_EDIT, AREA_WIDTH_MIN, 100, wParam);
 				}
 				break;
 
 				case AREA_HEIGHT_EDIT:
 				{
-					handleEdit(hwnd, tmpConfig.areaHeight, oldAreaHeight, L"Area height", AREA_HEIGHT_EDIT, AREA_HEIGHT_MIN, screenHeight, wParam);
+					handleEdit(hwnd, tmpConfig.areaHeight, oldAreaHeight, L"Area height", AREA_HEIGHT_EDIT, AREA_HEIGHT_MIN, 100, wParam);
 				}
 				break;
 
@@ -666,7 +666,6 @@ void handleUpdown(HWND hwnd, int &value, int &oldValue, const wchar_t *name, int
 	else
 	{
 		int cursorPosition = SendDlgItemMessage(hwnd, id, EM_GETSEL, 0, 0);
-		value = newValue;
 		oldValue = value;
 		SetDlgItemInt(settingsHWND, id, value, TRUE);
 		SendDlgItemMessage(hwnd, id, EM_SETSEL, cursorPosition, cursorPosition);
@@ -691,7 +690,7 @@ void handleEdit(HWND hwnd, int &value, int &oldValue, const wchar_t *name, int i
 			wsprintf(message, L"%s cannot be superior to %i", name, max);
 			MessageBox(NULL, message, title, MB_ICONWARNING);
 			int cursorPosition = SendDlgItemMessage(hwnd, id, EM_GETSEL, 0, 0);
-        	value = oldValue;
+        	value = max;
 			SetDlgItemInt(settingsHWND, id, value, TRUE);
 			SendDlgItemMessage(hwnd, id, EM_SETSEL, cursorPosition, cursorPosition);
 		}
@@ -701,7 +700,7 @@ void handleEdit(HWND hwnd, int &value, int &oldValue, const wchar_t *name, int i
 			wsprintf(message, L"%s cannot be inferior to %i", name, min);
 			MessageBox(NULL, message, title, MB_ICONWARNING);
 			int cursorPosition = SendDlgItemMessage(hwnd, id, EM_GETSEL, 0, 0);
-        	value = oldValue;
+        	value = min;
 			SetDlgItemInt(settingsHWND, id, value, TRUE);
 			SendDlgItemMessage(hwnd, id, EM_SETSEL, cursorPosition, cursorPosition);
 		}
