@@ -6,7 +6,7 @@
 
 MemSubLoader is a software that reads memory and loads subtitles for corresponding audio. It's made for old games that don't have any subtitles or when it's hard to edit them.
 
-Thanks to using the old low-level Win32 API it should be compatible from Windows XP SP2 to Windows 11 latest build. This is determined by the usage of the GDI+ library used to render the subtitles (requires Windows XP) and the usage of extended window styles (requires Windows XP SP2)
+MemSubLoader should be compatible from Windows XP SP2 to Windows 11 latest build, thanks to using the old low-level Win32 API. This API is supposed to be available starting from Windows NT, but the support range is determined by the usage of the GDI+ library used to render the subtitles (requires Windows XP) and the usage of extended window styles (requires Windows XP SP2).
 
 ## Features
 The current features are :
