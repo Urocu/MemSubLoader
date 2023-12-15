@@ -21,6 +21,15 @@ You can download the latest version here :
 
 https://github.com/Urocu/MemSubLoader/releases/latest
 
+## How it works
+MemSubLoader uses json format to store subtitles, addresses, configuration and other information needed to work.
+
+Subtitles info includes ID, text and identifier. Identifier is used to load specific configuration
+
+Addresses are used to read specific places in the game's memory to determine when it should load subtitles and which text to load.
+
+Configuration has info for how to display the text. More on that in the later part.
+
 ## Dependencies
 We tried to keep external dependencies to a minimum. MemSubLoader currently depends on :
 - [JsonCpp](https://github.com/open-source-parsers/jsoncpp "JsonCpp") for loading/saving the configuration
