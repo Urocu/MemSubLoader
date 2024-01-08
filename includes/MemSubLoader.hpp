@@ -14,8 +14,6 @@
 # include <vector>
 # include <map>
 # include <stdio.h>
-# include <chrono>
-# include <thread>
 # include <sstream>
 # include <gdiplus.h>
 # include "OutlineText.h"

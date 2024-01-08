@@ -5,35 +5,34 @@ void gameStart(PROCESS_INFORMATION pi)
 {
     int num = subtitles.size();
 	bool is = false;
-	const std::chrono::milliseconds frame_duration(1000 / 60);
-	while (WaitForSingleObject( pi.hProcess, 0 ) == WAIT_TIMEOUT)
-	{
-	    auto start_time = std::chrono::high_resolution_clock::now();
-	    for(int i = 0; i < num; i++)
+    // set a 100ms timer
+	SetTimer(NULL, 1, 100, nullptr);
+    // process messages, otherwise the software will freeze
+    MSG msg = { };
+    while (GetMessage(&msg, nullptr, 0, 0))
+    {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+        //
+        if (msg.message == WM_TIMER)
         {
-            is = false;
-            subtitles[i].search_memory(pi.hProcess);
-            if (subtitles[i].check_audio(pi.hProcess))
-                is = true;
+            for(int i = 0; i < num; i++)
+                {
+                    is = false;
+                    subtitles[i].search_memory(pi.hProcess);
+                    if (subtitles[i].check_audio(pi.hProcess))
+                        is = true;
+                }
+                if (!is && textToDraw !=L"")
+                {
+                    textToDraw = L"";
+                    invalidateWindow(subtitlesHWND);
+                }
         }
-        if (!is && textToDraw !=L"")
-		{
-			textToDraw = L"";
-			invalidateWindow(subtitlesHWND);
-		}
-		// process messages, otherwise the software will freeze
-        auto end_time = std::chrono::high_resolution_clock::now();
-        auto elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
-		MSG msg = { };
-		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE) || elapsed_time < frame_duration)
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-			end_time = std::chrono::high_resolution_clock::now();
-            elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
-            std::this_thread::sleep_for((std::chrono::milliseconds)10);
-		}
+        if(WaitForSingleObject( pi.hProcess, 0 ) != WAIT_TIMEOUT)
+            break;
 	}
+	KillTimer(NULL, 1);
 	CloseHandle(pi.hProcess);
 	CloseHandle(pi.hThread);
 	DestroyWindow(subtitlesHWND);
