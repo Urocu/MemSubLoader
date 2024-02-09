@@ -32,7 +32,7 @@ void gameStart(PROCESS_INFORMATION pi)
         if(WaitForSingleObject( pi.hProcess, 0 ) != WAIT_TIMEOUT)
             break;
 	}
-    //Makes sure to close the app completely in case the
+    //Makes sure to close the app completely in case the main window is closed while playing the game
 	if(!IsWindow(mainHWND))
         PostQuitMessage(0);
 	KillTimer(NULL, 1);
