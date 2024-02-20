@@ -2,6 +2,16 @@
 
 std::vector <Subtitles> subtitles;
 
+std::wstring jsonUnicodeToWstring(const Json::Value& value)
+{
+    std::string str = value.asString();
+    int wstrLength = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
+    std::wstring wstr(wstrLength, 0);
+    MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &wstr[0], wstrLength);
+    return wstr;
+}
+
+
 // Find address containing audio ID
 void Subtitles::findAddress(uintptr_t &address, int offset, HANDLE hProcess)
 {
@@ -20,7 +30,7 @@ void Subtitles::search_memory(HANDLE hProcess)
 		findAddress(address_play,offset_play[i],hProcess);
 }
 
-bool Subtitles::check_audio(HANDLE hProcess)
+bool Subtitles::check_audio(HANDLE hProcess, int place)
 {
 	SIZE_T bytesRead;
 	ReadProcessMemory(hProcess, (LPCVOID)address_play, &is_playing, 1, &bytesRead);
@@ -31,13 +41,21 @@ bool Subtitles::check_audio(HANDLE hProcess)
 		if (AudioID != lastAudioID && AudioID > 0)
 		{
 			lastAudioID = AudioID;
-			for(size_t i = 0; i < ID.size(); i++)
+			for(size_t i = 0; i < dialog.size(); i++)
 			{
-				if (AudioID == ID[i])
+				if (AudioID == dialog[i].ID)
 				{
-					textToDraw = Text[i].c_str();
-					testidentifier = identifier[i].c_str();
+					textToDraw = dialog[i].Text[0];
+					testidentifier = dialog[i].identifier;
 					invalidateWindow(subtitlesHWND);
+					if(dialog[i].Timer.size() != 0)
+                    {
+                        KillTimer(mainHWND,1);
+                        sub = place;
+                        subID = i;
+                        SetTimer(mainHWND, 2, dialog[i].Timer[0],NULL);
+                    }
+
 					break;
 				}
 			}
@@ -91,29 +109,62 @@ bool SubtitlesLoad(wchar_t *fileName)
     {
         if(root.isMember(sub+std::to_string(i)))
         {
+
+
             int s = root[sub+std::to_string(i)].size();
             for(int j = 0; j< s; j++)
             {
+                int id;
+                std::wstring ident;
+                std::vector<std::wstring> text;
+                std::vector<u_int> timer;
+
                 Json::Value dialog;
                 dialog =root[sub+std::to_string(i)][j];
                 if(dialog.isMember("ID"))
                 {
-                    subtitles[i].ID.push_back(dialog["ID"].asInt());
+                    id = dialog["ID"].asInt();
                 }
 
                 if(dialog.isMember("Identifier"))
                 {
                     const std::string identString = dialog["Identifier"].asString();
                     const std::wstring identWString(identString.begin(), identString.end());
-                    subtitles[i].identifier.push_back(identWString);
+                    ident = identWString;
                 }
 
                 if(dialog.isMember("Text"))
                 {
-                    const std::string textString = dialog["Text"].asString();
-                    const std::wstring textWString(textString.begin(), textString.end());
-                    subtitles[i].Text.push_back(textWString);
+                    Json::Value subs = dialog["Text"];
+                    if(subs.size() == 0)
+                    {
+                        const std::wstring textWString = jsonUnicodeToWstring(subs);
+                        text.push_back(textWString);
+                    }
+                    else
+                    for(int j = 0; j < subs.size();j++)
+                    {
+                        const std::wstring textWString = jsonUnicodeToWstring(subs[j]);
+                        text.push_back(textWString);
+                    }
                 }
+
+                if(dialog.isMember("Timer"))
+                {
+                    Json::Value time = dialog["Timer"];
+                    if(time.size() == 0)
+                    {
+                        timer.push_back(time.asInt());
+                    }
+                    else
+                    for(int j = 0; j < time.size();j++)
+                    {
+                        timer.push_back(time[j].asInt());
+                    }
+                }
+                Dialog test = {id,text,timer,ident};
+                subtitles[i].dialog.push_back(test);
+
             }
         }
     }

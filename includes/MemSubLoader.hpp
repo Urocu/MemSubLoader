@@ -140,6 +140,15 @@ struct WStringCompare
 	}
 };
 
+struct Dialog
+{
+    int ID;
+    std::vector <std::wstring> Text;
+    std::vector <u_int> Timer;
+    std::wstring identifier;
+};
+
+
 struct Subtitles
 {
 		uintptr_t bAddress_audio;
@@ -153,11 +162,10 @@ struct Subtitles
 		int AudioID;
 		int lastAudioID;
 		bool is_playing;
-		std::vector <int> ID;
-		std::vector <std::wstring> Text;
-		std::vector <std::wstring> identifier;
+		std::vector <Dialog> dialog;
+
 		void search_memory(HANDLE hProcess);
-		bool check_audio(HANDLE hProcess);
+		bool check_audio(HANDLE hProcess, int place);
 };
 
 // Global variables definition
@@ -174,6 +182,9 @@ extern HINSTANCE hInst;
 extern bool livePreview;
 extern int screenWidth;
 extern int screenHeight;
+extern int sub;
+extern int subID;
+
 
 // Windows
 extern HWND mainHWND;
@@ -250,6 +261,8 @@ void updateConfiguratorWindowAttributes();
 LRESULT CALLBACK ConfiguratorWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 // Utilities
+std::wstring jsonUnicodeToWstring(const Json::Value& value);
+
 void findAddress(uintptr_t &address, int offset, HANDLE hProcess);
 
 bool openFileExplorer(HWND hwnd, wchar_t *filePath, int filePathSize, int button);

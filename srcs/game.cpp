@@ -4,38 +4,62 @@
 void gameStart(PROCESS_INFORMATION pi)
 {
     int num = subtitles.size();
+    int currentTimer = 1;
 	bool is = false;
     // set a 100ms timer
-	SetTimer(NULL, 1, 100, nullptr);
+	SetTimer(mainHWND, 1, 100, NULL);
     // process messages, otherwise the software will freeze
     MSG msg = { };
     while (GetMessage(&msg, nullptr, 0, 0))
     {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
-        //
         if (msg.message == WM_TIMER)
         {
-            for(int i = 0; i < num; i++)
+            switch(msg.wParam)
+            {
+            case 1:
+                is = false;
+                for(int i = 0; i < num; i++)
                 {
-                    is = false;
+
                     subtitles[i].search_memory(pi.hProcess);
-                    if (subtitles[i].check_audio(pi.hProcess))
+                    if (subtitles[i].check_audio(pi.hProcess, i))
                         is = true;
+
                 }
                 if (!is && textToDraw !=L"")
                 {
                     textToDraw = L"";
                     invalidateWindow(subtitlesHWND);
                 }
+                break;
+            case 2:
+                if(subtitles[sub].dialog[subID].Timer.size() > currentTimer)
+                {
+                    textToDraw = subtitles[sub].dialog[subID].Text[currentTimer];
+                    invalidateWindow(subtitlesHWND);
+                    SetTimer(mainHWND,2,subtitles[sub].dialog[subID].Timer[currentTimer],NULL);
+                    currentTimer++;
+                }
+                else
+                {
+                    KillTimer(mainHWND,2);
+                    SetTimer(mainHWND, 1, 100, NULL);
+                    currentTimer = 1;
+                }
+                break;
+            }
+
         }
         if(WaitForSingleObject( pi.hProcess, 0 ) != WAIT_TIMEOUT)
             break;
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
 	}
     //Makes sure to close the app completely in case the main window is closed while playing the game
 	if(!IsWindow(mainHWND))
         PostQuitMessage(0);
-	KillTimer(NULL, 1);
+	KillTimer(mainHWND, 1);
+	KillTimer(mainHWND, 2);
 	CloseHandle(pi.hProcess);
 	CloseHandle(pi.hThread);
 	DestroyWindow(subtitlesHWND);

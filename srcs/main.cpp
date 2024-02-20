@@ -14,6 +14,9 @@ HINSTANCE hInst = NULL;
 bool livePreview = false;
 int screenWidth = GetSystemMetrics(SM_CXSCREEN);
 int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+int sub = 0;
+int subID = 0;
+
 
 // Windows
 HWND mainHWND = NULL;
