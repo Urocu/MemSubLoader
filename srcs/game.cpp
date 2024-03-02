@@ -33,15 +33,17 @@ void gameStart(PROCESS_INFORMATION pi)
                 }
                 break;
             case 2:
-                if(subtitles[sub].dialog[subID].Timer.size() > currentTimer)
+                if(subtitles[sub].dialog[subID].Timer.size() > currentTimer && subtitles[sub].dialog[subID].Timer[currentTimer] > subtitles[sub].dialog[subID].Timer[currentTimer-1])
                 {
-                    textToDraw = subtitles[sub].dialog[subID].Text[currentTimer];
+                    textToDraw = subtitles[sub].dialog[subID].Text[currentTimer-1];
                     invalidateWindow(subtitlesHWND);
-                    SetTimer(mainHWND,2,subtitles[sub].dialog[subID].Timer[currentTimer],NULL);
+                    SetTimer(mainHWND,2,subtitles[sub].dialog[subID].Timer[currentTimer] - subtitles[sub].dialog[subID].Timer[currentTimer-1],NULL);
                     currentTimer++;
                 }
                 else
                 {
+                    textToDraw = subtitles[sub].dialog[subID].Text[currentTimer-1];
+                    invalidateWindow(subtitlesHWND);
                     KillTimer(mainHWND,2);
                     SetTimer(mainHWND, 1, 100, NULL);
                     currentTimer = 1;

@@ -45,17 +45,20 @@ bool Subtitles::check_audio(HANDLE hProcess, int place)
 			{
 				if (AudioID == dialog[i].ID)
 				{
-					textToDraw = dialog[i].Text[0];
-					testidentifier = dialog[i].identifier;
-					invalidateWindow(subtitlesHWND);
-					if(dialog[i].Timer.size() != 0)
+				    if(dialog[i].Timer.size() == 0)
                     {
+                        textToDraw = dialog[i].Text[0];
+                    }
+                    else
+                    {
+                        textToDraw = L"";
                         KillTimer(mainHWND,1);
                         sub = place;
                         subID = i;
                         SetTimer(mainHWND, 2, dialog[i].Timer[0],NULL);
                     }
-
+					testidentifier = dialog[i].identifier;
+					invalidateWindow(subtitlesHWND);
 					break;
 				}
 			}
