@@ -184,6 +184,7 @@ extern int screenWidth;
 extern int screenHeight;
 extern int sub;
 extern int subID;
+extern bool isGameOpened;
 
 
 // Windows

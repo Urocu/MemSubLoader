@@ -28,6 +28,14 @@ LRESULT CALLBACK ConfiguratorWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPA
 					std::map<wchar_t *, Config, WStringCompare>::iterator iter = getConfig(selectedIdentifier);
 					if (iter != configs.end())
 					{
+                        if(!IsWindow(subtitlesHWND) && !isGameOpened)
+                        {
+                            if(createSubtitlesWindow())
+							{
+								MessageBox(hwnd, L"Error: Failed to initialize subtitles window", L"Window initialization", MB_ICONERROR);
+								break;
+							}
+                        }
 						if (!IsWindow(settingsHWND))
 						{
 							tmpConfig = iter->second;

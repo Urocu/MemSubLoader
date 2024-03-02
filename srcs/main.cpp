@@ -16,7 +16,7 @@ int screenWidth = GetSystemMetrics(SM_CXSCREEN);
 int screenHeight = GetSystemMetrics(SM_CYSCREEN);
 int sub = 0;
 int subID = 0;
-
+bool isGameOpened = false;
 
 // Windows
 HWND mainHWND = NULL;
@@ -133,9 +133,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						CreateProcess(gamePath, NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
 						WaitForInputIdle(pi.hProcess, INFINITE);
 
-						if (createSubtitlesWindow())
+                        if(!IsWindow(subtitlesHWND))
 						{
-							MessageBox(NULL, L"Error: Failed to initialize subtitles window", L"Window initialization", MB_ICONERROR);
+						    if (createSubtitlesWindow())
+                            {
+                                MessageBox(NULL, L"Error: Failed to initialize subtitles window", L"Window initialization", MB_ICONERROR);
+                            }
 						}
 						gameStart(pi);
         }

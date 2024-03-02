@@ -6,6 +6,9 @@ void gameStart(PROCESS_INFORMATION pi)
     int num = subtitles.size();
     int currentTimer = 1;
 	bool is = false;
+
+	isGameOpened = true;
+
     // set a 100ms timer
 	SetTimer(mainHWND, 1, 100, NULL);
     // process messages, otherwise the software will freeze
@@ -65,4 +68,5 @@ void gameStart(PROCESS_INFORMATION pi)
 	CloseHandle(pi.hProcess);
 	CloseHandle(pi.hThread);
 	DestroyWindow(subtitlesHWND);
+	isGameOpened = false;
 }

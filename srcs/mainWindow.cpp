@@ -53,9 +53,12 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 						CreateProcess(gamePath, NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
 						WaitForInputIdle(pi.hProcess, INFINITE);
 
-						if (createSubtitlesWindow())
+						if(!IsWindow(subtitlesHWND))
 						{
-							MessageBox(hwnd, L"Error: Failed to initialize subtitles window", L"Window initialization", MB_ICONERROR);
+						    if (createSubtitlesWindow())
+                            {
+                                MessageBox(NULL, L"Error: Failed to initialize subtitles window", L"Window initialization", MB_ICONERROR);
+                            }
 						}
 
 						PostMessage(hwnd, WM_SYSCOMMAND, SC_MINIMIZE, 0);

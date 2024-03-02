@@ -147,6 +147,8 @@ LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 					livePreview = false;
 					DestroyWindow(hwnd);
 					invalidateWindow(subtitlesHWND);
+					if(!isGameOpened)
+                        DestroyWindow(subtitlesHWND);
 				}
 				break;
 
@@ -158,6 +160,8 @@ LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 						livePreview = false;
 						DestroyWindow(settingsHWND);
 						invalidateWindow(subtitlesHWND);
+						if(!isGameOpened)
+                            DestroyWindow(subtitlesHWND);
 					}
 				}
 				break;
@@ -297,6 +301,8 @@ LRESULT CALLBACK SettingsWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 			{
 				livePreview = false;
 				DestroyWindow(settingsHWND);
+				if(!isGameOpened)
+                    DestroyWindow(subtitlesHWND);
 			}
 			return true;
 		}
