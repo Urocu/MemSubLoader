@@ -672,6 +672,7 @@ void handleUpdown(HWND hwnd, int &value, int &oldValue, const wchar_t *name, int
 	else
 	{
 		int cursorPosition = SendDlgItemMessage(hwnd, id, EM_GETSEL, 0, 0);
+		value = newValue;
 		oldValue = value;
 		SetDlgItemInt(settingsHWND, id, value, TRUE);
 		SendDlgItemMessage(hwnd, id, EM_SETSEL, cursorPosition, cursorPosition);
