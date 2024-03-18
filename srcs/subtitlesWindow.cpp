@@ -100,7 +100,7 @@ LRESULT CALLBACK subtitlesWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 			blend.BlendOp = AC_SRC_OVER;
 			blend.SourceConstantAlpha = 255;
 			blend.AlphaFormat = AC_SRC_ALPHA;
-			POINT ptLocation = { config.areaXPosition*screenWidth/100, config.areaYPosition*screenHeight/100 };
+			POINT ptLocation = { config.areaXPosition*(screenWidth-1)/100, config.areaYPosition*(screenHeight-1)/100 };
 			SIZE szWnd = { config.areaWidth*screenWidth/100, config.areaHeight*screenHeight/100 };
 			POINT ptSrc = { 0, 0 };
 

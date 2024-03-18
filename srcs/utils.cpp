@@ -11,7 +11,6 @@ std::wstring jsonUnicodeToWstring(const Json::Value& value)
     return wstr;
 }
 
-
 // Find address containing audio ID
 void Subtitles::findAddress(uintptr_t &address, int offset, HANDLE hProcess)
 {
@@ -590,13 +589,10 @@ Gdiplus::StringAlignment getConfigAlignment(TextAlignment alignment)
 	switch (alignment) {
 		case ALIGN_LEFT:
 			return Gdiplus::StringAlignment::StringAlignmentNear;
-			break;
 		case ALIGN_CENTER:
 			return Gdiplus::StringAlignment::StringAlignmentCenter;
-			break;
 		case ALIGN_RIGHT:
 			return Gdiplus::StringAlignment::StringAlignmentFar;
-			break;
 		default:
 			return Gdiplus::StringAlignment::StringAlignmentCenter;
 	}
@@ -649,7 +645,7 @@ void checkConfig(Config &config)
     if(config.areaYPosition > screenHeight)
         config.areaYPosition = 0;
     if(config.areaWidth > screenWidth)
-        config.areaWidth = screenWidth;
+        config.areaWidth = 100;
     if(config.areaHeight > screenHeight)
         config.areaHeight = 100;
 }
