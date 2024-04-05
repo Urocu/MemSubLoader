@@ -152,9 +152,9 @@ LRESULT CALLBACK ConfiguratorWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPA
 					if (iter != configs.end())
 					{
 						wchar_t buffer[33] = { 0 };
-						CWin32InputBox::InputBox(L"Duplicate configuration", L"Duplicated configuration name :", buffer, 32, false, hwnd);
 
-						if (buffer[0] != L'\0')
+						if (CWin32InputBox::InputBox(L"Duplicate configuration", L"Duplicated configuration name :", buffer, 32, false, hwnd) == IDOK)
+                        if (buffer[0] != L'\0')
 						{
 							std::map<wchar_t *, Config, WStringCompare>::iterator iter2 = getConfig(buffer);
 							if (iter2 != configs.end())
