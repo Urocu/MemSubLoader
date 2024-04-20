@@ -126,7 +126,7 @@ bool SubtitlesLoad(wchar_t *fileName)
                 dialog =root[sub+std::to_string(i)][j];
                 if(dialog.isMember("ID"))
                 {
-                    id = dialog["ID"].asInt();
+                    id = dialog["ID"].asUInt();
                 }
 
                 if(dialog.isMember("Identifier"))
@@ -179,6 +179,117 @@ bool SubtitlesLoad(wchar_t *fileName)
         std::wcout<<SubInfo;
     }
 
+    if(root.isMember("Identifiers"))
+    {
+        root = root["Identifiers"];
+        //configs.clear();
+        for (Json::Value::const_iterator itr = root.begin(); itr != root.end(); ++itr) {
+            const std::string identifierString = itr.key().asString();
+
+            const std::wstring identifierWString(identifierString.begin(), identifierString.end());
+            wchar_t *identifier = wcsdup(identifierWString.c_str());
+
+            if(identifier == configs[identifier].identifier)
+                continue;
+
+            const Json::Value &configObject = *itr;
+            Config config;
+
+            config.identifier = identifier;
+
+            // Font
+            if (configObject.isMember("fontColor")) {
+                config.fontColor = static_cast<COLORREF>(configObject["fontColor"].asUInt());
+            }
+            if (configObject.isMember("fontColorAlpha")) {
+                config.fontColorAlpha = configObject["fontColorAlpha"].asInt();
+            }
+            if (configObject.isMember("fontFaceName") && configObject["fontFaceName"].isString()) {
+                if (configObject["fontFaceName"].size() < LF_FACESIZE) {
+                    std::string faceNameString = configObject["fontFaceName"].asString();
+                    std::wstring wFaceName = std::wstring(faceNameString.begin(), faceNameString.end());
+                    wcsncpy(config.subtitlesFont.lfFaceName, wFaceName.c_str(), LF_FACESIZE);
+                }
+            }
+            if (configObject.isMember("fontHeight")) {
+                config.subtitlesFont.lfHeight = configObject["fontHeight"].asInt();
+            }
+
+            if (configObject.isMember("fontWeight")) {
+                config.subtitlesFont.lfWeight = configObject["fontWeight"].asInt();
+            }
+
+            if (configObject.isMember("fontItalic")) {
+                config.subtitlesFont.lfItalic = configObject["fontItalic"].asBool();
+            }
+
+            if (configObject.isMember("fontUnderline")) {
+                config.subtitlesFont.lfUnderline = configObject["fontUnderline"].asBool();
+            }
+
+            if (configObject.isMember("fontStrikeout")) {
+                config.subtitlesFont.lfStrikeOut = configObject["fontStrikeout"].asBool();
+            }
+
+            // Alignement
+            if (configObject.isMember("horizontalAlignment")) {
+                config.horizontalAlignment = static_cast<TextAlignment>(configObject["horizontalAlignment"].asInt());
+            }
+            if (configObject.isMember("verticalAlignment")) {
+                config.verticalAlignment = static_cast<TextAlignment>(configObject["verticalAlignment"].asInt());
+            }
+
+            // Outline
+            if (configObject.isMember("outlineWidth")) {
+                config.outlineWidth = configObject["outlineWidth"].asInt();
+            }
+            if (configObject.isMember("outlineColor")) {
+                config.outlineColor = static_cast<COLORREF>(configObject["outlineColor"].asUInt());
+            }
+            if (configObject.isMember("outlineColorAlpha")) {
+                config.outlineColorAlpha = configObject["outlineColorAlpha"].asInt();
+            }
+
+            // Shadows
+            if (configObject.isMember("shadowsWidth")) {
+                config.shadowsWidth = configObject["shadowsWidth"].asInt();
+            }
+            if (configObject.isMember("shadowsColor")) {
+                config.shadowsColor = static_cast<COLORREF>(configObject["shadowsColor"].asUInt());
+            }
+            if (configObject.isMember("shadowsXOffset")) {
+                config.shadowsXOffset = configObject["shadowsXOffset"].asInt();
+            }
+            if (configObject.isMember("shadowsYOffset")) {
+                config.shadowsYOffset = configObject["shadowsYOffset"].asInt();
+            }
+            if (configObject.isMember("shadowsColorAlpha")) {
+                config.shadowsColorAlpha = configObject["shadowsColorAlpha"].asInt();
+            }
+            if (configObject.isMember("shadowsDiffuse")) {
+                config.shadowsDiffuse = configObject["shadowsDiffuse"].asInt();
+            }
+
+            // Area
+            if (configObject.isMember("areaXPosition")) {
+                config.areaXPosition = configObject["areaXPosition"].asInt();
+            }
+            if (configObject.isMember("areaYPosition")) {
+                config.areaYPosition = configObject["areaYPosition"].asInt();
+            }
+            if (configObject.isMember("areaWidth")) {
+                config.areaWidth = configObject["areaWidth"].asInt();
+            }
+            if (configObject.isMember("areaHeight")) {
+                config.areaHeight = configObject["areaHeight"].asInt();
+            }
+            if (configObject.isMember("areaPreview")) {
+                config.areaPreview = configObject["areaPreview"].asInt();
+            }
+            checkConfig(config);
+            configs[identifier] = config;
+            }
+    }
 	inputFile.close();
 	return false;
 }
@@ -648,13 +759,13 @@ void setDefaultConfig(Config &defaultConfig)
 
 void checkConfig(Config &config)
 {
-    if(config.areaXPosition > screenWidth)
-        config.areaXPosition = 0;
-    if(config.areaYPosition > screenHeight)
-        config.areaYPosition = 0;
-    if(config.areaWidth > screenWidth)
+    if(config.areaXPosition > 100)
+        config.areaXPosition = 100;
+    if(config.areaYPosition > 100)
+        config.areaYPosition = 100;
+    if(config.areaWidth > 100)
         config.areaWidth = 100;
-    if(config.areaHeight > screenHeight)
+    if(config.areaHeight > 100)
         config.areaHeight = 100;
 }
 

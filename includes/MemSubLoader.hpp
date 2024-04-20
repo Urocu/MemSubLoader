@@ -142,7 +142,7 @@ struct WStringCompare
 
 struct Dialog
 {
-    int ID;
+    unsigned int ID;
     std::vector <std::wstring> Text;
     std::vector <u_int> Timer;
     std::wstring identifier;
@@ -159,8 +159,8 @@ struct Subtitles
 
 		uintptr_t address_audio;
 		uintptr_t address_play;
-		int AudioID;
-		int lastAudioID;
+		unsigned int AudioID;
+		unsigned int lastAudioID;
 		bool is_playing;
 		std::vector <Dialog> dialog;
 
