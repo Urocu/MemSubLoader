@@ -17,12 +17,12 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 		{
 			if (wParam == SIZE_MINIMIZED)
 			{
-				AddTrayIcon(hwnd, GetModuleHandle(NULL));
+				addTrayIcon(hwnd, GetModuleHandle(NULL));
 				ShowWindow(hwnd, SW_HIDE); // Hide window in taskbar
 			}
 			else if (isTrayVisible)
 			{
-				RemoveTrayIcon();
+				removeTrayIcon();
 			}
 		}
 		break;
@@ -43,7 +43,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 					if (openFileExplorer(hwnd, subtitlesPath, MAX_PATH, LOWORD(wParam)))
 					{
 						SetWindowText(subtitlesPathValueLabel, subtitlesPath);
-						if(SubtitlesLoad(subtitlesPath))
+						if(loadSubtitles(subtitlesPath))
 							{
 								MessageBox(hwnd, L"Failed to load subtitles file", L"Configuration autoloading", MB_ICONERROR);
 								subtitlesPath[0] = '\0';
@@ -221,7 +221,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 
 		case WM_DESTROY:
 		{
-			RemoveTrayIcon();
+			removeTrayIcon();
 			PostQuitMessage(0);
 		}
 		break;

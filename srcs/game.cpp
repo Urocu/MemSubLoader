@@ -47,8 +47,8 @@ void scanGame(PROCESS_INFORMATION pi)
                 for(int i = 0; i < num; i++)
                 {
 
-                    subtitles[i].search_memory(pi.hProcess);
-                    if (subtitles[i].check_audio(pi.hProcess, i))
+                    subtitles[i].searchMemory(pi.hProcess);
+                    if (subtitles[i].checkAudio(pi.hProcess, i))
                         is = true;
 
                 }

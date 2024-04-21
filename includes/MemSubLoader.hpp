@@ -173,8 +173,8 @@ struct Subtitles
 		bool is_playing;
 		std::vector <Dialog> dialog;
 
-		void search_memory(HANDLE hProcess);
-		bool check_audio(HANDLE hProcess, int place);
+		void searchMemory(HANDLE hProcess);
+		bool checkAudio(HANDLE hProcess, int place);
 };
 
 // Global variables definition
@@ -286,7 +286,7 @@ bool openColorDialog(HWND hwnd, COLORREF &subtitlesColor);
 
 void invalidateWindow(HWND hwnd);
 
-bool SubtitlesLoad(wchar_t *fileName);
+bool loadSubtitles(wchar_t *fileName);
 
 bool saveConfig(wchar_t *filename);
 bool loadConfig(const wchar_t *filename);
@@ -305,8 +305,8 @@ void cleanup(void);
 bool createShortcut(const wchar_t *targetPath, const wchar_t *arguments, const wchar_t *workingDir, const wchar_t *shortcutPath);
 
 // Tray
-void AddTrayIcon(HWND hWnd, HINSTANCE hInstance);
-void RemoveTrayIcon();
+void addTrayIcon(HWND hWnd, HINSTANCE hInstance);
+void removeTrayIcon();
 
 // Game
 void startGame(HWND hwnd);

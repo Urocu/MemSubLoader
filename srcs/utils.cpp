@@ -20,7 +20,7 @@ void Subtitles::findAddress(uintptr_t &address, int offset, HANDLE hProcess)
 		address += offset;
 }
 
-void Subtitles::search_memory(HANDLE hProcess)
+void Subtitles::searchMemory(HANDLE hProcess)
 {
 	address_audio = bAddress_audio;
 	address_play = bAddress_play;
@@ -30,7 +30,7 @@ void Subtitles::search_memory(HANDLE hProcess)
 		findAddress(address_play,offset_play[i],hProcess);
 }
 
-bool Subtitles::check_audio(HANDLE hProcess, int place)
+bool Subtitles::checkAudio(HANDLE hProcess, int place)
 {
 	SIZE_T bytesRead;
 	ReadProcessMemory(hProcess, (LPCVOID)address_play, &is_playing, 1, &bytesRead);
@@ -72,7 +72,7 @@ bool Subtitles::check_audio(HANDLE hProcess, int place)
 	}
 }
 
-bool SubtitlesLoad(wchar_t *fileName)
+bool loadSubtitles(wchar_t *fileName)
 {
 	subtitles.clear();
 	std::ifstream inputFile(fileName);
@@ -861,7 +861,7 @@ bool createShortcut(const wchar_t *targetPath, const wchar_t *arguments, const w
 	return SUCCEEDED(hres);
 }
 
-void AddTrayIcon(HWND hWnd, HINSTANCE hInstance)
+void addTrayIcon(HWND hWnd, HINSTANCE hInstance)
 {
 	niData.cbSize = sizeof(NOTIFYICONDATA);
 	niData.hWnd = hWnd;
@@ -874,7 +874,7 @@ void AddTrayIcon(HWND hWnd, HINSTANCE hInstance)
 	isTrayVisible = true;
 }
 
-void RemoveTrayIcon()
+void removeTrayIcon()
 {
 	if (isTrayVisible) {
 		Shell_NotifyIcon(NIM_DELETE, &niData);
