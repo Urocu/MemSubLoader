@@ -6,6 +6,8 @@
 # define _WIN32_WINNT 0x0501
 # define _WIN32_IE 0x0300
 # include <windows.h>
+# include <objidl.h>
+# include <objbase.h>
 # include <commctrl.h>
 # include <iostream>
 # include <shlwapi.h>
@@ -32,49 +34,50 @@
 # define MENU_LOAD 6
 # define MENU_SAVE 7
 # define MENU_SETAUTOLOAD 8
-# define MENU_EXIT 9
-# define MENU_SETTINGS 10
+# define MENU_CREATESHORTCUT 9
+# define MENU_EXIT 10
+# define MENU_SETTINGS 11
 
 // Settings controls
-# define FONT_COLOR_BUTTON 11
-# define FONT_BUTTON 12
-# define FONT_COLOR_ALPHA_EDIT 13
-# define FONT_COLOR_ALPHA_UPDOWN 14
-# define ALIGNMENT_HORIZONTAL_COMBOBOX 15
-# define ALIGNMENT_VERTICAL_COMBOBOX 16
-# define OUTLINE_WIDTH_EDIT 17
-# define OUTLINE_WIDTH_UPDOWN 18
-# define OUTLINE_COLOR_BUTTON 19
-# define OUTLINE_COLOR_ALPHA_EDIT 20
-# define OUTLINE_COLOR_ALPHA_UPDOWN 21
-# define SHADOWS_COLOR_BUTTON 22
-# define SHADOWS_COLOR_ALPHA_EDIT 23
-# define SHADOWS_COLOR_ALPHA_UPDOWN 24
-# define SHADOWS_WIDTH_EDIT 25
-# define SHADOWS_WIDTH_UPDOWN 26
-# define SHADOWS_XOFFSET_EDIT 27
-# define SHADOWS_XOFFSET_UPDOWN 28
-# define SHADOWS_YOFFSET_EDIT 29
-# define SHADOWS_YOFFSET_UPDOWN 30
-# define SHADOWS_DIFFUSE_CHECKBOX 31
-# define AREA_XPOS_EDIT 32
-# define AREA_XPOS_UPDOWN 33
-# define AREA_YPOS_EDIT 34
-# define AREA_YPOS_UPDOWN 35
-# define AREA_WIDTH_EDIT 36
-# define AREA_WIDTH_UPDOWN 37
-# define AREA_HEIGHT_EDIT 38
-# define AREA_HEIGHT_UPDOWN 39
-# define AREA_PREVIEW_CHECKBOX 40
-# define CONFIGURATOR_EDIT_BUTTON 41
-# define CONFIGURATOR_NEW_BUTTON 42
-# define CONFIGURATOR_DELETE_BUTTON 43
-# define CONFIGURATOR_DUPLICATE_BUTTON 44
-# define CONFIGURATOR_TODEFAULT_BUTTON 45
+# define FONT_COLOR_BUTTON 12
+# define FONT_BUTTON 13
+# define FONT_COLOR_ALPHA_EDIT 14
+# define FONT_COLOR_ALPHA_UPDOWN 15
+# define ALIGNMENT_HORIZONTAL_COMBOBOX 16
+# define ALIGNMENT_VERTICAL_COMBOBOX 17
+# define OUTLINE_WIDTH_EDIT 18
+# define OUTLINE_WIDTH_UPDOWN 19
+# define OUTLINE_COLOR_BUTTON 20
+# define OUTLINE_COLOR_ALPHA_EDIT 21
+# define OUTLINE_COLOR_ALPHA_UPDOWN 22
+# define SHADOWS_COLOR_BUTTON 23
+# define SHADOWS_COLOR_ALPHA_EDIT 24
+# define SHADOWS_COLOR_ALPHA_UPDOWN 25
+# define SHADOWS_WIDTH_EDIT 26
+# define SHADOWS_WIDTH_UPDOWN 27
+# define SHADOWS_XOFFSET_EDIT 28
+# define SHADOWS_XOFFSET_UPDOWN 29
+# define SHADOWS_YOFFSET_EDIT 30
+# define SHADOWS_YOFFSET_UPDOWN 31
+# define SHADOWS_DIFFUSE_CHECKBOX 32
+# define AREA_XPOS_EDIT 33
+# define AREA_XPOS_UPDOWN 34
+# define AREA_YPOS_EDIT 35
+# define AREA_YPOS_UPDOWN 36
+# define AREA_WIDTH_EDIT 37
+# define AREA_WIDTH_UPDOWN 38
+# define AREA_HEIGHT_EDIT 39
+# define AREA_HEIGHT_UPDOWN 40
+# define AREA_PREVIEW_CHECKBOX 41
+# define CONFIGURATOR_EDIT_BUTTON 42
+# define CONFIGURATOR_NEW_BUTTON 43
+# define CONFIGURATOR_DELETE_BUTTON 44
+# define CONFIGURATOR_DUPLICATE_BUTTON 45
+# define CONFIGURATOR_TODEFAULT_BUTTON 46
 
 // Save & Cancel controls
-# define SAVE_BUTTON 46
-# define CANCEL_BUTTON 47
+# define SAVE_BUTTON 47
+# define CANCEL_BUTTON 48
 
 # define FONT_ALPHA_MIN 0
 # define FONT_ALPHA_MAX 255
@@ -171,9 +174,11 @@ struct Subtitles
 // Global variables definition
 
 // Global resources
+
 extern std::vector <Subtitles> subtitles;
 extern std::wstring SubInfo;
 extern std::map<wchar_t *, Config, WStringCompare> configs;
+extern std::wstring loadedConfig;
 extern std::wstring textToDraw;
 extern std::wstring testidentifier;
 extern Config tmpConfig;
@@ -186,7 +191,6 @@ extern int screenHeight;
 extern int sub;
 extern int subID;
 extern bool isGameOpened;
-
 
 // Windows
 extern HWND mainHWND;
@@ -264,7 +268,6 @@ LRESULT CALLBACK ConfiguratorWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPA
 
 // Utilities
 std::wstring jsonUnicodeToWstring(const Json::Value& value);
-
 void findAddress(uintptr_t &address, int offset, HANDLE hProcess);
 
 bool openFileExplorer(HWND hwnd, wchar_t *filePath, int filePathSize, int button);
@@ -289,6 +292,10 @@ wchar_t *getSelectedIdentifier(void);
 void cleanup(void);
 
 // Game
-void gameStart(PROCESS_INFORMATION pi);
+void startGame(HWND hwnd);
+void scanGame(PROCESS_INFORMATION pi);
+
+// Shortcut
+bool createShortcut(const wchar_t *targetPath, const wchar_t *arguments, const wchar_t *workingDir, const wchar_t *shortcutPath);
 
 #endif

@@ -1,7 +1,30 @@
 #include "MemSubLoader.hpp"
 
-// Used when the game starts
-void gameStart(PROCESS_INFORMATION pi)
+// Initialize subtitles windows then start the game
+void startGame(HWND hwnd)
+{
+	STARTUPINFO si;
+	PROCESS_INFORMATION pi;
+
+	ZeroMemory(&si, sizeof(si));
+	si.cb = sizeof(si);
+	ZeroMemory(&pi, sizeof(pi));
+
+	// Opens the game
+	CreateProcess(gamePath, NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
+	WaitForInputIdle(pi.hProcess, INFINITE);
+
+	if (createSubtitlesWindow())
+	{
+		MessageBox(hwnd, L"Error: Failed to initialize subtitles window", L"Window initialization", MB_ICONERROR);
+	}
+
+	PostMessage(hwnd, WM_SYSCOMMAND, SC_MINIMIZE, 0);
+	scanGame(pi);
+}
+
+// Where the magic happens, scans memory for memory adresses accesses and draw subtitles accordingly
+void scanGame(PROCESS_INFORMATION pi)
 {
     int num = subtitles.size();
     int currentTimer = 1;

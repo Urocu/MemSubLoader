@@ -330,8 +330,13 @@ bool openFileExplorer(HWND hwnd, wchar_t *filePath, int filePathSize, int button
 			ofn.lpstrFilter = L"Configuration Files (*.json)\0*.json\0All Files (*.*)\0*.*\0";
 		}
 		break;
+
+		case MENU_CREATESHORTCUT:
+		{
+			ofn.lpstrFilter = L"Shortcut Files (*.lnk)\0*.lnk\0All Files (*.*)\0*.*\0";
+		}
 	}
-	if (button == MENU_SAVE)
+	if (button == MENU_SAVE || button == MENU_CREATESHORTCUT)
 	{
 		if (GetSaveFileName(&ofn))
 			return true;
@@ -480,6 +485,7 @@ bool saveConfig(wchar_t *filename)
 	}
 	outputFile << jsonStr;
 	outputFile.close();
+	loadedConfig = filename;
 	return false;
 }
 
@@ -640,11 +646,12 @@ bool loadConfig(const wchar_t *filename)
 		if (configObject.isMember("areaPreview")) {
 			config.areaPreview = configObject["areaPreview"].asInt();
 		}
-        checkConfig(config);
+		checkConfig(config);
 		configs[identifier] = config;
 	}
 
 	inputFile.close();
+	loadedConfig = filename;
 	return false;
 }
 
@@ -817,4 +824,39 @@ void cleanup(void)
 	DestroyWindow(settingsHWND);
 	DestroyWindow(subtitlesHWND);
 	DestroyWindow(mainHWND);
+}
+
+bool createShortcut(const wchar_t *targetPath, const wchar_t *arguments, const wchar_t *workingDir, const wchar_t *shortcutPath)
+{
+	HRESULT hres;
+	CoInitialize(NULL);
+
+	// Create instance of IShellLink
+	IShellLink *pShellLink;
+	hres = CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, IID_IShellLink, (LPVOID *)&pShellLink);
+	if (SUCCEEDED(hres))
+	{
+		// Set the path of the file to execute
+		pShellLink->SetPath(targetPath);
+
+		// Set the arguments
+		if (arguments != nullptr)
+			pShellLink->SetArguments(arguments);
+
+		// Set the working directory
+		if (workingDir != nullptr)
+			pShellLink->SetWorkingDirectory(workingDir);
+
+		// Save the shortcut to disk
+		IPersistFile *pPersistFile;
+		hres = pShellLink->QueryInterface(IID_IPersistFile, (void **)&pPersistFile);
+		if (SUCCEEDED(hres))
+		{
+			hres = pPersistFile->Save(shortcutPath, TRUE);
+			pPersistFile->Release();
+		}
+		pShellLink->Release();
+	}
+	CoUninitialize();
+	return SUCCEEDED(hres);
 }

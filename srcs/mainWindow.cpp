@@ -28,45 +28,25 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 				{
 					if (openFileExplorer(hwnd, subtitlesPath, MAX_PATH, LOWORD(wParam)))
 					{
-                        SetWindowText(subtitlesPathValueLabel, subtitlesPath);
+						SetWindowText(subtitlesPathValueLabel, subtitlesPath);
 						if(SubtitlesLoad(subtitlesPath))
-                            {
-                                MessageBox(hwnd, L"Failed to load subtitles file", L"Configuration autoloading", MB_ICONERROR);
-                                subtitlesPath[0] = '\0';
-                            }
+							{
+								MessageBox(hwnd, L"Failed to load subtitles file", L"Configuration autoloading", MB_ICONERROR);
+								subtitlesPath[0] = '\0';
+							}
 					}
 				}
 				break;
 
 				case START_BUTTON: // When both game and file was selected
 				{
-					if (gamePath[0] != L'\0' && subtitlesPath[0] != L'\0')
+					if (gamePath[0] == L'\0' || subtitlesPath[0] == L'\0')
 					{
-						STARTUPINFO si;
-						PROCESS_INFORMATION pi;
-
-						ZeroMemory(&si, sizeof(si));
-						si.cb = sizeof(si);
-						ZeroMemory(&pi, sizeof(pi));
-
-						// Opens the game
-						CreateProcess(gamePath, NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
-						WaitForInputIdle(pi.hProcess, INFINITE);
-
-						if(!IsWindow(subtitlesHWND))
-						{
-						    if (createSubtitlesWindow())
-                            {
-                                MessageBox(NULL, L"Error: Failed to initialize subtitles window", L"Window initialization", MB_ICONERROR);
-                            }
-						}
-
-						PostMessage(hwnd, WM_SYSCOMMAND, SC_MINIMIZE, 0);
-						gameStart(pi);
+						MessageBox(hwnd, L"You must select both game and file", L"Warning", MB_ICONWARNING);
 					}
 					else
 					{
-						MessageBox(hwnd, L"You must select both game and file", L"Warning", MB_ICONWARNING);
+						startGame(hwnd); // Start the game and pass main window handle
 					}
 				}
 				break;
@@ -133,6 +113,48 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 						else {
 							wsprintf(message, L"Failed to save configuration :\n%s", selectedFile);
 							MessageBox(hwnd, message, L"Setting configuration autoloading", MB_ICONERROR);
+						}
+					}
+				}
+				break;
+
+				case MENU_CREATESHORTCUT:
+				{
+					if (loadedConfig == L"")
+					{
+						MessageBox(NULL, L"You must save/load a configuration to be able to create a shortcut.", L"Create shortcut", MB_ICONERROR);
+					}
+					else if (gamePath[0] == L'\0' || subtitlesPath[0] == L'\0')
+					{
+						MessageBox(NULL, L"Missing game or subtitles path in your autoloaded configuration file. Please check if both paths are correct and try again.", L"Create shortcut", MB_ICONERROR);
+					}
+					else
+					{
+						wchar_t selectedFile[MAX_PATH] = {};
+
+						// Open the file explorer dialog with the appropriate filter
+						if (openFileExplorer(hwnd, selectedFile, MAX_PATH, MENU_CREATESHORTCUT))
+						{
+							// Ensure that the path ends with ".lnk"
+							std::wstring shortcutPath = selectedFile;
+							if (shortcutPath.length() < 4 || shortcutPath.substr(shortcutPath.length() - 4) != L".lnk")
+							{
+								shortcutPath += L".lnk";
+							}
+
+							// Get the path of the current executable
+							wchar_t exePath[MAX_PATH];
+							GetModuleFileName(NULL, exePath, MAX_PATH);
+
+							// Create the shortcut
+							if (createShortcut(exePath, (L"-config " + loadedConfig).c_str(), NULL, shortcutPath.c_str()))
+							{
+								MessageBox(NULL, L"Shortcut created successfully", L"Create shortcut", MB_ICONINFORMATION);
+							}
+							else
+							{
+								MessageBox(NULL, L"Failed to create shortcut", L"Create shortcut", MB_ICONERROR);
+							}
 						}
 					}
 				}
@@ -240,6 +262,7 @@ int createMainWindow(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	AppendMenu(hMenu_1, MF_STRING, MENU_LOAD, (L"Load configuration"));
 	AppendMenu(hMenu_1, MF_STRING, MENU_SAVE, (L"Save configuration"));
 	AppendMenu(hMenu_1, MF_STRING, MENU_SETAUTOLOAD, (L"Set autoloaded configuration"));
+	AppendMenu(hMenu_1, MF_STRING, MENU_CREATESHORTCUT, (L"Create shortcut using loaded config"));
 	AppendMenu(hMenu_1, MF_SEPARATOR, 0, 0);
 	AppendMenu(hMenu_1, MF_STRING, MENU_EXIT, (L"Exit"));
 	AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hMenu_1, (L"File"));
