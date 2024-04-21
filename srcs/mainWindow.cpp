@@ -162,7 +162,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 							GetModuleFileName(NULL, exePath, MAX_PATH);
 
 							// Create the shortcut
-							if (createShortcut(exePath, (L"-config " + loadedConfig).c_str(), NULL, shortcutPath.c_str()))
+							if (createShortcut(exePath, (L"-config \"" + loadedConfig + L'"').c_str(), NULL, shortcutPath.c_str()))
 							{
 								MessageBox(NULL, L"Shortcut created successfully", L"Create shortcut", MB_ICONINFORMATION);
 							}
@@ -200,7 +200,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 					ShowWindow(hwnd, SW_SHOWNORMAL);
 				}
 				break;
-				
+
 				case TRAY_EXIT:
 				{
 					PostMessage(hwnd, WM_CLOSE, 0, 0);
