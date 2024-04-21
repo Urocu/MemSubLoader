@@ -60,6 +60,8 @@
 			<Add library="Shlwapi" />
 			<Add library="Comdlg32" />
 			<Add library="gdiplus" />
+			<Add library="ole32" />
+			<Add library="uuid" />
 		</Linker>
 		<Unit filename="includes/MemSubLoader.hpp">
 			<Option target="Debug" />

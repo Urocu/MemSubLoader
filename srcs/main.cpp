@@ -1,10 +1,12 @@
 #include "MemSubLoader.hpp"
+#include <stdio.h>
 using namespace Gdiplus;
 
 // Global variables assignment
 
 // Global resources
 std::map<wchar_t *, Config, WStringCompare> configs;
+std::wstring loadedConfig;
 std::wstring textToDraw;
 std::wstring testidentifier;
 Config tmpConfig = {};
@@ -23,6 +25,10 @@ HWND mainHWND = NULL;
 HWND subtitlesHWND = NULL;
 HWND settingsHWND = NULL;
 HWND configuratorHWND = NULL;
+
+// Tray
+NOTIFYICONDATA niData;
+bool isTrayVisible;
 
 // Main window handles
 HWND gamePathValueLabel = NULL;
@@ -74,18 +80,20 @@ int oldAreaHeight = 0;
 // Main
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-    LPWSTR *ArgList;
-    int nArgs;
+	LPWSTR *ArgList;
+	int nArgs;
 	hInst = hInstance;
 	MSG msg = {};
 	wchar_t autoloadPath[MAX_PATH] = {};
 	wchar_t message[MAX_PATH + 256] = {};
 	Config defaultConfig;
+	int mode = SW_SHOW;
+	bool startImmediately = false;
 
-    //Check arguments
-    ArgList = CommandLineToArgvW(GetCommandLineW(), &nArgs);
-    if(ArgList == NULL)
-        MessageBox(NULL, L"Error: Failed to check arguments", L"Arguments check", MB_ICONERROR);
+	// Check arguments
+	ArgList = CommandLineToArgvW(GetCommandLineW(), &nArgs);
+	if(ArgList == NULL)
+		MessageBox(NULL, L"Error: Failed to check arguments", L"Arguments check", MB_ICONERROR);
 
 	GpStatus gdiplusStatus = GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 	if (gdiplusStatus != GpStatus::Ok)
@@ -94,70 +102,73 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		cleanup();
 		return 1;
 	}
+
 	setDefaultConfig(defaultConfig);
-	if (getAutoloadConfigPath(autoloadPath)) // Get autoloaded configuration path from autoload.dat
+	// Autoload config using file argument
+	if(nArgs > 1 && wcsstr(ArgList[1], L"-config") && ArgList[2])
 	{
-		if (loadConfig(autoloadPath)) // Failed to load configuration
+		mode = SW_MINIMIZE;
+		if (loadConfig(ArgList[2]))
 		{
-			wchar_t autoload[MAX_PATH];
-			if (getAutoloadPath(autoload))
-			{
-				DeleteFile(autoload);
-			}
-			wsprintf(message, L"Failed to autoload configuration :\n%s\nDeleted configuration autoload", autoloadPath);
+			wsprintf(message, L"Failed to autoload configuration.\n%s\nAborting.", ArgList[2]);
 			MessageBox(NULL, message, L"Configuration autoloading", MB_ICONERROR);
+			cleanup();
+			return 1;
+		}
+		if (gamePath[0] == L'\0' || subtitlesPath[0] == L'\0')
+		{
+			MessageBox(NULL, L"Missing game or subtitles path in your autoloaded configuration file. Please check if both path are correct and try again.", L"Configuration autoloading", MB_ICONERROR);
+			cleanup();
+			return 1;
+		}
+		if (loadSubtitles(subtitlesPath))
+		{
+			MessageBox(NULL, L"Failed to load subtitles file", L"Subtitles loading", MB_ICONERROR);
+			subtitlesPath[0] = '\0';
+		}
+		startImmediately = true;
+	}
+	// Autoload config using autoload.dat
+	else
+	{
+		if (getAutoloadConfigPath(autoloadPath)) // Get autoloaded configuration path from autoload.dat
+		{
+			if (loadConfig(autoloadPath)) // Failed to load configuration
+			{
+				wchar_t autoload[MAX_PATH];
+				if (getAutoloadPath(autoload))
+				{
+					DeleteFile(autoload);
+				}
+				wsprintf(message, L"Failed to autoload configuration :\n%s\nDeleted configuration autoload", autoloadPath);
+				MessageBox(NULL, message, L"Configuration autoloading", MB_ICONERROR);
+				configs.insert({ wcsdup(L"DEFAULT"), defaultConfig });
+			}
+			if (loadSubtitles(subtitlesPath))
+			{
+				MessageBox(NULL, L"Failed to load subtitles file", L"Subtitles loading", MB_ICONERROR);
+				subtitlesPath[0] = '\0';
+			}
+		}
+		else // No autoload.dat found
+		{
 			configs.insert({ wcsdup(L"DEFAULT"), defaultConfig });
 		}
-		if(SubtitlesLoad(subtitlesPath))
-        {
-            MessageBox(NULL, L"Failed to load subtitles file", L"Configuration autoloading", MB_ICONERROR);
-            subtitlesPath[0] = '\0';
-        }
 	}
-	else // No autoload.dat found
+
+	int res = createMainWindow(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
+	if (res)
 	{
-		configs.insert({ wcsdup(L"DEFAULT"), defaultConfig });
+		MessageBox(NULL, L"Error: Failed to initialize main window", L"Window initialization", MB_ICONERROR);
+		cleanup();
+		return 1;
 	}
-	if(nArgs > 1 && wcsstr(ArgList[1], L"-translate"))
-    {
-        if (gamePath[0] != L'\0' && subtitlesPath[0] != L'\0')
-        {
-						STARTUPINFO si;
-						PROCESS_INFORMATION pi;
+	ShowWindow(mainHWND, mode);
 
-						ZeroMemory(&si, sizeof(si));
-						si.cb = sizeof(si);
-						ZeroMemory(&pi, sizeof(pi));
-
-						// Opens the game
-						CreateProcess(gamePath, NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
-						WaitForInputIdle(pi.hProcess, INFINITE);
-
-                        if(!IsWindow(subtitlesHWND))
-						{
-						    if (createSubtitlesWindow())
-                            {
-                                MessageBox(NULL, L"Error: Failed to initialize subtitles window", L"Window initialization", MB_ICONERROR);
-                            }
-						}
-						gameStart(pi);
-        }
-        else
-        {
-            MessageBox(NULL, message, L"Something went wrong :(", MB_ICONERROR);
-        }
-        return 0;
-    }
-    else
-    {
-        int res = createMainWindow(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
-        if (res)
-        {
-            MessageBox(NULL, L"Error: Failed to initialize main window", L"Window initialization", MB_ICONERROR);
-            cleanup();
-            return 1;
-        }
-    }
+	if (startImmediately)
+	{
+		startGame(NULL);
+	}
 
 	while (GetMessage(&msg, NULL, 0, 0) > 0)
 	{

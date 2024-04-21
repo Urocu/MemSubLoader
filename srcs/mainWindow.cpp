@@ -13,6 +13,20 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 		}
 		break;
 
+		case WM_SIZE:
+		{
+			if (wParam == SIZE_MINIMIZED)
+			{
+				addTrayIcon(hwnd, GetModuleHandle(NULL));
+				ShowWindow(hwnd, SW_HIDE); // Hide window in taskbar
+			}
+			else if (isTrayVisible)
+			{
+				removeTrayIcon();
+			}
+		}
+		break;
+
 		case WM_COMMAND:
 		{
 			switch (LOWORD(wParam))
@@ -28,45 +42,26 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 				{
 					if (openFileExplorer(hwnd, subtitlesPath, MAX_PATH, LOWORD(wParam)))
 					{
-                        SetWindowText(subtitlesPathValueLabel, subtitlesPath);
-						if(SubtitlesLoad(subtitlesPath))
-                            {
-                                MessageBox(hwnd, L"Failed to load subtitles file", L"Configuration autoloading", MB_ICONERROR);
-                                subtitlesPath[0] = '\0';
-                            }
+						SetWindowText(subtitlesPathValueLabel, subtitlesPath);
+						if(loadSubtitles(subtitlesPath))
+							{
+								MessageBox(hwnd, L"Failed to load subtitles file", L"Configuration autoloading", MB_ICONERROR);
+								subtitlesPath[0] = '\0';
+							}
 					}
 				}
 				break;
 
 				case START_BUTTON: // When both game and file was selected
 				{
-					if (gamePath[0] != L'\0' && subtitlesPath[0] != L'\0')
+					if (gamePath[0] == L'\0' || subtitlesPath[0] == L'\0')
 					{
-						STARTUPINFO si;
-						PROCESS_INFORMATION pi;
-
-						ZeroMemory(&si, sizeof(si));
-						si.cb = sizeof(si);
-						ZeroMemory(&pi, sizeof(pi));
-
-						// Opens the game
-						CreateProcess(gamePath, NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
-						WaitForInputIdle(pi.hProcess, INFINITE);
-
-						if(!IsWindow(subtitlesHWND))
-						{
-						    if (createSubtitlesWindow())
-                            {
-                                MessageBox(NULL, L"Error: Failed to initialize subtitles window", L"Window initialization", MB_ICONERROR);
-                            }
-						}
-
-						PostMessage(hwnd, WM_SYSCOMMAND, SC_MINIMIZE, 0);
-						gameStart(pi);
+						MessageBox(hwnd, L"You must select both game and file", L"Warning", MB_ICONWARNING);
 					}
 					else
 					{
-						MessageBox(hwnd, L"You must select both game and file", L"Warning", MB_ICONWARNING);
+						ShowWindow(mainHWND, SW_MINIMIZE); // Minimize main window
+						startGame(hwnd); // Start the game and pass main window handle
 					}
 				}
 				break;
@@ -138,6 +133,48 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 				}
 				break;
 
+				case MENU_CREATESHORTCUT:
+				{
+					if (loadedConfig == L"")
+					{
+						MessageBox(NULL, L"You must save/load a configuration to be able to create a shortcut.", L"Create shortcut", MB_ICONERROR);
+					}
+					else if (gamePath[0] == L'\0' || subtitlesPath[0] == L'\0')
+					{
+						MessageBox(NULL, L"Missing game or subtitles path in your autoloaded configuration file. Please check if both paths are correct and try again.", L"Create shortcut", MB_ICONERROR);
+					}
+					else
+					{
+						wchar_t selectedFile[MAX_PATH] = {};
+
+						// Open the file explorer dialog with the appropriate filter
+						if (openFileExplorer(hwnd, selectedFile, MAX_PATH, MENU_CREATESHORTCUT))
+						{
+							// Ensure that the path ends with ".lnk"
+							std::wstring shortcutPath = selectedFile;
+							if (shortcutPath.length() < 4 || shortcutPath.substr(shortcutPath.length() - 4) != L".lnk")
+							{
+								shortcutPath += L".lnk";
+							}
+
+							// Get the path of the current executable
+							wchar_t exePath[MAX_PATH];
+							GetModuleFileName(NULL, exePath, MAX_PATH);
+
+							// Create the shortcut
+							if (createShortcut(exePath, (L"-config " + loadedConfig).c_str(), NULL, shortcutPath.c_str()))
+							{
+								MessageBox(NULL, L"Shortcut created successfully", L"Create shortcut", MB_ICONINFORMATION);
+							}
+							else
+							{
+								MessageBox(NULL, L"Failed to create shortcut", L"Create shortcut", MB_ICONERROR);
+							}
+						}
+					}
+				}
+				break;
+
 				case MENU_EXIT:
 				{
 					PostQuitMessage(0);
@@ -157,6 +194,18 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 					ShowWindow(configuratorHWND, SW_SHOW);
 				}
 				break;
+
+				case TRAY_OPEN:
+				{
+					ShowWindow(hwnd, SW_SHOWNORMAL);
+				}
+				break;
+				
+				case TRAY_EXIT:
+				{
+					PostMessage(hwnd, WM_CLOSE, 0, 0);
+				}
+				break;
 			}
 		}
 		break;
@@ -172,6 +221,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 
 		case WM_DESTROY:
 		{
+			removeTrayIcon();
 			PostQuitMessage(0);
 		}
 		break;
@@ -183,6 +233,28 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 			FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
 			EndPaint(hwnd, &ps);
 		}
+		break;
+
+		case TRAY_SHOW:
+			switch (LOWORD(lParam))
+			{
+				case WM_RBUTTONDOWN:
+				case WM_CONTEXTMENU:
+				// Right-click or context menu requested on the tray icon
+				{
+					POINT pt;
+					GetCursorPos(&pt);
+
+					HMENU hPopupMenu = CreatePopupMenu();
+					AppendMenu(hPopupMenu, MF_STRING, TRAY_OPEN, L"Open");
+					AppendMenu(hPopupMenu, MF_STRING, TRAY_EXIT, L"Quit");
+
+					SetForegroundWindow(hwnd); // Ensure the menu is on top
+					TrackPopupMenu(hPopupMenu, TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, 0, hwnd, NULL);
+					DestroyMenu(hPopupMenu);
+				}
+				break;
+			}
 		break;
 	}
 
@@ -240,6 +312,7 @@ int createMainWindow(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	AppendMenu(hMenu_1, MF_STRING, MENU_LOAD, (L"Load configuration"));
 	AppendMenu(hMenu_1, MF_STRING, MENU_SAVE, (L"Save configuration"));
 	AppendMenu(hMenu_1, MF_STRING, MENU_SETAUTOLOAD, (L"Set autoloaded configuration"));
+	AppendMenu(hMenu_1, MF_STRING, MENU_CREATESHORTCUT, (L"Create shortcut using loaded config"));
 	AppendMenu(hMenu_1, MF_SEPARATOR, 0, 0);
 	AppendMenu(hMenu_1, MF_STRING, MENU_EXIT, (L"Exit"));
 	AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hMenu_1, (L"File"));
@@ -272,6 +345,5 @@ int createMainWindow(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	SendMessage(startButton, WM_SETFONT, (WPARAM)hFont, FALSE);
 	updateMainAttributes(mainHWND);
 
-	ShowWindow(mainHWND, nCmdShow);
 	return 0;
 }

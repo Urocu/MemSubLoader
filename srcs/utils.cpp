@@ -5,11 +5,11 @@ std::wstring SubInfo;
 
 std::wstring jsonUnicodeToWstring(const Json::Value& value)
 {
-    std::string str = value.asString();
-    int wstrLength = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
-    std::wstring wstr(wstrLength, 0);
-    MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &wstr[0], wstrLength);
-    return wstr;
+	std::string str = value.asString();
+	int wstrLength = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
+	std::wstring wstr(wstrLength, 0);
+	MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &wstr[0], wstrLength);
+	return wstr;
 }
 
 // Find address containing audio ID
@@ -20,7 +20,7 @@ void Subtitles::findAddress(uintptr_t &address, int offset, HANDLE hProcess)
 		address += offset;
 }
 
-void Subtitles::search_memory(HANDLE hProcess)
+void Subtitles::searchMemory(HANDLE hProcess)
 {
 	address_audio = bAddress_audio;
 	address_play = bAddress_play;
@@ -30,11 +30,11 @@ void Subtitles::search_memory(HANDLE hProcess)
 		findAddress(address_play,offset_play[i],hProcess);
 }
 
-bool Subtitles::check_audio(HANDLE hProcess, int place)
+bool Subtitles::checkAudio(HANDLE hProcess, int place)
 {
 	SIZE_T bytesRead;
 	ReadProcessMemory(hProcess, (LPCVOID)address_play, &is_playing, 1, &bytesRead);
-    ReadProcessMemory(hProcess, (LPCVOID)address_audio, &AudioID, 4, &bytesRead);
+	ReadProcessMemory(hProcess, (LPCVOID)address_audio, &AudioID, 4, &bytesRead);
 
 	if (is_playing)
 	{
@@ -45,18 +45,18 @@ bool Subtitles::check_audio(HANDLE hProcess, int place)
 			{
 				if (AudioID == dialog[i].ID)
 				{
-				    if(dialog[i].Timer.size() == 0)
-                    {
-                        textToDraw = dialog[i].Text[0];
-                    }
-                    else
-                    {
-                        textToDraw = L"";
-                        KillTimer(mainHWND,1);
-                        sub = place;
-                        subID = i;
-                        SetTimer(mainHWND, 2, dialog[i].Timer[0],NULL);
-                    }
+					if(dialog[i].Timer.size() == 0)
+					{
+						textToDraw = dialog[i].Text[0];
+					}
+					else
+					{
+						textToDraw = L"";
+						KillTimer(mainHWND,1);
+						sub = place;
+						subID = i;
+						SetTimer(mainHWND, 2, dialog[i].Timer[0],NULL);
+					}
 					testidentifier = dialog[i].identifier;
 					invalidateWindow(subtitlesHWND);
 					break;
@@ -66,16 +66,16 @@ bool Subtitles::check_audio(HANDLE hProcess, int place)
 		return true;
 	}
 	else
-    {
-        lastAudioID = 0;
-        return false;
-    }
+	{
+		lastAudioID = 0;
+		return false;
+	}
 }
 
-bool SubtitlesLoad(wchar_t *fileName)
+bool loadSubtitles(wchar_t *fileName)
 {
-    subtitles.clear();
-    std::ifstream inputFile(fileName);
+	subtitles.clear();
+	std::ifstream inputFile(fileName);
 	if (!inputFile.is_open()) {
 		return true;
 	}
@@ -92,204 +92,204 @@ bool SubtitlesLoad(wchar_t *fileName)
 	}
 	if(root.isMember("Addresses"))
 	{
-	    for(int i = 0; i < root["Addresses"].size(); i++)
-	    {
-	        subtitles.push_back(Subtitles());
-	        Json::Value address;
-	        address = root["Addresses"][i];
+		for(int i = 0; i < root["Addresses"].size(); i++)
+		{
+			subtitles.push_back(Subtitles());
+			Json::Value address;
+			address = root["Addresses"][i];
 
-	        subtitles[i].bAddress_audio = address["BaseAddressAudio"].asInt();
-	        for(int j = 0; j < address["OffsetsAudio"].size();j++)
-                subtitles[i].offset_audio.push_back(address["OffsetsAudio"][j].asInt());
+			subtitles[i].bAddress_audio = address["BaseAddressAudio"].asInt();
+			for(int j = 0; j < address["OffsetsAudio"].size();j++)
+				subtitles[i].offset_audio.push_back(address["OffsetsAudio"][j].asInt());
 
-            subtitles[i].bAddress_play = address["BaseAddressPlay"].asInt();
-	        for(int j = 0; j < address["OffsetsPlay"].size();j++)
-                subtitles[i].offset_play.push_back(address["OffsetsPlay"][j].asInt());
-	    }
+			subtitles[i].bAddress_play = address["BaseAddressPlay"].asInt();
+			for(int j = 0; j < address["OffsetsPlay"].size();j++)
+				subtitles[i].offset_play.push_back(address["OffsetsPlay"][j].asInt());
+		}
 	}
-    std::string sub = "Subtitles";
-    for(int i = 0; i < root["Addresses"].size(); i++)
-    {
-        if(root.isMember(sub+std::to_string(i)))
-        {
+	std::string sub = "Subtitles";
+	for(int i = 0; i < root["Addresses"].size(); i++)
+	{
+		if(root.isMember(sub+std::to_string(i)))
+		{
 
 
-            int s = root[sub+std::to_string(i)].size();
-            for(int j = 0; j< s; j++)
-            {
-                int id;
-                std::wstring ident;
-                std::vector<std::wstring> text;
-                std::vector<u_int> timer;
+			int s = root[sub+std::to_string(i)].size();
+			for(int j = 0; j< s; j++)
+			{
+				int id;
+				std::wstring ident;
+				std::vector<std::wstring> text;
+				std::vector<u_int> timer;
 
-                Json::Value dialog;
-                dialog =root[sub+std::to_string(i)][j];
-                if(dialog.isMember("ID"))
-                {
-                    id = dialog["ID"].asUInt();
-                }
+				Json::Value dialog;
+				dialog =root[sub+std::to_string(i)][j];
+				if(dialog.isMember("ID"))
+				{
+					id = dialog["ID"].asUInt();
+				}
 
-                if(dialog.isMember("Identifier"))
-                {
-                    const std::string identString = dialog["Identifier"].asString();
-                    const std::wstring identWString(identString.begin(), identString.end());
-                    ident = identWString;
-                }
+				if(dialog.isMember("Identifier"))
+				{
+					const std::string identString = dialog["Identifier"].asString();
+					const std::wstring identWString(identString.begin(), identString.end());
+					ident = identWString;
+				}
 
-                if(dialog.isMember("Text"))
-                {
-                    Json::Value subs = dialog["Text"];
-                    if(subs.size() == 0)
-                    {
-                        const std::wstring textWString = jsonUnicodeToWstring(subs);
-                        text.push_back(textWString);
-                    }
-                    else
-                    for(int j = 0; j < subs.size();j++)
-                    {
-                        const std::wstring textWString = jsonUnicodeToWstring(subs[j]);
-                        text.push_back(textWString);
-                    }
-                }
+				if(dialog.isMember("Text"))
+				{
+					Json::Value subs = dialog["Text"];
+					if(subs.size() == 0)
+					{
+						const std::wstring textWString = jsonUnicodeToWstring(subs);
+						text.push_back(textWString);
+					}
+					else
+					for(int j = 0; j < subs.size();j++)
+					{
+						const std::wstring textWString = jsonUnicodeToWstring(subs[j]);
+						text.push_back(textWString);
+					}
+				}
 
-                if(dialog.isMember("Timer"))
-                {
-                    Json::Value time = dialog["Timer"];
-                    if(time.size() == 0)
-                    {
-                        timer.push_back(time.asInt());
-                    }
-                    else
-                    for(int j = 0; j < time.size();j++)
-                    {
-                        timer.push_back(time[j].asInt());
-                    }
-                }
-                Dialog test = {id,text,timer,ident};
-                subtitles[i].dialog.push_back(test);
+				if(dialog.isMember("Timer"))
+				{
+					Json::Value time = dialog["Timer"];
+					if(time.size() == 0)
+					{
+						timer.push_back(time.asInt());
+					}
+					else
+					for(int j = 0; j < time.size();j++)
+					{
+						timer.push_back(time[j].asInt());
+					}
+				}
+				Dialog test = {id,text,timer,ident};
+				subtitles[i].dialog.push_back(test);
 
-            }
-        }
-    }
+			}
+		}
+	}
 
-    if(root.isMember("Info"))
-    {
-        const std::wstring textWString = jsonUnicodeToWstring(root["Info"]);
-        SubInfo = textWString;
-        std::wcout<<SubInfo;
-    }
+	if(root.isMember("Info"))
+	{
+		const std::wstring textWString = jsonUnicodeToWstring(root["Info"]);
+		SubInfo = textWString;
+		std::wcout<<SubInfo;
+	}
 
-    if(root.isMember("Identifiers"))
-    {
-        root = root["Identifiers"];
-        //configs.clear();
-        for (Json::Value::const_iterator itr = root.begin(); itr != root.end(); ++itr) {
-            const std::string identifierString = itr.key().asString();
+	if(root.isMember("Identifiers"))
+	{
+		root = root["Identifiers"];
+		//configs.clear();
+		for (Json::Value::const_iterator itr = root.begin(); itr != root.end(); ++itr) {
+			const std::string identifierString = itr.key().asString();
 
-            const std::wstring identifierWString(identifierString.begin(), identifierString.end());
-            wchar_t *identifier = wcsdup(identifierWString.c_str());
+			const std::wstring identifierWString(identifierString.begin(), identifierString.end());
+			wchar_t *identifier = wcsdup(identifierWString.c_str());
 
-            if(identifier == configs[identifier].identifier)
-                continue;
+			if(identifier == configs[identifier].identifier)
+				continue;
 
-            const Json::Value &configObject = *itr;
-            Config config;
+			const Json::Value &configObject = *itr;
+			Config config;
 
-            config.identifier = identifier;
+			config.identifier = identifier;
 
-            // Font
-            if (configObject.isMember("fontColor")) {
-                config.fontColor = static_cast<COLORREF>(configObject["fontColor"].asUInt());
-            }
-            if (configObject.isMember("fontColorAlpha")) {
-                config.fontColorAlpha = configObject["fontColorAlpha"].asInt();
-            }
-            if (configObject.isMember("fontFaceName") && configObject["fontFaceName"].isString()) {
-                if (configObject["fontFaceName"].size() < LF_FACESIZE) {
-                    std::string faceNameString = configObject["fontFaceName"].asString();
-                    std::wstring wFaceName = std::wstring(faceNameString.begin(), faceNameString.end());
-                    wcsncpy(config.subtitlesFont.lfFaceName, wFaceName.c_str(), LF_FACESIZE);
-                }
-            }
-            if (configObject.isMember("fontHeight")) {
-                config.subtitlesFont.lfHeight = configObject["fontHeight"].asInt();
-            }
+			// Font
+			if (configObject.isMember("fontColor")) {
+				config.fontColor = static_cast<COLORREF>(configObject["fontColor"].asUInt());
+			}
+			if (configObject.isMember("fontColorAlpha")) {
+				config.fontColorAlpha = configObject["fontColorAlpha"].asInt();
+			}
+			if (configObject.isMember("fontFaceName") && configObject["fontFaceName"].isString()) {
+				if (configObject["fontFaceName"].size() < LF_FACESIZE) {
+					std::string faceNameString = configObject["fontFaceName"].asString();
+					std::wstring wFaceName = std::wstring(faceNameString.begin(), faceNameString.end());
+					wcsncpy(config.subtitlesFont.lfFaceName, wFaceName.c_str(), LF_FACESIZE);
+				}
+			}
+			if (configObject.isMember("fontHeight")) {
+				config.subtitlesFont.lfHeight = configObject["fontHeight"].asInt();
+			}
 
-            if (configObject.isMember("fontWeight")) {
-                config.subtitlesFont.lfWeight = configObject["fontWeight"].asInt();
-            }
+			if (configObject.isMember("fontWeight")) {
+				config.subtitlesFont.lfWeight = configObject["fontWeight"].asInt();
+			}
 
-            if (configObject.isMember("fontItalic")) {
-                config.subtitlesFont.lfItalic = configObject["fontItalic"].asBool();
-            }
+			if (configObject.isMember("fontItalic")) {
+				config.subtitlesFont.lfItalic = configObject["fontItalic"].asBool();
+			}
 
-            if (configObject.isMember("fontUnderline")) {
-                config.subtitlesFont.lfUnderline = configObject["fontUnderline"].asBool();
-            }
+			if (configObject.isMember("fontUnderline")) {
+				config.subtitlesFont.lfUnderline = configObject["fontUnderline"].asBool();
+			}
 
-            if (configObject.isMember("fontStrikeout")) {
-                config.subtitlesFont.lfStrikeOut = configObject["fontStrikeout"].asBool();
-            }
+			if (configObject.isMember("fontStrikeout")) {
+				config.subtitlesFont.lfStrikeOut = configObject["fontStrikeout"].asBool();
+			}
 
-            // Alignement
-            if (configObject.isMember("horizontalAlignment")) {
-                config.horizontalAlignment = static_cast<TextAlignment>(configObject["horizontalAlignment"].asInt());
-            }
-            if (configObject.isMember("verticalAlignment")) {
-                config.verticalAlignment = static_cast<TextAlignment>(configObject["verticalAlignment"].asInt());
-            }
+			// Alignement
+			if (configObject.isMember("horizontalAlignment")) {
+				config.horizontalAlignment = static_cast<TextAlignment>(configObject["horizontalAlignment"].asInt());
+			}
+			if (configObject.isMember("verticalAlignment")) {
+				config.verticalAlignment = static_cast<TextAlignment>(configObject["verticalAlignment"].asInt());
+			}
 
-            // Outline
-            if (configObject.isMember("outlineWidth")) {
-                config.outlineWidth = configObject["outlineWidth"].asInt();
-            }
-            if (configObject.isMember("outlineColor")) {
-                config.outlineColor = static_cast<COLORREF>(configObject["outlineColor"].asUInt());
-            }
-            if (configObject.isMember("outlineColorAlpha")) {
-                config.outlineColorAlpha = configObject["outlineColorAlpha"].asInt();
-            }
+			// Outline
+			if (configObject.isMember("outlineWidth")) {
+				config.outlineWidth = configObject["outlineWidth"].asInt();
+			}
+			if (configObject.isMember("outlineColor")) {
+				config.outlineColor = static_cast<COLORREF>(configObject["outlineColor"].asUInt());
+			}
+			if (configObject.isMember("outlineColorAlpha")) {
+				config.outlineColorAlpha = configObject["outlineColorAlpha"].asInt();
+			}
 
-            // Shadows
-            if (configObject.isMember("shadowsWidth")) {
-                config.shadowsWidth = configObject["shadowsWidth"].asInt();
-            }
-            if (configObject.isMember("shadowsColor")) {
-                config.shadowsColor = static_cast<COLORREF>(configObject["shadowsColor"].asUInt());
-            }
-            if (configObject.isMember("shadowsXOffset")) {
-                config.shadowsXOffset = configObject["shadowsXOffset"].asInt();
-            }
-            if (configObject.isMember("shadowsYOffset")) {
-                config.shadowsYOffset = configObject["shadowsYOffset"].asInt();
-            }
-            if (configObject.isMember("shadowsColorAlpha")) {
-                config.shadowsColorAlpha = configObject["shadowsColorAlpha"].asInt();
-            }
-            if (configObject.isMember("shadowsDiffuse")) {
-                config.shadowsDiffuse = configObject["shadowsDiffuse"].asInt();
-            }
+			// Shadows
+			if (configObject.isMember("shadowsWidth")) {
+				config.shadowsWidth = configObject["shadowsWidth"].asInt();
+			}
+			if (configObject.isMember("shadowsColor")) {
+				config.shadowsColor = static_cast<COLORREF>(configObject["shadowsColor"].asUInt());
+			}
+			if (configObject.isMember("shadowsXOffset")) {
+				config.shadowsXOffset = configObject["shadowsXOffset"].asInt();
+			}
+			if (configObject.isMember("shadowsYOffset")) {
+				config.shadowsYOffset = configObject["shadowsYOffset"].asInt();
+			}
+			if (configObject.isMember("shadowsColorAlpha")) {
+				config.shadowsColorAlpha = configObject["shadowsColorAlpha"].asInt();
+			}
+			if (configObject.isMember("shadowsDiffuse")) {
+				config.shadowsDiffuse = configObject["shadowsDiffuse"].asInt();
+			}
 
-            // Area
-            if (configObject.isMember("areaXPosition")) {
-                config.areaXPosition = configObject["areaXPosition"].asInt();
-            }
-            if (configObject.isMember("areaYPosition")) {
-                config.areaYPosition = configObject["areaYPosition"].asInt();
-            }
-            if (configObject.isMember("areaWidth")) {
-                config.areaWidth = configObject["areaWidth"].asInt();
-            }
-            if (configObject.isMember("areaHeight")) {
-                config.areaHeight = configObject["areaHeight"].asInt();
-            }
-            if (configObject.isMember("areaPreview")) {
-                config.areaPreview = configObject["areaPreview"].asInt();
-            }
-            checkConfig(config);
-            configs[identifier] = config;
-            }
-    }
+			// Area
+			if (configObject.isMember("areaXPosition")) {
+				config.areaXPosition = configObject["areaXPosition"].asInt();
+			}
+			if (configObject.isMember("areaYPosition")) {
+				config.areaYPosition = configObject["areaYPosition"].asInt();
+			}
+			if (configObject.isMember("areaWidth")) {
+				config.areaWidth = configObject["areaWidth"].asInt();
+			}
+			if (configObject.isMember("areaHeight")) {
+				config.areaHeight = configObject["areaHeight"].asInt();
+			}
+			if (configObject.isMember("areaPreview")) {
+				config.areaPreview = configObject["areaPreview"].asInt();
+			}
+			checkConfig(config);
+			configs[identifier] = config;
+			}
+	}
 	inputFile.close();
 	return false;
 }
@@ -330,8 +330,13 @@ bool openFileExplorer(HWND hwnd, wchar_t *filePath, int filePathSize, int button
 			ofn.lpstrFilter = L"Configuration Files (*.json)\0*.json\0All Files (*.*)\0*.*\0";
 		}
 		break;
+
+		case MENU_CREATESHORTCUT:
+		{
+			ofn.lpstrFilter = L"Shortcut Files (*.lnk)\0*.lnk\0All Files (*.*)\0*.*\0";
+		}
 	}
-	if (button == MENU_SAVE)
+	if (button == MENU_SAVE || button == MENU_CREATESHORTCUT)
 	{
 		if (GetSaveFileName(&ofn))
 			return true;
@@ -480,6 +485,7 @@ bool saveConfig(wchar_t *filename)
 	}
 	outputFile << jsonStr;
 	outputFile.close();
+	loadedConfig = filename;
 	return false;
 }
 
@@ -640,11 +646,12 @@ bool loadConfig(const wchar_t *filename)
 		if (configObject.isMember("areaPreview")) {
 			config.areaPreview = configObject["areaPreview"].asInt();
 		}
-        checkConfig(config);
+		checkConfig(config);
 		configs[identifier] = config;
 	}
 
 	inputFile.close();
+	loadedConfig = filename;
 	return false;
 }
 
@@ -759,14 +766,14 @@ void setDefaultConfig(Config &defaultConfig)
 
 void checkConfig(Config &config)
 {
-    if(config.areaXPosition > 100)
-        config.areaXPosition = 100;
-    if(config.areaYPosition > 100)
-        config.areaYPosition = 100;
-    if(config.areaWidth > 100)
-        config.areaWidth = 100;
-    if(config.areaHeight > 100)
-        config.areaHeight = 100;
+	if(config.areaXPosition > 100)
+		config.areaXPosition = 100;
+	if(config.areaYPosition > 100)
+		config.areaYPosition = 100;
+	if(config.areaWidth > 100)
+		config.areaWidth = 100;
+	if(config.areaHeight > 100)
+		config.areaHeight = 100;
 }
 
 wchar_t *getSelectedIdentifier(void)
@@ -817,4 +824,60 @@ void cleanup(void)
 	DestroyWindow(settingsHWND);
 	DestroyWindow(subtitlesHWND);
 	DestroyWindow(mainHWND);
+}
+
+bool createShortcut(const wchar_t *targetPath, const wchar_t *arguments, const wchar_t *workingDir, const wchar_t *shortcutPath)
+{
+	HRESULT hres;
+	CoInitialize(NULL);
+
+	// Create instance of IShellLink
+	IShellLink *pShellLink;
+	hres = CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, IID_IShellLink, (LPVOID *)&pShellLink);
+	if (SUCCEEDED(hres))
+	{
+		// Set the path of the file to execute
+		pShellLink->SetPath(targetPath);
+
+		// Set the arguments
+		if (arguments != nullptr)
+			pShellLink->SetArguments(arguments);
+
+		// Set the working directory
+		if (workingDir != nullptr)
+			pShellLink->SetWorkingDirectory(workingDir);
+
+		// Save the shortcut to disk
+		IPersistFile *pPersistFile;
+		hres = pShellLink->QueryInterface(IID_IPersistFile, (void **)&pPersistFile);
+		if (SUCCEEDED(hres))
+		{
+			hres = pPersistFile->Save(shortcutPath, TRUE);
+			pPersistFile->Release();
+		}
+		pShellLink->Release();
+	}
+	CoUninitialize();
+	return SUCCEEDED(hres);
+}
+
+void addTrayIcon(HWND hWnd, HINSTANCE hInstance)
+{
+	niData.cbSize = sizeof(NOTIFYICONDATA);
+	niData.hWnd = hWnd;
+	niData.uID = 1; // Unique ID for the tray icon
+	niData.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
+	niData.uCallbackMessage = TRAY_SHOW;
+	niData.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(MSL_ICON)); // Icon for the tray
+	lstrcpy(niData.szTip, L"MemSubLoader"); // Tooltip text
+	Shell_NotifyIcon(NIM_ADD, &niData);
+	isTrayVisible = true;
+}
+
+void removeTrayIcon()
+{
+	if (isTrayVisible) {
+		Shell_NotifyIcon(NIM_DELETE, &niData);
+		isTrayVisible = false;
+	}
 }

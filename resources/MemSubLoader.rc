@@ -36,6 +36,7 @@ MAIN_MENU MENU
     {
         MENUITEM "Load configuration", 0
         MENUITEM "Save configuration", 0
+		MENUITEM "Create shortcut using loaded config", 0
         MENUITEM "Set autoloaded configuration", 0
         MENUITEM SEPARATOR
         MENUITEM "Exit", 0
