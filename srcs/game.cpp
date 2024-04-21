@@ -92,4 +92,9 @@ void scanGame(PROCESS_INFORMATION pi)
 	CloseHandle(pi.hThread);
 	DestroyWindow(subtitlesHWND);
 	isGameOpened = false;
+
+	if (isTrayVisible)
+	{
+		ShowWindow(mainHWND, SW_SHOW); // Restore window
+	}
 }

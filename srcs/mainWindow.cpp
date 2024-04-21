@@ -13,6 +13,20 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 		}
 		break;
 
+		case WM_SIZE:
+		{
+			if (wParam == SIZE_MINIMIZED)
+			{
+				AddTrayIcon(hwnd, GetModuleHandle(NULL));
+				ShowWindow(hwnd, SW_HIDE); // Hide window in taskbar
+			}
+			else if (isTrayVisible)
+			{
+				RemoveTrayIcon();
+			}
+		}
+		break;
+
 		case WM_COMMAND:
 		{
 			switch (LOWORD(wParam))
@@ -46,6 +60,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 					}
 					else
 					{
+						ShowWindow(mainHWND, SW_MINIMIZE); // Minimize main window
 						startGame(hwnd); // Start the game and pass main window handle
 					}
 				}
@@ -179,6 +194,18 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 					ShowWindow(configuratorHWND, SW_SHOW);
 				}
 				break;
+
+				case TRAY_OPEN:
+				{
+					ShowWindow(hwnd, SW_SHOWNORMAL);
+				}
+				break;
+				
+				case TRAY_EXIT:
+				{
+					PostMessage(hwnd, WM_CLOSE, 0, 0);
+				}
+				break;
 			}
 		}
 		break;
@@ -194,6 +221,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 
 		case WM_DESTROY:
 		{
+			RemoveTrayIcon();
 			PostQuitMessage(0);
 		}
 		break;
@@ -205,6 +233,28 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 			FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
 			EndPaint(hwnd, &ps);
 		}
+		break;
+
+		case TRAY_SHOW:
+			switch (LOWORD(lParam))
+			{
+				case WM_RBUTTONDOWN:
+				case WM_CONTEXTMENU:
+				// Right-click or context menu requested on the tray icon
+				{
+					POINT pt;
+					GetCursorPos(&pt);
+
+					HMENU hPopupMenu = CreatePopupMenu();
+					AppendMenu(hPopupMenu, MF_STRING, TRAY_OPEN, L"Open");
+					AppendMenu(hPopupMenu, MF_STRING, TRAY_EXIT, L"Quit");
+
+					SetForegroundWindow(hwnd); // Ensure the menu is on top
+					TrackPopupMenu(hPopupMenu, TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, 0, hwnd, NULL);
+					DestroyMenu(hPopupMenu);
+				}
+				break;
+			}
 		break;
 	}
 
@@ -295,6 +345,5 @@ int createMainWindow(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	SendMessage(startButton, WM_SETFONT, (WPARAM)hFont, FALSE);
 	updateMainAttributes(mainHWND);
 
-	ShowWindow(mainHWND, nCmdShow);
 	return 0;
 }

@@ -8,6 +8,7 @@
 # include <windows.h>
 # include <objidl.h>
 # include <objbase.h>
+# include <shellapi.h>
 # include <commctrl.h>
 # include <iostream>
 # include <shlwapi.h>
@@ -74,6 +75,11 @@
 # define CONFIGURATOR_DELETE_BUTTON 44
 # define CONFIGURATOR_DUPLICATE_BUTTON 45
 # define CONFIGURATOR_TODEFAULT_BUTTON 46
+
+// Tray controls
+# define TRAY_SHOW 47
+# define TRAY_OPEN 48
+# define TRAY_EXIT 49
 
 // Save & Cancel controls
 # define SAVE_BUTTON 47
@@ -198,6 +204,10 @@ extern HWND subtitlesHWND;
 extern HWND settingsHWND;
 extern HWND configuratorHWND;
 
+// Tray
+extern NOTIFYICONDATA niData;
+extern bool isTrayVisible;
+
 // Main window handles
 extern HWND gamePathValueLabel;
 extern HWND subtitlesPathValueLabel;
@@ -291,11 +301,15 @@ wchar_t *getSelectedIdentifier(void);
 
 void cleanup(void);
 
+// Shortcut
+bool createShortcut(const wchar_t *targetPath, const wchar_t *arguments, const wchar_t *workingDir, const wchar_t *shortcutPath);
+
+// Tray
+void AddTrayIcon(HWND hWnd, HINSTANCE hInstance);
+void RemoveTrayIcon();
+
 // Game
 void startGame(HWND hwnd);
 void scanGame(PROCESS_INFORMATION pi);
-
-// Shortcut
-bool createShortcut(const wchar_t *targetPath, const wchar_t *arguments, const wchar_t *workingDir, const wchar_t *shortcutPath);
 
 #endif

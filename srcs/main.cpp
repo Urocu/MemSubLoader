@@ -1,4 +1,5 @@
 #include "MemSubLoader.hpp"
+#include <stdio.h>
 using namespace Gdiplus;
 
 // Global variables assignment
@@ -24,6 +25,10 @@ HWND mainHWND = NULL;
 HWND subtitlesHWND = NULL;
 HWND settingsHWND = NULL;
 HWND configuratorHWND = NULL;
+
+// Tray
+NOTIFYICONDATA niData;
+bool isTrayVisible;
 
 // Main window handles
 HWND gamePathValueLabel = NULL;
@@ -82,6 +87,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	wchar_t autoloadPath[MAX_PATH] = {};
 	wchar_t message[MAX_PATH + 256] = {};
 	Config defaultConfig;
+	int mode = SW_SHOW;
+	bool startImmediately = false;
 
 	// Check arguments
 	ArgList = CommandLineToArgvW(GetCommandLineW(), &nArgs);
@@ -97,13 +104,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	}
 
 	setDefaultConfig(defaultConfig);
-
 	// Autoload config using file argument
 	if(nArgs > 1 && wcsstr(ArgList[1], L"-config") && ArgList[2])
 	{
+		mode = SW_MINIMIZE;
 		if (loadConfig(ArgList[2]))
 		{
-			wsprintf(message, L"Failed to autoload configuration.\n%s\nAborting.", autoloadPath);
+			wsprintf(message, L"Failed to autoload configuration.\n%s\nAborting.", ArgList[2]);
 			MessageBox(NULL, message, L"Configuration autoloading", MB_ICONERROR);
 			cleanup();
 			return 1;
@@ -119,19 +126,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			MessageBox(NULL, L"Failed to load subtitles file", L"Subtitles loading", MB_ICONERROR);
 			subtitlesPath[0] = '\0';
 		}
-		startGame(NULL); // We're directly starting the game without creating the main window
+		startImmediately = true;
 	}
+	// Autoload config using autoload.dat
 	else
 	{
-		int res = createMainWindow(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
-		if (res)
-		{
-			MessageBox(NULL, L"Error: Failed to initialize main window", L"Window initialization", MB_ICONERROR);
-			cleanup();
-			return 1;
-		}
-
-		// Autoload config using autoload.dat
 		if (getAutoloadConfigPath(autoloadPath)) // Get autoloaded configuration path from autoload.dat
 		{
 			if (loadConfig(autoloadPath)) // Failed to load configuration
@@ -155,6 +154,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		{
 			configs.insert({ wcsdup(L"DEFAULT"), defaultConfig });
 		}
+	}
+
+	int res = createMainWindow(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
+	if (res)
+	{
+		MessageBox(NULL, L"Error: Failed to initialize main window", L"Window initialization", MB_ICONERROR);
+		cleanup();
+		return 1;
+	}
+	ShowWindow(mainHWND, mode);
+
+	if (startImmediately)
+	{
+		startGame(NULL);
 	}
 
 	while (GetMessage(&msg, NULL, 0, 0) > 0)
