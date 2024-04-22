@@ -154,25 +154,27 @@ LRESULT CALLBACK ConfiguratorWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPA
 						wchar_t buffer[33] = { 0 };
 
 						if (CWin32InputBox::InputBox(L"Duplicate configuration", L"Duplicated configuration name :", buffer, 32, false, hwnd) == IDOK)
-                        if (buffer[0] != L'\0')
-						{
-							std::map<wchar_t *, Config, WStringCompare>::iterator iter2 = getConfig(buffer);
-							if (iter2 != configs.end())
-							{
-								MessageBox(hwnd, L"Duplicated configuration name already exists", L"Duplicate configuration", MB_ICONERROR);
-								break;
-							}
+                        {
+                            if (buffer[0] != L'\0')
+                            {
+                                std::map<wchar_t *, Config, WStringCompare>::iterator iter2 = getConfig(buffer);
+                                if (iter2 != configs.end())
+                                {
+                                    MessageBox(hwnd, L"Duplicated configuration name already exists", L"Duplicate configuration", MB_ICONERROR);
+                                    break;
+                                }
 
-							Config newConfig = iter->second;
-							newConfig.identifier = wcsdup(buffer);
-							configs.insert({ wcsdup(buffer), newConfig });
-							updateConfiguratorWindowAttributes();
-						}
-						else
-						{
-							MessageBox(hwnd, L"Duplicated configuration name cannot be empty", L"Duplicate configuration", MB_ICONERROR);
-							break;
-						}
+                                Config newConfig = iter->second;
+                                newConfig.identifier = wcsdup(buffer);
+                                configs.insert({ wcsdup(buffer), newConfig });
+                                updateConfiguratorWindowAttributes();
+                            }
+                            else
+                            {
+                                MessageBox(hwnd, L"Duplicated configuration name cannot be empty", L"Duplicate configuration", MB_ICONERROR);
+                                break;
+                            }
+                        }
 					}
 					else
 					{

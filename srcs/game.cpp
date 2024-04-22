@@ -23,7 +23,7 @@ void startGame(HWND hwnd)
 	scanGame(pi);
 }
 
-// Where the magic happens, scans memory for memory adresses accesses and draw subtitles accordingly
+// Where the magic happens, scans specific memory addresses for ID and bool values and draws subtitles accordingly
 void scanGame(PROCESS_INFORMATION pi)
 {
     int num = subtitles.size();
@@ -42,15 +42,13 @@ void scanGame(PROCESS_INFORMATION pi)
         {
             switch(msg.wParam)
             {
-            case 1:
+            case 1: // If the subtitles aren't timed
                 is = false;
                 for(int i = 0; i < num; i++)
                 {
-
                     subtitles[i].searchMemory(pi.hProcess);
                     if (subtitles[i].checkAudio(pi.hProcess, i))
                         is = true;
-
                 }
                 if (!is && textToDraw !=L"")
                 {
@@ -58,7 +56,7 @@ void scanGame(PROCESS_INFORMATION pi)
                     invalidateWindow(subtitlesHWND);
                 }
                 break;
-            case 2:
+            case 2: // If the subtitles are timed
                 if(subtitles[sub].dialog[subID].Timer.size() > currentTimer && subtitles[sub].dialog[subID].Timer[currentTimer] > subtitles[sub].dialog[subID].Timer[currentTimer-1])
                 {
                     textToDraw = subtitles[sub].dialog[subID].Text[currentTimer-1];
@@ -66,7 +64,7 @@ void scanGame(PROCESS_INFORMATION pi)
                     SetTimer(mainHWND,2,subtitles[sub].dialog[subID].Timer[currentTimer] - subtitles[sub].dialog[subID].Timer[currentTimer-1],NULL);
                     currentTimer++;
                 }
-                else
+                else // End of timed subtitles
                 {
                     textToDraw = subtitles[sub].dialog[subID].Text[currentTimer-1];
                     invalidateWindow(subtitlesHWND);
