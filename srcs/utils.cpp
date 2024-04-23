@@ -173,13 +173,21 @@ bool loadSubtitles(wchar_t *fileName)
 			}
 		}
 	}
-
+    // Load info
 	if(root.isMember("Info"))
 	{
 		const std::wstring textWString = jsonUnicodeToWstring(root["Info"]);
 		SubInfo = textWString;
 		std::wcout<<SubInfo;
 	}
+
+    // Load identifiers
+    std::map<TextAlignment, std::string> alignmentToString =
+	{
+		{ALIGN_LEFT, "ALIGN_LEFT"},
+		{ALIGN_CENTER, "ALIGN_CENTER"},
+		{ALIGN_RIGHT, "ALIGN_RIGHT"}
+	};
 
 	if(root.isMember("Identifiers"))
 	{
