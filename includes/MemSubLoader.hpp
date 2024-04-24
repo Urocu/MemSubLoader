@@ -1,8 +1,6 @@
 #ifndef MEMSUBLOADER_HPP
 # define MEMSUBLOADER_HPP
-#ifndef UNICODE
 # define UNICODE
-#endif
 # define _WIN32_WINNT 0x0501
 # define _WIN32_IE 0x0300
 # include <windows.h>
