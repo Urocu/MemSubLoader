@@ -247,7 +247,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 
 					HMENU hPopupMenu = CreatePopupMenu();
 					AppendMenu(hPopupMenu, MF_STRING, TRAY_OPEN, L"Open");
-					AppendMenu(hPopupMenu, MF_STRING, TRAY_EXIT, L"Quit");
+					AppendMenu(hPopupMenu, MF_STRING, TRAY_EXIT, L"Exit");
 
 					SetForegroundWindow(hwnd); // Ensure the menu is on top
 					TrackPopupMenu(hPopupMenu, TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, 0, hwnd, NULL);
