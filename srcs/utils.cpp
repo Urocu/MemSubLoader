@@ -12,7 +12,7 @@ std::wstring jsonUnicodeToWstring(const Json::Value& value)
 	return wstr;
 }
 
-// Find address containing audio ID
+// Reads address stored in memory and adds offset to it if needed
 void Subtitles::findAddress(uintptr_t &address, int offset, HANDLE hProcess)
 {
 	SIZE_T bytesRead;
@@ -20,6 +20,7 @@ void Subtitles::findAddress(uintptr_t &address, int offset, HANDLE hProcess)
 		address += offset;
 }
 
+// Finds dynamic address using baseaddress and offsets
 void Subtitles::searchMemory(HANDLE hProcess)
 {
 	address_audio = bAddress_audio;
@@ -30,6 +31,7 @@ void Subtitles::searchMemory(HANDLE hProcess)
 		findAddress(address_play,offset_play[i],hProcess);
 }
 
+// Checks if there is audio playing and if yes, which one
 bool Subtitles::checkAudio(HANDLE hProcess, int place)
 {
 	SIZE_T bytesRead;
@@ -49,7 +51,7 @@ bool Subtitles::checkAudio(HANDLE hProcess, int place)
 					{
 						textToDraw = dialog[i].Text[0];
 					}
-					else
+					else // If subtitles have timer
 					{
 						textToDraw = L"";
 						KillTimer(mainHWND,1);
@@ -171,13 +173,21 @@ bool loadSubtitles(wchar_t *fileName)
 			}
 		}
 	}
-
+    // Load info
 	if(root.isMember("Info"))
 	{
 		const std::wstring textWString = jsonUnicodeToWstring(root["Info"]);
 		SubInfo = textWString;
 		std::wcout<<SubInfo;
 	}
+
+    // Load identifiers
+    std::map<TextAlignment, std::string> alignmentToString =
+	{
+		{ALIGN_LEFT, "ALIGN_LEFT"},
+		{ALIGN_CENTER, "ALIGN_CENTER"},
+		{ALIGN_RIGHT, "ALIGN_RIGHT"}
+	};
 
 	if(root.isMember("Identifiers"))
 	{
