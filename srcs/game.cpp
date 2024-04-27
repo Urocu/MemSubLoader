@@ -93,6 +93,7 @@ void scanGame(PROCESS_INFORMATION pi)
 
 	if (isTrayVisible)
 	{
+	    PostMessage(mainHWND, WM_SYSCOMMAND, SC_RESTORE, 0);
 		ShowWindow(mainHWND, SW_SHOW); // Restore window
 	}
 }
