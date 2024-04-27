@@ -42,12 +42,16 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 				{
 					if (openFileExplorer(hwnd, subtitlesPath, MAX_PATH, LOWORD(wParam)))
 					{
-						SetWindowText(subtitlesPathValueLabel, subtitlesPath);
 						if(loadSubtitles(subtitlesPath))
 							{
 								MessageBox(hwnd, L"Failed to load subtitles file", L"Configuration autoloading", MB_ICONERROR);
 								subtitlesPath[0] = '\0';
+								SetWindowText(subtitlesPathValueLabel, L"Select a file...");
 							}
+                        else
+                            {
+                                SetWindowText(subtitlesPathValueLabel, subtitlesPath);
+                            }
 					}
 				}
 				break;
