@@ -21,15 +21,24 @@ LRESULT CALLBACK subtitlesWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 				std::map<wchar_t *, Config>::iterator iter = getConfig(identifier);
 				if (iter != configs.end())
 				{
-				    if(screenWidth != GetSystemMetrics(SM_CXSCREEN) || screenHeight != GetSystemMetrics(SM_CYSCREEN))
-                    {
-                    screenWidth = GetSystemMetrics(SM_CXSCREEN);
-                    screenHeight = GetSystemMetrics(SM_CYSCREEN);
-                    checkConfig(iter->second);
-                    }
 					config = iter->second;
 				}
+				else
+                {
+                    iter = getConfig(L"DEFAULT");
+                    if (iter != configs.end())
+                    {
+                        config = iter->second;
+                    }
+                }
 			}
+
+            if(screenWidth != GetSystemMetrics(SM_CXSCREEN) || screenHeight != GetSystemMetrics(SM_CYSCREEN))
+            {
+                screenWidth = GetSystemMetrics(SM_CXSCREEN);
+                screenHeight = GetSystemMetrics(SM_CYSCREEN);
+                checkConfig(config);
+            }
 
 			// Initialization
 			Gdiplus::Bitmap subtitlesBitmap(config.areaWidth*screenWidth/100, config.areaHeight*screenHeight/100, PixelFormat32bppARGB);
