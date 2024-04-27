@@ -8,7 +8,6 @@
 # include <objbase.h>
 # include <shellapi.h>
 # include <commctrl.h>
-# include <iostream>
 # include <shlwapi.h>
 # include <fstream>
 # include <string>
@@ -180,7 +179,7 @@ struct Subtitles
 // Global resources
 
 extern std::vector <Subtitles> subtitles;
-extern std::wstring SubInfo;
+extern std::wstring subInfo;
 extern std::map<wchar_t *, Config, WStringCompare> configs;
 extern std::wstring loadedConfig;
 extern std::wstring textToDraw;

@@ -1,7 +1,7 @@
 #include "MemSubLoader.hpp"
 
 std::vector <Subtitles> subtitles;
-std::wstring SubInfo;
+std::wstring subInfo;
 
 std::wstring jsonUnicodeToWstring(const Json::Value& value)
 {
@@ -177,8 +177,7 @@ bool loadSubtitles(wchar_t *fileName)
 	if(root.isMember("Info"))
 	{
 		const std::wstring textWString = jsonUnicodeToWstring(root["Info"]);
-		SubInfo = textWString;
-		std::wcout<<SubInfo;
+		subInfo = textWString;
 	}
 
     // Load identifiers

@@ -51,6 +51,9 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
                         else
                             {
                                 SetWindowText(subtitlesPathValueLabel, subtitlesPath);
+                                if(subInfo[0] != L'\0')
+                                    MessageBox(hwnd, subInfo.c_str(), L"Subtitles info", MB_ICONINFORMATION);
+
                             }
 					}
 				}
