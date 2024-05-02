@@ -25,7 +25,8 @@ LRESULT CALLBACK subtitlesWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 				}
 				else
                 {
-                    iter = getConfig(L"DEFAULT");
+                    wcscpy(identifier, L"DEFAULT");
+                    iter = getConfig(identifier);
                     if (iter != configs.end())
                     {
                         config = iter->second;

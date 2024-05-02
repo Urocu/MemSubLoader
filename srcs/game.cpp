@@ -27,7 +27,7 @@ void startGame(HWND hwnd)
 void scanGame(PROCESS_INFORMATION pi)
 {
     int num = subtitles.size();
-    int currentTimer = 1;
+    unsigned int currentTimer = 1;
 	bool is = false;
 
 	isGameOpened = true;

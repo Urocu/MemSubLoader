@@ -4,7 +4,7 @@
 /*
 History
 ----------
-03/02/2006 
+03/02/2006
 - Initial version development
 
 03/04/2006
@@ -13,7 +13,7 @@ History
 
 */
 
-typedef struct _MSDN_DLGTEMPLATEEX 
+typedef struct _MSDN_DLGTEMPLATEEX
 {
   WORD dlgVer;
   WORD signature;
@@ -34,12 +34,12 @@ static bool IsDlgTemplateExtended(DLGTEMPLATE *dlgTemplate)
 
   // MSDN excerpt:
   //* dlgVer
-  //  Specifies the version number of the extended dialog box template. This member must be 1. 
+  //  Specifies the version number of the extended dialog box template. This member must be 1.
   //* signature
-  //  Indicates whether a template is an extended dialog box template. 
-  // If signature is 0xFFFF, this is an extended dialog box template. 
-  // In this case, the dlgVer member specifies the template version number. 
-  // If signature is any value other than 0xFFFF, this is a standard dialog box template that uses the DLGTEMPLATE and DLGITEMTEMPLATE structures. 
+  //  Indicates whether a template is an extended dialog box template.
+  // If signature is 0xFFFF, this is an extended dialog box template.
+  // In this case, the dlgVer member specifies the template version number.
+  // If signature is any value other than 0xFFFF, this is a standard dialog box template that uses the DLGTEMPLATE and DLGITEMTEMPLATE structures.
 
   return (dgExTemplate->dlgVer == 1) && (dgExTemplate->signature == 0xFFFF);
 }
@@ -47,7 +47,7 @@ static bool IsDlgTemplateExtended(DLGTEMPLATE *dlgTemplate)
 // Use alignment if supported by the compiler
 #ifdef _MSC_VER
   #if _MSC_VER > 1200
-    __declspec(align(4)) 
+    __declspec(align(4))
   #endif
 #endif
 
@@ -77,10 +77,10 @@ static unsigned char definputbox_dlg[] =
     0xff,0xff,0xff,0xff,0xff,0x82,0x00,0x00,0x00,0x00,0x00
 };
 
-static LPCTSTR definputbox_buttonnames[] = { _T("OK"), _T("CANCEL") };
+static LPCTSTR definputbox_buttonnames[] = { L"OK", L"CANCEL" };
 static const INT_PTR definputbox_buttonids[] = { IDOK, IDCANCEL };
 
-static const INT 
+static const INT
   definputbox_id_prompt = 1000,
   definputbox_id_edit1 = 1001,
   definputbox_id_edit2 = 1002;
@@ -155,7 +155,7 @@ INT_PTR CWin32InputBox::InputBoxEx(WIN32INPUTBOX_PARAM *param)
     dlgTemplate = (LPDLGTEMPLATE) param->DlgTemplateData;
   }
 
-  MSDN_DLGTEMPLATEEX *dlgTemplateEx = 
+  MSDN_DLGTEMPLATEEX *dlgTemplateEx =
     IsDlgTemplateExtended((LPDLGTEMPLATE) dlgTemplate) ? (MSDN_DLGTEMPLATEEX *) dlgTemplate : 0;
 
   if (dlgTemplateEx != 0)
@@ -199,9 +199,9 @@ INT_PTR CWin32InputBox::InputBoxEx(WIN32INPUTBOX_PARAM *param)
 }
 
 INT_PTR CWin32InputBox::InputBox(
-  LPCTSTR szTitle, 
-  LPCTSTR szPrompt, 
-  LPTSTR szResult, 
+  LPCTSTR szTitle,
+  LPCTSTR szPrompt,
+  LPTSTR szResult,
   DWORD nResultSize,
   bool bMultiLine,
   HWND hwndParent)
@@ -247,32 +247,32 @@ void CWin32InputBox::InitDialog()
   {
     ::ShowWindow(hwndEdit1, SW_HIDE);
     ::SetWindowPos(
-      hwndEdit2, 
-      HWND_NOTOPMOST, 
-      rectEdit1.left - rectDlg.left, 
-      (rectEdit1.top - rectDlg.top) - (rectEdit1.bottom - rectEdit1.top), 
-      0, 
-      0, 
+      hwndEdit2,
+      HWND_NOTOPMOST,
+      rectEdit1.left - rectDlg.left,
+      (rectEdit1.top - rectDlg.top) - (rectEdit1.bottom - rectEdit1.top),
+      0,
+      0,
       SWP_NOSIZE | SWP_NOZORDER);
 
     ::SetWindowPos(
-      _param->hDlg, 
-      HWND_NOTOPMOST, 
-      0, 
-      0, 
-      rectDlg.right - rectDlg.left, 
-      rectDlg.bottom - rectDlg.top - (rectEdit1.bottom - rectEdit1.top), 
+      _param->hDlg,
+      HWND_NOTOPMOST,
+      0,
+      0,
+      rectDlg.right - rectDlg.left,
+      rectDlg.bottom - rectDlg.top - (rectEdit1.bottom - rectEdit1.top),
       SWP_NOMOVE);
 
   }
   else
   {
     ::SetWindowPos(
-      _param->hDlg, 
-      HWND_NOTOPMOST, 
-      0, 
-      0, 
-      rectDlg.right - rectDlg.left, 
+      _param->hDlg,
+      HWND_NOTOPMOST,
+      0,
+      0,
+      rectDlg.right - rectDlg.left,
       rectEdit1.bottom - rectDlg.top + 5,
       SWP_NOMOVE);
 
@@ -283,14 +283,14 @@ void CWin32InputBox::InitDialog()
 // Message handler for about box.
 LRESULT CALLBACK CWin32InputBox::DlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-  CWin32InputBox *_this = (CWin32InputBox *) ::GetWindowLong(hDlg, GWL_USERDATA);
+  CWin32InputBox *_this = (CWin32InputBox *) ::GetWindowLong(hDlg, GWLP_USERDATA);
 
   switch (message)
   {
     case WM_INITDIALOG:
     {
-      ::SetWindowLong(hDlg, GWL_USERDATA, (LONG) lParam);
-      
+      ::SetWindowLong(hDlg, GWLP_USERDATA, (LONG) lParam);
+
       _this = (CWin32InputBox *)  lParam;
       _this->_param->hDlg = hDlg;
       _this->InitDialog();
@@ -310,11 +310,11 @@ LRESULT CALLBACK CWin32InputBox::DlgProc(HWND hDlg, UINT message, WPARAM wParam,
            i<sizeof(definputbox_buttonids)/sizeof(definputbox_buttonids[0]);
            i++)
       {
-        if (buttonId == definputbox_buttonids[i]) 
+        if (buttonId == definputbox_buttonids[i])
         {
           ::GetWindowText(
-            _this->_hwndEditCtrl, 
-            _this->_param->szResult, 
+            _this->_hwndEditCtrl,
+            _this->_param->szResult,
             _this->_param->nResultSize);
 
           ::EndDialog(hDlg, buttonId);

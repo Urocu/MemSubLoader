@@ -94,23 +94,23 @@ bool loadSubtitles(wchar_t *fileName)
 	}
 	if(root.isMember("Addresses"))
 	{
-		for(int i = 0; i < root["Addresses"].size(); i++)
+		for(unsigned int i = 0; i < root["Addresses"].size(); i++)
 		{
 			subtitles.push_back(Subtitles());
 			Json::Value address;
 			address = root["Addresses"][i];
 
 			subtitles[i].bAddress_audio = address["BaseAddressAudio"].asInt();
-			for(int j = 0; j < address["OffsetsAudio"].size();j++)
+			for(unsigned int j = 0; j < address["OffsetsAudio"].size();j++)
 				subtitles[i].offset_audio.push_back(address["OffsetsAudio"][j].asInt());
 
 			subtitles[i].bAddress_play = address["BaseAddressPlay"].asInt();
-			for(int j = 0; j < address["OffsetsPlay"].size();j++)
+			for(unsigned int j = 0; j < address["OffsetsPlay"].size();j++)
 				subtitles[i].offset_play.push_back(address["OffsetsPlay"][j].asInt());
 		}
 	}
 	std::string sub = "Subtitles";
-	for(int i = 0; i < root["Addresses"].size(); i++)
+	for(unsigned int i = 0; i < root["Addresses"].size(); i++)
 	{
 		if(root.isMember(sub+std::to_string(i)))
 		{
@@ -119,13 +119,13 @@ bool loadSubtitles(wchar_t *fileName)
 			int s = root[sub+std::to_string(i)].size();
 			for(int j = 0; j< s; j++)
 			{
-				int id;
+				unsigned int id;
 				std::wstring ident;
 				std::vector<std::wstring> text;
 				std::vector<u_int> timer;
 
 				Json::Value dialog;
-				dialog =root[sub+std::to_string(i)][j];
+				dialog = root[sub+std::to_string(i)][j];
 				if(dialog.isMember("ID"))
 				{
 					id = dialog["ID"].asUInt();
@@ -147,7 +147,7 @@ bool loadSubtitles(wchar_t *fileName)
 						text.push_back(textWString);
 					}
 					else
-					for(int j = 0; j < subs.size();j++)
+					for(unsigned int j = 0; j < subs.size();j++)
 					{
 						const std::wstring textWString = jsonUnicodeToWstring(subs[j]);
 						text.push_back(textWString);
@@ -162,7 +162,7 @@ bool loadSubtitles(wchar_t *fileName)
 						timer.push_back(time.asInt());
 					}
 					else
-					for(int j = 0; j < time.size();j++)
+					for(unsigned int j = 0; j < time.size();j++)
 					{
 						timer.push_back(time[j].asInt());
 					}

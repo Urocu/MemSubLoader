@@ -20,6 +20,10 @@
 # include "json.h"
 # include "Win32InputBox.h"
 # include "resource.h"
+#include "stdafx.h"
+#include "winnls.h"
+#include "shobjidl.h"
+#include "shlguid.h"
 
 // Main controls
 # define GAME_BUTTON 1
