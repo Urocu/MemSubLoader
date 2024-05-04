@@ -1,7 +1,7 @@
 NAME = MemSubLoader
 CC = g++
 CFLAGS = -Wall
-LINKS = -lstdc++ -lcomdlg32 -lshlwapi -lgdi32 -lgdiplus bin/Release/OutlineText.dll bin/Release/JsonCpp.dll
+LINKS = -lgdi32 -luser32 -lkernel32 -lcomctl32 -lshlwapi -lcomdlg32 -lgdiplus -lole32 -luuid bin/Release/OutlineText.dll bin/Release/JsonCpp.dll
 LIBLINKS = -I./includes -I./resources -I./lib -I./lib/json -I./lib/OutlineText
 SRC_PATH = srcs/
 OBJ_PATH = bin/
