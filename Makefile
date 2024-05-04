@@ -1,10 +1,12 @@
 NAME = MemSubLoader
 CC = g++
 CFLAGS = -Wall
-LINKS = -lstdc++ -lcomdlg32 -lshlwapi -lgdi32 -lgdiplus bin/Release/OutlineText.dll bin/Release/JsonCpp.dll
+RC = windres
+LINKS = -lgdi32 -luser32 -lkernel32 -lcomctl32 -lshlwapi -lcomdlg32 -lgdiplus -lole32 -luuid bin/Release/OutlineText.dll bin/Release/JsonCpp.dll
 LIBLINKS = -I./includes -I./resources -I./lib -I./lib/json -I./lib/OutlineText
 SRC_PATH = srcs/
 OBJ_PATH = bin/
+RES_PATH = resources/
 OUT_PATH = bin/Release/
 C_EXTENSION = .cpp
 
@@ -37,6 +39,10 @@ LIB_JSON_CPP_SRCS_FILES_EXT	+= 	$(addsuffix $(C_EXTENSION), $(LIB_JSON_CPP_SRCS_
 LIB_JSON_CPP_SRCS 			+= 	$(addprefix $(LIB_JSON_CPP_PATH), $(LIB_JSON_CPP_SRCS_FILES_EXT))
 LIB_JSON_CPP_OBJS 			= 	$(addprefix $(OBJ_PATH), $(LIB_JSON_CPP_SRCS_FILES_EXT:cpp=o))
 
+RC_FILES = MemSubLoader.rc
+RC_SRCS = $(addprefix $(RES_PATH), $(RC_FILES))
+RC_OBJS = $(addprefix $(OBJ_PATH), $(RC_FILES:rc=o))
+
 #		(҂◡_◡)			UTILS			(҂◡_◡)
 
 RM = rm -rf
@@ -45,8 +51,8 @@ RM = rm -rf
 
 all: folders libOutlineText libJsonCpp $(NAME)
 
-$(NAME): $(OBJS)
-	$(CC) $(CFLAGS) -o $(OUT_PATH)$(NAME) $(OBJS) $(LINKS)
+$(NAME): $(OBJS) $(RC_OBJS)
+	$(CC) $(CFLAGS) -o $(OUT_PATH)$(NAME) $(OBJS) $(RC_OBJS) $(LINKS)
 
 folders:
 	@mkdir -p $(dir $(OBJ_PATH)$(LIB_OUTLINE_TEXT_PATH))
@@ -59,6 +65,9 @@ libOutlineText: $(LIB_OUTLINE_TEXT_OBJS)
 
 libJsonCpp: $(LIB_JSON_CPP_OBJS)
 	$(CC) ${CFLAGS} -shared $(LIB_JSON_CPP_OBJS) -Wl,--export-all-symbols -o $(OUT_PATH)JsonCpp.dll
+
+$(RC_OBJS): $(RC_SRCS)
+	$(RC) -i $< -o $@
 
 .c.o:
 	@$(CC) $(FLAGS) -c ${LIBLINKS} $< -o ${<:.cpp=.o}
