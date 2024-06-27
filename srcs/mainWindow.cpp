@@ -202,6 +202,20 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 				}
 				break;
 
+				case MENU_DEBUG:
+				{
+					if (!IsWindow(debugHWND))
+					{
+						if (createDebugWindow(hwnd))
+						{
+							MessageBox(hwnd, L"Error: Failed to initialize debug window", L"Window initialization", MB_ICONERROR);
+							break;
+						}
+					}
+					ShowWindow(debugHWND, SW_SHOW);
+				}
+				break;
+
 				case TRAY_OPEN:
 				{
 					ShowWindow(hwnd, SW_SHOWNORMAL);
@@ -326,6 +340,10 @@ int createMainWindow(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	HMENU hMenu_2 = CreatePopupMenu();
 	AppendMenu(hMenu_2, MF_STRING, MENU_SETTINGS, (L"Settings"));
 	AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hMenu_2, (L"Subtitles"));
+	SetMenu(mainHWND, hMenu);
+	HMENU hMenu_3 = CreatePopupMenu();
+	AppendMenu(hMenu_3, MF_STRING, MENU_DEBUG, (L"Open"));
+	AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hMenu_3, (L"Debug"));
 	SetMenu(mainHWND, hMenu);
 
 

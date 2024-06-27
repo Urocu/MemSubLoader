@@ -82,9 +82,14 @@
 # define TRAY_OPEN 48
 # define TRAY_EXIT 49
 
+// Debug
+# define MENU_DEBUG 50
+
 // Save & Cancel controls
 # define SAVE_BUTTON 47
 # define CANCEL_BUTTON 48
+
+
 
 # define FONT_ALPHA_MIN 0
 # define FONT_ALPHA_MAX 255
@@ -204,6 +209,7 @@ extern HWND mainHWND;
 extern HWND subtitlesHWND;
 extern HWND settingsHWND;
 extern HWND configuratorHWND;
+extern HWND debugHWND;
 
 // Tray
 extern NOTIFYICONDATA niData;
@@ -222,6 +228,9 @@ extern HWND alignmentVerticalComboBox;
 
 // Configurator window handles
 extern HWND configList;
+
+// Debug window handles
+extern HWND debugList;
 
 // Resources
 extern HFONT hFont;
@@ -277,6 +286,9 @@ int createConfiguratorWindow(HWND parent);
 void updateConfiguratorWindowAttributes();
 LRESULT CALLBACK ConfiguratorWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+int createDebugWindow(HWND parent);
+void updateDebugWindowAttributes();
+LRESULT CALLBACK DebugWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 // Utilities
 std::wstring jsonUnicodeToWstring(const Json::Value& value);
 void findAddress(uintptr_t &address, int offset, HANDLE hProcess);

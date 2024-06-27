@@ -25,6 +25,7 @@ HWND mainHWND = NULL;
 HWND subtitlesHWND = NULL;
 HWND settingsHWND = NULL;
 HWND configuratorHWND = NULL;
+HWND debugHWND = NULL;
 
 // Tray
 NOTIFYICONDATA niData;
@@ -43,6 +44,9 @@ HWND alignmentVerticalComboBox = NULL;
 
 // Configurator window handles
 HWND configList = NULL;
+
+// Debug window handles
+HWND debugList = NULL;
 
 // Resources
 HFONT hFont = NULL;

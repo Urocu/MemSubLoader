@@ -45,6 +45,10 @@ MAIN_MENU MENU
     {
         MENUITEM "Settings", 0
     }
+    POPUP "Debug"
+    {
+        MENUITEM "Open", 0
+    }
 }
 
 
