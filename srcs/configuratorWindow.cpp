@@ -76,30 +76,32 @@ LRESULT CALLBACK ConfiguratorWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPA
 				case CONFIGURATOR_NEW_BUTTON:
 				{
 					wchar_t buffer[33] = { 0 };
-					CWin32InputBox::InputBox(L"Create new configuration", L"New configuration name :", buffer, 32, false, hwnd);
+					if(CWin32InputBox::InputBox(L"Create new configuration", L"New configuration name :", buffer, 32, false, hwnd) == IDOK)
+                    {
+                        if (buffer[0] != L'\0')
+                        {
+                            std::map<wchar_t *, Config, WStringCompare>::iterator iter = getConfig(buffer);
+                            if (iter != configs.end())
+                            {
+                                MessageBox(hwnd, L"New configuration name already exists", L"Create new configuration", MB_ICONERROR);
+                                break;
+                            }
 
-					if (buffer[0] != L'\0')
-					{
-						std::map<wchar_t *, Config, WStringCompare>::iterator iter = getConfig(buffer);
-						if (iter != configs.end())
-						{
-							MessageBox(hwnd, L"New configuration name already exists", L"Create new configuration", MB_ICONERROR);
-							break;
-						}
+                            Config newConfig = {};
+                            setDefaultConfig(newConfig);
+                            newConfig.identifier = wcsdup(buffer);
+                            HFONT hSystemFont = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
+                            GetObject(hSystemFont, sizeof(LOGFONT), &newConfig.subtitlesFont);
+                            configs.insert({ wcsdup(buffer), newConfig });
+                            updateConfiguratorWindowAttributes();
+                        }
+                        else
+                        {
+                            MessageBox(hwnd, L"New configuration name cannot be empty", L"Create new configuration", MB_ICONERROR);
+                            break;
+                        }
+                    }
 
-						Config newConfig = {};
-						setDefaultConfig(newConfig);
-						newConfig.identifier = wcsdup(buffer);
-						HFONT hSystemFont = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
-						GetObject(hSystemFont, sizeof(LOGFONT), &newConfig.subtitlesFont);
-						configs.insert({ wcsdup(buffer), newConfig });
-						updateConfiguratorWindowAttributes();
-					}
-					else
-					{
-						MessageBox(hwnd, L"New configuration name cannot be empty", L"Create new configuration", MB_ICONERROR);
-						break;
-					}
 				}
 				break;
 
