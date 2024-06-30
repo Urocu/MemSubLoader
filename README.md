@@ -12,9 +12,12 @@ MemSubLoader should be compatible from Windows XP SP2 to Windows 11 latest build
 The current features are :
 
 - Loading subtitles for games
+- Ability to use timers for subtitles
 - Settings for text style
 - Ability to save and load configuration
 - Autoload configuration
+- Shortcut creation
+- Ability to check variables with debug window
 
 ## Download
 You can download the latest version here :
