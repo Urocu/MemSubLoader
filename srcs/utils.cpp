@@ -806,6 +806,17 @@ wchar_t *getSelectedIdentifier(void)
 	return NULL;
 }
 
+int getSelectedSubtitle(void)
+{
+	int selectedIndex = ListView_GetNextItem(debugList, -1, LVNI_SELECTED);
+
+	if (selectedIndex != -1)
+	{
+		return selectedIndex >> 1;
+	}
+	return 0;
+}
+
 void invalidateWindow(HWND hwnd)
 {
 	if (hwnd != NULL)

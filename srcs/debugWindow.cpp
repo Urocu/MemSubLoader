@@ -56,7 +56,7 @@ int createDebugWindow(HWND parent)
 		return 1;
 	}
 
-    debugList = CreateWindowEx(0, WC_LISTVIEW, (L""), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | LVS_EX_GRIDLINES, 11, 11, 353, 351, debugHWND, (HMENU)0, debugWindowClass.hInstance, 0);
+    debugList = CreateWindowEx(0, WC_LISTVIEW, (L""), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | LVS_EX_GRIDLINES, 11, 11, 353, 175, debugHWND, (HMENU)0, debugWindowClass.hInstance, 0);
 	SendMessage(debugList, WM_SETFONT, (WPARAM)hFont, FALSE);
 	ListView_SetExtendedListViewStyle(debugList, LVS_EX_FULLROWSELECT);
 	LVCOLUMN lvc;
@@ -71,31 +71,56 @@ int createDebugWindow(HWND parent)
 	lvc.pszText = const_cast<LPWSTR>(L"Variable");
 	ListView_InsertColumn(debugList, 2, &lvc);
 
-
+	subtitleList = CreateWindowEx(0, WC_LISTVIEW, (L""), WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_BORDER | LVS_EX_GRIDLINES, 11, 185, 353, 175, debugHWND, (HMENU)0, debugWindowClass.hInstance, 0);
+	SendMessage(subtitleList, WM_SETFONT, (WPARAM)hFont, FALSE);
+	ListView_SetExtendedListViewStyle(subtitleList, LVS_EX_FULLROWSELECT);
+	lvc.mask = LVCF_TEXT | LVCF_WIDTH;
+	lvc.cx = 351;
+	lvc.pszText = const_cast<LPWSTR>(L"Subtitles");
+	ListView_InsertColumn(subtitleList, 0, &lvc);
 
 	// Window icon
 	SendMessage(debugHWND, WM_SETICON, ICON_SMALL, (LPARAM)iconLogo);
 	SendMessage(debugHWND, WM_SETICON, ICON_BIG, (LPARAM)iconLogo);
     SetWindowPos(debugHWND, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-	updateDebugWindowAttributes();
+	createDebugWindowAttributes();
 	return 0;
 }
 
+
+
 // Debug window update
-void updateDebugWindowAttributes(void)
+void createDebugWindowAttributes(void)
 {
-	ListView_DeleteAllItems(debugList);
     int i = 0;
 	for (std::vector<Subtitles>::iterator iter = subtitles.begin(); iter != subtitles.end(); iter++)
 	{
-	    std::wstringstream wss;
-	    std::wstring ws;
 		LVITEM lvi = {};
 		lvi.mask = LVIF_TEXT;
 		lvi.iItem = i;
 		lvi.iSubItem = 0;
 		lvi.pszText = const_cast<LPWSTR>(L"Audio Address");
 		ListView_InsertItem(debugList, &lvi);
+		++i;
+		lvi.iItem = i;
+		lvi.pszText = const_cast<LPWSTR>(L"Play Address");
+		ListView_InsertItem(debugList, &lvi);
+		++i;
+	}
+}
+
+void updateDebugWindowAttributes(void)
+{
+    int index = getSelectedSubtitle();
+    int i = 0;
+    for (std::vector<Subtitles>::iterator iter = subtitles.begin(); iter != subtitles.end(); iter++)
+    {
+
+        std::wstringstream wss;
+	    std::wstring ws;
+		LVITEM lvi = {};
+		lvi.mask = LVIF_TEXT;
+		lvi.iItem = i;
 		lvi.iSubItem = 1;
         wss << iter->address_audio;
         ws = wss.str();
@@ -109,10 +134,8 @@ void updateDebugWindowAttributes(void)
 		ListView_SetItem(debugList, &lvi);
 		wss.str(L"");
 		++i;
+
 		lvi.iItem = i;
-		lvi.iSubItem = 0;
-		lvi.pszText = const_cast<LPWSTR>(L"Play Address");
-		ListView_InsertItem(debugList, &lvi);
 		lvi.iSubItem = 1;
         wss << iter->address_play;
         ws = wss.str();
@@ -120,10 +143,35 @@ void updateDebugWindowAttributes(void)
 		ListView_SetItem(debugList, &lvi);
 		wss.str(L"");
 		lvi.iSubItem = 2;
-        wss << iter->is_playing;
-        ws = wss.str();
-		lvi.pszText = const_cast<LPWSTR>(ws.c_str());
+        if(iter->is_playing)
+            lvi.pszText = const_cast<LPWSTR>(L"True");
+		else
+            lvi.pszText = const_cast<LPWSTR>(L"False");
 		ListView_SetItem(debugList, &lvi);
 		++i;
-	}
+    }
+
+
+    if(index != debugLastIndex || subtitles[index].AudioID != debugLastID)
+    {
+        debugLastIndex = index;
+        debugLastID = subtitles[index].AudioID;
+
+        ListView_DeleteAllItems(subtitleList);
+        for(size_t i = 0; i < subtitles[index].dialog.size(); i++)
+        {
+            if (subtitles[index].AudioID == subtitles[index].dialog[i].ID)
+            {
+                for(size_t j = 0; j < subtitles[index].dialog[i].Text.size();j++)
+                {
+                    LVITEM lvi = {};
+                    lvi.mask = LVIF_TEXT;
+                    lvi.iItem = j;
+                    lvi.pszText = const_cast<LPWSTR>(subtitles[index].dialog[i].Text[j].c_str());
+                    ListView_InsertItem(subtitleList, &lvi);
+                }
+                break;
+            }
+        }
+    }
 }

@@ -204,6 +204,9 @@ extern int sub;
 extern int subID;
 extern bool isGameOpened;
 
+extern int debugLastID;
+extern int debugLastIndex;
+
 // Windows
 extern HWND mainHWND;
 extern HWND subtitlesHWND;
@@ -231,6 +234,7 @@ extern HWND configList;
 
 // Debug window handles
 extern HWND debugList;
+extern HWND subtitleList;
 
 // Resources
 extern HFONT hFont;
@@ -287,6 +291,7 @@ void updateConfiguratorWindowAttributes();
 LRESULT CALLBACK ConfiguratorWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 int createDebugWindow(HWND parent);
+void createDebugWindowAttributes();
 void updateDebugWindowAttributes();
 LRESULT CALLBACK DebugWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 // Utilities
@@ -311,6 +316,8 @@ std::map<wchar_t *, Config, WStringCompare>::iterator getConfig(wchar_t * identi
 void setDefaultConfig(Config &defaultConfig);
 void checkConfig(Config &config);
 wchar_t *getSelectedIdentifier(void);
+int getSelectedSubtitle(void);
+
 
 void cleanup(void);
 

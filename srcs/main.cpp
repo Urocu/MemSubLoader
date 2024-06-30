@@ -20,6 +20,9 @@ int sub = 0;
 int subID = 0;
 bool isGameOpened = false;
 
+int debugLastID = 0;
+int debugLastIndex = 0;
+
 // Windows
 HWND mainHWND = NULL;
 HWND subtitlesHWND = NULL;
@@ -47,6 +50,7 @@ HWND configList = NULL;
 
 // Debug window handles
 HWND debugList = NULL;
+HWND subtitleList = NULL;
 
 // Resources
 HFONT hFont = NULL;

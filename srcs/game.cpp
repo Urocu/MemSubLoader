@@ -55,7 +55,6 @@ void scanGame(PROCESS_INFORMATION pi)
                     textToDraw = L"";
                     invalidateWindow(subtitlesHWND);
                 }
-                updateDebugWindowAttributes();
                 break;
             case 2: // If the subtitles are timed
                 if(subtitles[sub].dialog[subID].Timer.size() > currentTimer && subtitles[sub].dialog[subID].Timer[currentTimer] > subtitles[sub].dialog[subID].Timer[currentTimer-1])
@@ -73,13 +72,13 @@ void scanGame(PROCESS_INFORMATION pi)
                     SetTimer(mainHWND, 1, 100, NULL);
                     currentTimer = 1;
                 }
-                updateDebugWindowAttributes();
                 break;
             }
 
         }
         if(WaitForSingleObject( pi.hProcess, 0 ) != WAIT_TIMEOUT)
             break;
+        updateDebugWindowAttributes();
         TranslateMessage(&msg);
         DispatchMessage(&msg);
 	}
