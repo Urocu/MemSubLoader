@@ -50,7 +50,7 @@ int createDebugWindow(HWND parent)
 	debugWindowClass.lpszClassName = DEBUG_CLASS_NAME;
 	RegisterClass(&debugWindowClass);
 
-	debugHWND = CreateWindowEx(0, DEBUG_CLASS_NAME, L"Debug", WS_SYSMENU | WS_MINIMIZEBOX, (desktop.right / 2) - (382 / 2), (desktop.bottom / 2) - (403 / 2), 382, 403, NULL, NULL, NULL, NULL);
+	debugHWND = CreateWindowEx(0, DEBUG_CLASS_NAME, L"Debug", WS_SYSMENU | WS_MINIMIZEBOX, (desktop.right / 2) - (382 / 2), (desktop.bottom / 2) - (403 / 2), 381, 403, NULL, NULL, NULL, NULL);
 	if (!IsWindow(debugHWND))
 	{
 		return 1;
